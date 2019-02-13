@@ -1,0 +1,74 @@
+service: cvs-svc-activities
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-plugin-typescript
+
+functions:
+  main:
+    handler: src/handler.handler
+    events:
+    - http:
+        path: activities
+        method: post
+    - http:
+        path: activities/{id}/end
+        method: put
+
+resources:
+  Resources:
+    Users:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: cvs-local-activities
+        AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: testerStaffId
+          AttributeType: S
+        KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        GlobalSecondaryIndexes:
+        - IndexName: StaffIndex
+          KeySchema:
+          - AttributeName: testerStaffId
+            KeyType: HASH
+          Projection:
+            NonKeyAttributes:
+            - activityType
+            - testStationName
+            - testStationNumber
+            - testStationEmail
+            - testStationType
+            - testerName
+            - startTime
+            - endTime
+            ProjectionType: INCLUDE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+custom:
+  serverless-offline:
+    port: 3007
+  dynamodb:
+    start:
+      port: 8005
+      inMemory: true
+      migrate: true
+      seed: false
+      noStart: true
+    seed:
+      activities:
+        sources:
+        - table: cvs-local-activities
+          sources: [./tests/resources/activities.json]
