@@ -80,8 +80,7 @@ podTemplate(label: label, containers: [
                                   accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                   credentialsId: 'jenkins-iam',
                                   secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-
-                    sh "aws s3 cp ${LBRANCH}.zip s3://cvs-services/activities/${LBRANCH}.zip"
+                    sh "aws s3 cp ${LBRANCH}.zip s3://cvs-services/activities/${LBRANCH}.zip --metadata sha256sum=\"\$(openssl dgst -sha256 -binary ${LBRANCH}.zip | openssl enc -base64)\""
                 }
             }
         }
