@@ -1,0 +1,24 @@
+functions:
+- startActivity:
+    method: POST
+    path: /activities
+    proxy: null
+    function: startActivity
+- endActivity:
+    method: PUT
+    path: /activities/{+proxy}
+    proxy: :id/end
+    function: endActivity
+dynamodb:
+  local:
+    params:
+      region: localhost
+      endpoint: http://localhost:8005
+    table: cvs-local-activities
+    keys:
+      - id
+  remote:
+    params: {}
+    table: cvs-${BRANCH}-activities
+serverless:
+  port: 3007
