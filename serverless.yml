@@ -44,7 +44,7 @@ resources:
             NonKeyAttributes:
             - activityType
             - testStationName
-            - testStationNumber
+            - testStationPNumber
             - testStationEmail
             - testStationType
             - testerName
