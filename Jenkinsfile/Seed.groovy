@@ -28,7 +28,7 @@ podTemplate(label: label, containers: [
                 
                 stage ("delete-table") {
     
-                    sh "aws dynamodb delete-table --table-name cvs-${LBRANCH}-activities --region=eu-west-1 || true"
+                    sh "aws dynamodb delete-table --table-name cvs-${LBRANCH}-activities --region=eu-west-1"
                     sh "aws dynamodb wait table-not-exists --table-name cvs-${LBRANCH}-activities --region=eu-west-1"
 
                 }
