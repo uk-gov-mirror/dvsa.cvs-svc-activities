@@ -42,8 +42,6 @@ podTemplate(label: label, containers: [
                 '''
 
                 sh "sls dynamodb seed --seed=activities"
-
-                }
                 
                 stage ("seed-table") {
                         sh "./seed.js cvs-${LBRANCH}-activities ../tests/resources/activities.json"
