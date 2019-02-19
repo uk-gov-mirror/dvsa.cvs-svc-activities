@@ -36,7 +36,6 @@ podTemplate(label: label, containers: [
                 sh '''
                     aws dynamodb create-table \
                     --region=eu-west-1 \
-                    --endpoint-url http://localhost:8005 \
                     --table-name cvs-local-activities \
                     --attribute-definitions AttributeName=id,AttributeType=S AttributeName=testerStaffId,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --global-secondary-indexes IndexName=StaffIndex,KeySchema=[{AttributeName=testerStaffId,KeyType=HASH}],Projection={ProjectionType=INCLUDE,NonKeyAttributes=[activityType,testStationName,testStationNumber,testStationEmail,testStationType,testerName,startTime,endTime]},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}"
                 '''
