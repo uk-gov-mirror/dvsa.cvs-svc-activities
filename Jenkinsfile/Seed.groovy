@@ -32,15 +32,18 @@ podTemplate(label: label, containers: [
                     sh "aws dynamodb wait table-not-exists --table-name cvs-${LBRANCH}-activities --region=eu-west-1"
 
                 }
-                
+                stage ("create-tabble") {
                 sh '''
-                    aws dynamodb create-table \
-                    --region=eu-west-1 \
-                    --table-name cvs-local-activities \
-                    --attribute-definitions AttributeName=id,AttributeType=S AttributeName=testerStaffId,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --global-secondary-indexes IndexName=StaffIndex,KeySchema=[{AttributeName=testerStaffId,KeyType=HASH}],Projection={ProjectionType=INCLUDE,NonKeyAttributes=[activityType,testStationName,testStationNumber,testStationEmail,testStationType,testerName,startTime,endTime]},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}"
+                        aws dynamodb create-table \
+                        --region=eu-west-1 \
+                        --table-name cvs-local-activities \
+                        --attribute-definitions AttributeName=id,AttributeType=S AttributeName=testerStaffId,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --global-secondary-indexes IndexName=StaffIndex,KeySchema=[{AttributeName=testerStaffId,KeyType=HASH}],Projection={ProjectionType=INCLUDE,NonKeyAttributes=[activityType,testStationName,testStationNumber,testStationEmail,testStationType,testerName,startTime,endTime]},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}"
                 '''
 
                 sh "sls dynamodb seed --seed=activities"
+                }
+
+                
                 
                 stage ("seed-table") {
                         sh "./seed.js cvs-${LBRANCH}-activities ../tests/resources/activities.json"
