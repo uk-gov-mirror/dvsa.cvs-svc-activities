@@ -33,18 +33,15 @@ podTemplate(label: label, containers: [
 
                 }
                 stage ("create-tabble") {
-                sh """
+                    sh """
                         aws dynamodb create-table \
                         --region=eu-west-1 \
                         --table-name cvs-${LBRANCH}-activities \
                         --attribute-definitions AttributeName=id,AttributeType=S AttributeName=testerStaffId,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --global-secondary-indexes IndexName=StaffIndex,KeySchema=[{AttributeName=testerStaffId,KeyType=HASH}],Projection={ProjectionType=INCLUDE,NonKeyAttributes=[activityType,testStationName,testStationNumber,testStationEmail,testStationType,testerName,startTime,endTime]},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}"
-                """
-
-                sh "sls dynamodb seed --seed=activities"
+                    """
+                
+                    sh "aws dynamodb wait table-exists --table-name cvs-${LBRANCH}-activities --region=eu-west-1"
                 }
-
-                
-                
                 stage ("seed-table") {
                         sh "./seed.js cvs-${LBRANCH}-activities ../tests/resources/activities.json"
                 }
