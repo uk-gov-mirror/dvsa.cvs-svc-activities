@@ -47,14 +47,15 @@ dynamodb:
     table: cvs-local-activities
     keys:
       - id
-  ${BRANCH}:
+  remote:
     params: {}
     table: cvs-${BRANCH}-activities
 ```
 #### Serverless
-For serverless, you need to specify the port number. This is required for integration testing
+For serverless, you need to specify the port number. This is required for integration testing. The `basePath` specifies the base path of the URL on the AWS environment. This is tied to the `BRANCH` environment variable.
 ```
 serverless:
+  basePath: ${BRANCH}
   port: 3007
 ```
 

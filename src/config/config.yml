@@ -21,4 +21,5 @@ dynamodb:
     params: {}
     table: cvs-${BRANCH}-activities
 serverless:
+  basePath: /${BRANCH}
   port: 3007

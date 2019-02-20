@@ -24,6 +24,7 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
     // Finding an appropriate λ matching the request
     const config: Configuration = Configuration.getInstance();
     const functions: IFunctionEvent[] =  config.getFunctions();
+    const serverlessConfig: any = config.getConfig().serverless;
 
     const matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
         // Find λ with matching httpMethod
@@ -31,18 +32,25 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
     })
     .filter((fn) => {
         // Find λ with matching path
-        const path: Path = new Path(fn.path);
-        return path.test(event.path);
+        const localPath: Path = new Path(fn.path);
+        const remotePath: Path = new Path(`${serverlessConfig.basePath}${fn.path}`); // Remote paths also have environment
+
+        return (localPath.test(event.path) || remotePath.test(event.path));
     });
 
     // Exactly one λ should match the above filtering.
     if (matchingLambdaEvents.length === 1) {
-        const lambdaFn: Handler = matchingLambdaEvents[0].function;
-        const lambdaPathParams: any = new Path(matchingLambdaEvents[0].path).test(event.path);
+        const lambdaEvent: IFunctionEvent = matchingLambdaEvents[0];
+        const lambdaFn: Handler = lambdaEvent.function;
+
+        const localPath: Path = new Path(lambdaEvent.path);
+        const remotePath: Path = new Path(`${serverlessConfig.basePath}${lambdaEvent.path}`); // Remote paths also have environment
+
+        const lambdaPathParams: any = (localPath.test(event.path) || remotePath.test(event.path));
 
         Object.assign(event, { pathParameters: lambdaPathParams });
 
-        console.log(`HTTP ${event.httpMethod} ${event.path} -> λ ${matchingLambdaEvents[0].name}`);
+        console.log(`HTTP ${event.httpMethod} ${event.path} -> λ ${lambdaEvent.name}`);
 
         // Explicit conversion because typescript can't figure it out
         return lambdaFn(event, context, callback) as Promise<APIGatewayProxyResult>;
