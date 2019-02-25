@@ -88,6 +88,11 @@ export class DynamoDBMockService {
         });
     }
 
+    /**
+     * Get ongoing by staff id
+     * @param staffId
+     * @returns null
+     */
     public getOngoingByStaffId(staffId: string): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
         return new Promise((resolve, reject) => {
             const matches: any = this.db.filter((item: IActivity) => item.testerStaffId === staffId)

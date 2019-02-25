@@ -4,14 +4,37 @@
   "description": "A template application containing boilerplate code for writing CVS microservices.",
   "main": "handler.js",
   "scripts": {
-    "start": "node_modules/serverless/bin/serverless offline start",
+    "start": "npm run tslint && BRANCH=local node_modules/serverless/bin/serverless offline start",
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir .build --sourceMap false && npm run build:copy",
     "build:dev": "node_modules/typescript/bin/tsc && npm run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find tests -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "test": "npm run build && BRANCH=local node_modules/.bin/mocha .build/tests/**/*.unitTest.js",
     "test-i": "node_modules/.bin/mocha .build/tests/**/*.intTest.js",
-    "lint": "tslint src/**/*.ts tests/**/*.ts",
-    "sonar-scanner": "echo 'TODO'"
+    "prepush": "BRANCH=local npm test && npm run tslint",
+    "predeploy": "npm install && npm run prepush",
+    "security-checks": "git secrets --scan && git log -p | scanrepo",
+    "tslint": "tslint src/**/*.ts tests/**/*.ts",
+    "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
+    "coverage": "nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "author": "",
   "license": "ISC",
@@ -21,8 +44,9 @@
     "joi": "^14.3.1",
     "node-yaml": "^3.1.1",
     "path-parser": "^4.2.0",
-    "uuid": "^3.3.2",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "ts-node-register": "^1.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
@@ -35,10 +59,12 @@
     "chai": "^4.2.0",
     "gulp": "^4.0.0",
     "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
     "serverless": "^1.36.3",
     "serverless-dynamodb-local": "0.2.35",
     "serverless-offline": "^4.2.0",
     "serverless-plugin-typescript": "^1.1.5",
+    "source-map-support": "^0.5.9",
     "supertest": "^3.4.2",
     "swagger-jsdoc": "^3.2.6",
     "tslint": "^5.12.1",
