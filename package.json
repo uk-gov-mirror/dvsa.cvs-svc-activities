@@ -15,7 +15,7 @@
     "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage",
-    "coverage": "nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov"
+    "coverage": "BRANCH=local nyc mocha tests/unit/*.unitTest.ts && nyc report --reporter=lcov"
   },
   "nyc": {
     "include": [
