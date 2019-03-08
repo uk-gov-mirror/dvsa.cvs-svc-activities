@@ -6,7 +6,7 @@ import {HTTPResponse} from "../utils/HTTPResponse";
 
 const getActivity: Handler = async (event: any, context?: Context): Promise<any> => {
     const activityService = Injector.resolve<ActivityService>(ActivityService);
-    return activityService.getActivity(event)
+    return activityService.getActivities(event)
         .then((data: any) => {
             return new HTTPResponse(200, data);
         })
