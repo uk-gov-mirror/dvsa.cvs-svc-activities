@@ -1,16 +1,18 @@
-import {describe} from "mocha";
-import {expect} from "chai";
-import {Injector} from "../../src/models/injector/Injector";
-import {ActivityService} from "../../src/services/ActivityService";
-import {DynamoDBMockService} from "../models/DynamoDBMockService";
-import {HTTPResponse} from "../../src/utils/HTTPResponse";
+import { describe } from "mocha";
+import { assert, expect } from "chai";
+import { Injector } from "../../src/models/injector/Injector";
+import { ActivityService } from "../../src/services/ActivityService";
+import { DynamoDBMockService } from "../models/DynamoDBMockService";
+import { HTTPResponse } from "../../src/utils/HTTPResponse";
+import * as jsonData from "../resources/activities.json";
+
 
 describe("createActivity", () => {
     const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
 
     context("when the payload is missing the", () => {
         context("activityType attribute", () => {
-            const payload: any =   {
+            const payload: any = {
                 testStationName: "Rowe, Wunsch and Wisoky",
                 testStationPNumber: "87-1369569",
                 testStationEmail: "teststationname@dvsa.gov.uk",
@@ -22,8 +24,6 @@ describe("createActivity", () => {
             it("should return an error", () => {
                 return activityService.createActivity(payload)
                     .then((result: { id: string }) => {
-                        // The creation should not succeed
-                        console.log(result);
                         expect.fail();
                     })
                     .catch((error: HTTPResponse) => {
@@ -45,15 +45,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationName\" is required");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationName\" is required");
+                    });
             });
         });
 
@@ -69,15 +67,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationPNumber\" is required");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationPNumber\" is required");
+                    });
             });
         });
 
@@ -93,15 +89,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationEmail\" is required");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationEmail\" is required");
+                    });
             });
         });
 
@@ -117,15 +111,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationType\" is required");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationType\" is required");
+                    });
             });
         });
 
@@ -141,15 +133,10 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testerName\" is required");
-                });
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testerName\" is required");
+                    });
             });
         });
 
@@ -165,15 +152,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testerStaffId\" is required");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testerStaffId\" is required");
+                    });
             });
         });
     });
@@ -192,15 +177,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"activityType\" must be one of [visit, wait]");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"activityType\" must be one of [visit, wait]");
+                    });
             });
         });
 
@@ -217,15 +200,13 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    console.log(result);
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationEmail\" must be a valid email");
-                });
+                    .then((result: { id: string }) => {
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationEmail\" must be a valid email");
+                    });
             });
         });
 
@@ -242,14 +223,14 @@ describe("createActivity", () => {
 
             it("should return an error", () => {
                 return activityService.createActivity(payload)
-                .then((result: { id: string }) => {
-                    // The creation should not succeed
-                    expect.fail();
-                })
-                .catch((error: HTTPResponse) => {
-                    const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"testStationType\" must be one of [atf, gvts, hq]");
-                });
+                    .then((result: { id: string }) => {
+                        // The creation should not succeed
+                        expect.fail();
+                    })
+                    .catch((error: HTTPResponse) => {
+                        const body: any = JSON.parse(error.body);
+                        expect(body.error).to.equal("\"testStationType\" must be one of [atf, gvts, hq]");
+                    });
             });
         });
     });
@@ -267,14 +248,12 @@ describe("createActivity", () => {
 
         it("should return a uuid", () => {
             return activityService.createActivity(payload)
-            .then((result: { id: string }) => {
-                expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-            })
-            .catch((error: HTTPResponse) => {
-                // The creation should not fail
-                console.log(error);
-                expect.fail();
-            });
+                .then((result: { id: string }) => {
+                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+                })
+                .catch((error: HTTPResponse) => {
+                    expect.fail();
+                });
         });
     });
 
@@ -315,26 +294,115 @@ describe("endActivity", () => {
 
             // If the call does not throw errors, it is successful
             return activityService.endActivity(activityId)
-            .catch((error: HTTPResponse) => {
-                // The creation should succeed
-                console.log(error);
-                expect.fail();
-            });
+                .catch((error: HTTPResponse) => {
+                    expect.fail();
+                });
         });
     });
 
     context("when the activity has already ended", () => {
         it("should return an error", async () => {
             return activityService.endActivity(activityId)
-            .then(() => {
-                // The creation should not succeed
-                expect.fail();
-            })
-            .catch((error: HTTPResponse) => {
-                const body: any = JSON.parse(error.body);
-                expect(body.error).to.equal(`Activity already ended`);
-            });
+                .then(() => {
+                    // The creation should not succeed
+                    expect.fail();
+                })
+                .catch((error: HTTPResponse) => {
+                    const body: any = JSON.parse(error.body);
+                    expect(body.error).to.equal(`Activity already ended`);
+                });
         });
     });
 
+});
+
+describe("getActivity", () => {
+    const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
+    context("when no data is returned from database", () => {
+        it("should throw error", () => {
+            const event = {
+                queryStringParameters: {
+                    fromStartTime: "2020-02-12"
+                }
+            };
+            activityService.getActivity(event).then(() => {
+                expect.fail();
+            }).catch((error: HTTPResponse) => {
+                const body: any = JSON.parse(error.body);
+                expect(error.statusCode).to.equal(404);
+                expect(JSON.parse(body)).to.equal("No resources match the search criteria");
+            });
+
+        });
+    });
+    context("when the fromStarTime is valid", () => {
+        it("should return array of activities", () => {
+            const event = {
+                queryStringParameters: {
+                    fromStartTime: "2014-02-12"
+                }
+            };
+            const dataMock: any = jsonData;
+            dataMock.Items = dataMock.default;
+            expect(activityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+        });
+        describe("and the toStartTime is valid", () => {
+            it("should return array of activities", () => {
+                const event = {
+                    queryStringParameters: {
+                        fromStartTime: "2014-02-12",
+                        toStartTime: "2019-02-12"
+                    }
+                };
+                const dataMock: any = jsonData;
+                dataMock.Items = dataMock.default;
+                expect(activityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+            });
+        });
+        describe("and the activityType is valid", () => {
+            it("should return array of activities", () => {
+                const event = {
+                    queryStringParameters: {
+                        fromStartTime: "2014-02-12",
+                        toStartTime: "2019-02-12",
+                        activityType: "visit"
+                    }
+                };
+                const dataMock: any = jsonData;
+                dataMock.Items = dataMock.default;
+                expect(activityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+            });
+        });
+        describe("and the testStationPNumber is valid", () => {
+            it("should return array of activities", () => {
+                const event = {
+                    queryStringParameters: {
+                        fromStartTime: "2014-02-12",
+                        toStartTime: "2019-02-12",
+                        activityType: "visit",
+                        testStationPNumber: "87-1369561"
+                    }
+                };
+                const dataMock: any = jsonData;
+                dataMock.Items = dataMock.default;
+                expect(activityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+            });
+        });
+        describe("and the testerStaffId is valid", () => {
+            it("should return array of activities", () => {
+                const event = {
+                    queryStringParameters: {
+                        fromStartTime: "2014-02-12",
+                        toStartTime: "2019-02-12",
+                        activityType: "visit",
+                        testStationPNumber: "87-1369561",
+                        testerStaffId: "132"
+                    }
+                };
+                const dataMock: any = jsonData;
+                dataMock.Items = dataMock.default;
+                expect(activityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+            });
+        });
+    });
 });

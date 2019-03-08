@@ -20,6 +20,9 @@ functions:
     - http:
         path: activities/{id}/end
         method: put
+    - http:
+        path: activities/details
+        method: get
 
 resources:
   Resources:

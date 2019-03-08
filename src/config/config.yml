@@ -9,6 +9,11 @@ functions:
     path: /activities/{+proxy}
     proxy: :id/end
     function: endActivity
+- getActivity:
+    method: GET
+    path: /activities/details
+    proxy: null
+    function: getActivity
 dynamodb:
   local:
     params:
