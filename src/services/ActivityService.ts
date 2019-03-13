@@ -79,11 +79,11 @@ export class ActivityService {
             .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
                 // Result checks
                 if (result.Item === undefined) {
-                    throw new HTTPResponse(404, { error: `Activity id ${id} does not exist` });
+                    throw new HTTPResponse(404, { error: `Activity id does not exist` });
                 }
 
                 if (result.Item.endTime !== null) {
-                    throw new HTTPResponse(403, { error: `Activity id ${id} has already ended` });
+                    throw new HTTPResponse(403, { error: `Activity already ended` });
                 }
 
                 const activity: IActivity = result.Item as IActivity;

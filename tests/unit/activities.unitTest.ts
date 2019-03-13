@@ -293,7 +293,7 @@ describe("endActivity", () => {
             })
             .catch((error: HTTPResponse) => {
                 const body: any = JSON.parse(error.body);
-                expect(body.error).to.equal(`Activity id ${activityId} does not exist`);
+                expect(body.error).to.equal(`Activity id does not exist`);
             });
         });
     });
@@ -332,7 +332,7 @@ describe("endActivity", () => {
             })
             .catch((error: HTTPResponse) => {
                 const body: any = JSON.parse(error.body);
-                expect(body.error).to.equal(`Activity id ${activityId} has already ended`);
+                expect(body.error).to.equal(`Activity already ended`);
             });
         });
     });
