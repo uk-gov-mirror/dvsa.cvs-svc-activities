@@ -1,3 +1,4 @@
+import { HTTPRESPONSE } from "./assets/enums";
 import {APIGatewayProxyResult, Callback, Context, Handler} from "aws-lambda";
 import Path from "path-parser";
 import {Configuration, IFunctionEvent} from "./utils/Configuration";
@@ -6,7 +7,7 @@ import {HTTPResponse} from "./utils/HTTPResponse";
 const handler: Handler = async (event: any, context: Context, callback: Callback): Promise<APIGatewayProxyResult> => {
     // Request integrity checks
     if (!event) {
-        return new HTTPResponse(400, "AWS event is empty. Check your test event.");
+        return new HTTPResponse(400, HTTPRESPONSE.AWS_EVENT_EMPTY);
     }
 
     if (event.body) {
@@ -15,7 +16,7 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
         try {
             payload = JSON.parse(event.body);
         } catch {
-            return new HTTPResponse(400, "Body is not a valid JSON.");
+            return new HTTPResponse(400, HTTPRESPONSE.NOT_VALID_JSON);
         }
 
         Object.assign(event, { body: payload });

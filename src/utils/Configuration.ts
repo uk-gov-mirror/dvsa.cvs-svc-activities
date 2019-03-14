@@ -1,6 +1,8 @@
+import { ERRORS } from "./../assets/enums";
 import {Handler} from "aws-lambda";
 // @ts-ignore
 import * as yml from "node-yaml";
+import { ENV_VARIABLES } from "../assets/enums";
 
 enum HTTPMethods {
     GET = "GET",
@@ -68,7 +70,7 @@ class Configuration {
      */
     public getFunctions(): IFunctionEvent[] {
         if (!this.config.functions) {
-            throw new Error("Functions were not defined in the config file.");
+            throw new Error(ERRORS.FUNCTION_NOT_DEFINED);
         }
 
         return this.config.functions.map((fn: Handler) => {
@@ -90,11 +92,11 @@ class Configuration {
      */
     public getDynamoDBConfig(): any {
         if (!this.config.dynamodb) {
-            throw new Error("DynamoDB config is not defined in the config file.");
+            throw new Error(ERRORS.DYNAMODB_NOT_DEFINED);
         }
 
         // Not defining BRANCH will default to local
-        const env: string = (!process.env.BRANCH || process.env.BRANCH === "local") ? "local" : "remote";
+        const env: string = (!process.env.BRANCH || process.env.BRANCH === ENV_VARIABLES.LOCAL) ? ENV_VARIABLES.LOCAL : ENV_VARIABLES.REMOTE;
 
         return this.config.dynamodb[env];
     }

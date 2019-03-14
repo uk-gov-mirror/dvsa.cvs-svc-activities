@@ -1,6 +1,4 @@
-import { Injector } from "./../models/injector/Injector";
-import { ActivityFilters } from "./../utils/Filters";
-import { AWSError, HttpResponse } from "aws-sdk";
+import { AWSError } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import * as Joi from "joi";
 import uuid from "uuid";
@@ -9,6 +7,7 @@ import { ActivitySchema } from "../models/ActivitySchema";
 import { Service } from "../models/injector/ServiceDecorator";
 import { HTTPResponse } from "../utils/HTTPResponse";
 import { DynamoDBService } from "./DynamoDBService";
+import { HTTPRESPONSE } from "../assets/enums";
 
 
 @Service()
@@ -27,6 +26,7 @@ export class ActivityService {
      * Creates a new activity in the database.
      * The startTime of this activity will be now.
      * @param activity - the payload containing the activity
+     * @returns Promise - The ID of the activitiy
      */
     public async createActivity(activity: IActivity): Promise<{ id: string }> {
         // Payload validation
@@ -48,7 +48,7 @@ export class ActivityService {
             });
 
         if (ongoingCount && ongoingCount > 0) {
-            throw new HTTPResponse(403, { error: `Staff ID ${activity.testerStaffId} already has an ongoing activity` });
+            throw new HTTPResponse(403, { error: HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID + " " + activity.testerStaffId + " " + HTTPRESPONSE.ONGING_ACTIVITY});
         }
 
         // Assign an id
@@ -78,17 +78,18 @@ export class ActivityService {
     /**
      * Ends an activity with the given id
      * @param id - id of the activity to end
+     * @returns Promise void
      */
     public async endActivity(id: string): Promise<void> {
         return this.dbClient.get({ id })
             .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
                 // Result checks
                 if (result.Item === undefined) {
-                    throw new HTTPResponse(404, { error: `Activity id does not exist` });
+                    throw new HTTPResponse(404, { error: HTTPRESPONSE.NOT_EXIST });
                 }
 
                 if (result.Item.endTime !== null) {
-                    throw new HTTPResponse(403, { error: `Activity already ended` });
+                    throw new HTTPResponse(403, { error: HTTPRESPONSE.ALREADY_ENDED });
                 }
 
                 const activity: IActivity = result.Item as IActivity;
@@ -107,23 +108,6 @@ export class ActivityService {
 
                 // Otherwise, if DynamoDB errors, we throw 500
                 throw new HTTPResponse(error.statusCode, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
-            });
-    }
-
-    /**
-     * Get activities from Dynamodb
-     * @param event
-     */
-    public async getActivities(event: any): Promise<any> {
-        const activityService = Injector.resolve<ActivityFilters>(ActivityFilters);
-        return this.dbClient.scan()
-            .then((data: any) => {
-                return activityService.filterActivities(data, event);
-            })
-            .catch((error) => {
-                if (error instanceof HTTPResponse) {
-                    throw new HTTPResponse(error.statusCode, error.body);
-                }
             });
     }
 }

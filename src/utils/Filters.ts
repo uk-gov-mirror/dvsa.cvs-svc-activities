@@ -1,48 +1,19 @@
+import { HTTPRESPONSE, QUERY_PARAMS } from "./../assets/enums";
 import { isAfter, isBefore, isEqual } from "date-fns";
 import { HTTPResponse } from "../utils/HTTPResponse";
 
 export class ActivityFilters {
-    /**
-     * Filter activities by received parameters
-     * @param response Data received from Dynamodb
-     * @param event Event
-     */
-    public filterActivities(response: any, event: any) {
-        let filteredActivities: string[] = [];
-        if (response.Count === 0) {
-            throw new HTTPResponse(404, "No resources match the search criteria");
-        } else {
-            if (event.queryStringParameters) {
-                if (event.queryStringParameters.fromStartTime) {
-                    filteredActivities = this.filterActivitiesByStartTime(response.Items, event.queryStringParameters.fromStartTime, true);
-                } else {
-                    throw new HTTPResponse(400, "Bad request");
-                }
-                if (event.queryStringParameters.toStartTime) {
-                    filteredActivities = this.filterActivitiesByStartTime(filteredActivities, event.queryStringParameters.toStartTime, false);
-                }
-                if (event.queryStringParameters.activityType) {
-                    filteredActivities = this.filterActivitiesByParameter(filteredActivities, event.queryStringParameters.activityType, "activityType");
-                }
-                if (event.queryStringParameters.testStationPNumber) {
-                    filteredActivities = this.filterActivitiesByParameter(filteredActivities, event.queryStringParameters.testStationPNumber, "testStationPNumber");
-                }
-                if (event.queryStringParameters.testerStaffId) {
-                    filteredActivities = this.filterActivitiesByParameter(filteredActivities, event.queryStringParameters.testerStaffId, "testerStaffId");
-                }
-                return this.returnOrderedActivities(filteredActivities);
-            } else {
-                throw new HTTPResponse(400, "Bad request");
-            }
-        }
-    }
+// tslint:disable-next-line: no-empty
+    public constructor() {}
+
     /**
      * Filter activities by Start Time
      * @param activities Array of activities
      * @param params Query parameters
      * @param option True = ifAfter | False = ifBefore
+     * @returns Array of Activities filtered by start time or end time
      */
-    private filterActivitiesByStartTime(activities: string[], startTime: string, option: boolean): string[] {
+    public filterActivitiesByStartTime(activities: string[], startTime: string, option: boolean): string[] {
         const activityArray: string[] = [];
         activities.forEach((element: any) => {
             switch (option) {
@@ -57,11 +28,7 @@ export class ActivityFilters {
                     }
             }
         });
-        if (activityArray.length) {
-            return activityArray;
-        } else {
-            throw new HTTPResponse(404, "No resources match the search criteria");
-        }
+        return activityArray;
     }
 
     /**
@@ -69,23 +36,21 @@ export class ActivityFilters {
      * @param activities Array of activities
      * @param value Value of the @param field
      * @param field activityType | testStationPNumber | testerStaffId
+     * @returns Array of Activities filtered by activityType | testStationPNumber | testerStaffId
      */
-    private filterActivitiesByParameter(activities: string[], value: string, field: string) {
+    public filterActivitiesByParameter(activities: string[], value: string, field: string) {
         const filteredArrayOfActivities = activities.filter((element: any) => {
             return element[field] === value;
         });
-        if (filteredArrayOfActivities.length) {
-            return filteredArrayOfActivities;
-        } else {
-            throw new HTTPResponse(404, "No resources match the search criteria");
-        }
+        return filteredArrayOfActivities;
     }
 
     /**
      * Order Activities desc by Start Time
      * @param activities Array of activities
+     * @returns Array of Activities ordered desc
      */
-    private returnOrderedActivities(activities: string[]): string[] {
+    public returnOrderedActivities(activities: string[]): string[] {
         const sortDateDesc = (date1: any, date2: any) => {
             const date = new Date(date1.startTime).toISOString();
             const dateToCompare = new Date(date2.startTime).toISOString();
