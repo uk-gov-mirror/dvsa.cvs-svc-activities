@@ -1,5 +1,5 @@
-import { AWSError } from "aws-sdk";
-import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
+import { AWSError } from "aws-sdk"; // Only used as a type, so not wrapped by XRay
+import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client"; // Only used as a type, so not wrapped by XRay
 import * as Joi from "joi";
 import uuid from "uuid";
 import { IActivity } from "../models/Activity";

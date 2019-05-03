@@ -1,6 +1,10 @@
-import {AWSError, DynamoDB} from "aws-sdk";
-import {DocumentClient} from "aws-sdk/lib/dynamodb/document_client";
-import {PromiseResult} from "aws-sdk/lib/request";
+/* tslint:disable */
+const AWSXRay = require("aws-xray-sdk");
+const AWS = AWSXRay.captureAWS(require("aws-sdk"));
+/* tslint:enable */
+import {AWSError} from "aws-sdk"; // Only used as a type, so not wrapped by XRay
+import {DocumentClient} from "aws-sdk/lib/dynamodb/document_client"; // Only used as a type, so not wrapped by XRay
+import {PromiseResult} from "aws-sdk/lib/request"; // Only used as a type, so not wrapped by XRay
 import {Configuration} from "../utils/Configuration";
 
 export class DynamoDBService {
@@ -15,7 +19,7 @@ export class DynamoDBService {
         this.tableName = config.table;
 
         if (!DynamoDBService.client) {
-            DynamoDBService.client = new DynamoDB.DocumentClient(config.params);
+            DynamoDBService.client = new AWS.DynamoDB.DocumentClient(config.params);
         }
     }
 
