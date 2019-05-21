@@ -13,6 +13,7 @@
   },
   {
     "id": "5e4bd304-446e-4678-8289-d34fca925612",
+    "parentId": "5e4bd304-446e-4678-8289-d34fca9256e9",
     "activityType": "wait",
     "testStationName": "Rowe, Wunsch and Wisoky",
     "testStationPNumber": "87-1369562",
@@ -21,7 +22,9 @@
     "testerName": "Gica",
     "testerStaffId": "132",
     "startTime": "2017-02-13",
-    "endTime": null
+    "endTime": null,
+    "waitReason": ["Admin"],
+    "notes": null
   },{
     "id": "5e4bd304-446e-4678-8289-d34fca9256e8",
     "activityType": "visit",
@@ -135,8 +138,9 @@
     "endTime": null
   },
   {
-    "id": "6e4b9304-446e-4678-8289-d34fca9256e4",
-    "activityType": "visit",
+    "id": "9e4b9304-446e-4678-8289-d34fca9259e4",
+    "parentId": "6e4bd304-446e-4678-8289-d34fca9256e4",
+    "activityType": "unaccountable time",
     "testStationName": "Rowe, Wunsch and Wisoky",
     "testStationPNumber": "87-1369564",
     "testStationEmail": "teststationname@dvsa.gov.uk",
@@ -144,6 +148,8 @@
     "testerName": "Gica",
     "testerStaffId": "132",
     "startTime": "2015-02-13",
-    "endTime": null
+    "endTime": "2015-02-13",
+    "waitReason": [],
+    "notes": null
   }
 ]

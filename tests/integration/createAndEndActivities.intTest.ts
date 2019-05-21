@@ -12,6 +12,7 @@ const request = supertest(`http://localhost:${config.serverless.port}`);
 const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService);
 
 let postedActivity: DocumentClient.Key = {};
+const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
 
 describe("POST /activities", () => {
 
@@ -35,7 +36,7 @@ describe("POST /activities", () => {
             });
         });
 
-        context("and the payload is correct", () => {
+        context("and the payload is correct for visit activityType", () => {
             const payload: IActivity = {
                 activityType: ActivityType.visit,
                 testStationName: "Rowe, Wunsch and Wisoky",
@@ -44,6 +45,37 @@ describe("POST /activities", () => {
                 testStationType: StationType.gvts,
                 testerName: "Dorel",
                 testerStaffId: "1664"
+            };
+
+            it("should respond with HTTP 201", () => {
+                return request.post("/activities")
+                    .send(payload)
+                    .expect("access-control-allow-origin", "*")
+                    .expect("access-control-allow-credentials", "true")
+                    .expect(201)
+                    .then((response: Response) => {
+                        expect(response.body).to.have.property("id");
+                        expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+
+                        postedActivity = { id: response.body.id };
+                    });
+            });
+        });
+
+        context("and the payload is correct for wait activityType", () => {
+            const payload: IActivity = {
+                parentId: visitId,
+                activityType: ActivityType.wait,
+                testStationName: "Rowe, Wunsch and Wisoky",
+                testStationPNumber: "87-1369569",
+                testStationEmail: "teststationname@dvsa.gov.uk",
+                testStationType: StationType.gvts,
+                testerName: "Dorel",
+                testerStaffId: "1664",
+                startTime: new Date().toISOString(),
+                endTime: new Date().toISOString(),
+                waitReason: ["Break"],
+                notes: "test notes"
             };
 
             it("should respond with HTTP 201", () => {

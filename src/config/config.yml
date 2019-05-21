@@ -9,6 +9,11 @@ functions:
     path: /activities/{+proxy}
     proxy: :id/end
     function: endActivity
+- updateActivity:
+    method: PUT
+    path: /activities/update
+    proxy: null
+    function: updateActivity
 - getActivity:
     method: GET
     path: /activities/details

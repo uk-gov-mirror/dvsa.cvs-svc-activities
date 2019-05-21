@@ -1,6 +1,7 @@
 export enum ActivityType {
     visit = "visit",
-    wait = "wait"
+    wait = "wait",
+    unaccountableTime = "unaccountable time"
 }
 
 export enum StationType {
@@ -9,8 +10,11 @@ export enum StationType {
     hq = "hq"
 }
 
+export const waitReasons: string[] = ["Waiting for vehicle", "Break", "Admin", "Site issue", "Other"];
+
 export interface IActivity {
     id?: string;
+    parentId?: string;
     activityType: ActivityType;
     testStationName: string;
     testStationPNumber: string;
@@ -20,4 +24,6 @@ export interface IActivity {
     testerStaffId: string;
     startTime?: string;
     endTime?: string;
+    waitReason?: [string];
+    notes?: string;
 }

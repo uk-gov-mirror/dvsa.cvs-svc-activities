@@ -30,6 +30,9 @@ functions:
         path: activities/{id}/end
         method: put
     - http:
+        path: activities/update
+        method: put
+    - http:
         path: activities/details
         method: get
 
@@ -54,6 +57,7 @@ resources:
             KeyType: HASH
           Projection:
             NonKeyAttributes:
+            - parentId
             - activityType
             - testStationName
             - testStationPNumber
@@ -62,6 +66,8 @@ resources:
             - testerName
             - startTime
             - endTime
+            - waitReason
+            - notes
             ProjectionType: INCLUDE
           ProvisionedThroughput:
             ReadCapacityUnits: 1
