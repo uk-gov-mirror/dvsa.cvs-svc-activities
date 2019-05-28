@@ -176,13 +176,15 @@ export class ActivityService {
                     const dbActivity: IActivity = result.Item as IActivity;
 
                     // Assign the waitReasons
-                    Object.assign(dbActivity, {waitReasons: each.waitReason});
+                    Object.assign(dbActivity, {waitReason: each.waitReason});
                     // Assign the notes
                     Object.assign(dbActivity, {notes: each.notes});
                     activitiesList.push(dbActivity);
                     console.log(`Adding activity: ${dbActivity.id} for batch update.`);
                 })
                 .catch((error: AWSError | HTTPResponse) => {
+                    this.handleHttpError(error);
+                    /*
                     // If we get HTTPResponse, we rethrow it
                     if (error instanceof HTTPResponse) {
                         throw error;
