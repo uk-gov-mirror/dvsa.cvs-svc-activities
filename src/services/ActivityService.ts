@@ -183,8 +183,7 @@ export class ActivityService {
                     console.log(`Adding activity: ${dbActivity.id} for batch update.`);
                 })
                 .catch((error: AWSError | HTTPResponse) => {
-                    this.handleHttpError(error);
-                    /*
+
                     // If we get HTTPResponse, we rethrow it
                     if (error instanceof HTTPResponse) {
                         throw error;
