@@ -6,6 +6,7 @@ import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import { HTTPRESPONSE } from "../../src/assets/enums";
 
+const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8";
 describe("updateActivity", () => {
     const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
     const activityId: string = "9e4b9304-446e-4678-8289-d34fca9259e4"; // Existing ID
@@ -43,10 +44,59 @@ describe("updateActivity", () => {
             });
         });
     });
-/*
+
     context("when the activity was successfully updated", () => {
+        // Create visit activity and then update it
+        let createdId: string = "test";
+        let waitId: string = "waitId";
+        const visitPayload: any = {
+            activityType: "visit",
+            testStationName: "Rowe, Wunsch and Wisoky",
+            testStationPNumber: "87-1369569",
+            testStationEmail: "teststationname@dvsa.gov.uk",
+            testStationType: "gvts",
+            testerName: "Gica",
+            testerStaffId: "132"
+        };
+        it("should return a uuid", () => {
+            return activityService.createActivity(visitPayload)
+                .then((result: { id: string }) => {
+                    createdId = result.id;
+                    console.log(`Created visit: ${createdId}`);
+                })
+                .catch((error: HTTPResponse) => {
+                    console.error(`Error creating visit activity.`);
+                });
+        });
+        // Create wait activity
+        const waitPayload: any = {
+            parentId: createdId,
+            activityType: "wait",
+            testStationName: "Rowe, Wunsch and Wisoky",
+            testStationPNumber: "87-1369569",
+            testStationEmail: "teststationname@dvsa.gov.uk",
+            testStationType: "gvts",
+            testerName: "Gica",
+            testerStaffId: "132",
+            startTime: new Date().toISOString(),
+            endTime: new Date().toISOString(),
+            waitReason: [],
+            notes: null
+        };
+
+        it("should return a uuid", () => {
+            return activityService.createActivity(waitPayload)
+                .then((result: { id: string }) => {
+                    waitId = result.id;
+                    console.log(`Created wait: ${waitId}`);
+                })
+                .catch((error: HTTPResponse) => {
+                    console.error(`Error creating visit activity.`);
+                });
+        });
+
         const payload: any = [
-            {id: activityId, waitReason: ["Other", "Waiting for vehicle"], notes: "sample"}
+            {id: waitId, waitReason: ["Waiting for vehicle"], notes: "sample"}
         ];
         it("should return void", async () => {
             // If the call does not throw errors, it is successful
@@ -57,7 +107,7 @@ describe("updateActivity", () => {
                 });
         });
     });
-*/
+
     context("when the waitReason does not meet the requirements", () => {
         const payload: any = [
             {id: activityId, waitReason: ["invalidReason", "Waiting for vehicle"], notes: null}
