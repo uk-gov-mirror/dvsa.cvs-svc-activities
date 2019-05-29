@@ -40,6 +40,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/lambda-tester": "^3.5.1",
     "aws-lambda": "^0.1.2",
     "aws-sdk": "^2.456.0",
     "aws-xray-sdk": "^2.3.3",
@@ -62,6 +63,7 @@
     "audit-filter": "^0.4.3",
     "chai": "^4.2.0",
     "gulp": "^4.0.2",
+    "lambda-tester": "^3.5.0",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "serverless": "^1.42.3",

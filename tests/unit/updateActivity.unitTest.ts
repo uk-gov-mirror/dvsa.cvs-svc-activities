@@ -5,9 +5,27 @@ import { ActivityService } from "../../src/services/ActivityService";
 import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import { HTTPRESPONSE } from "../../src/assets/enums";
+import { updateActivity } from "../../src/functions/updateActivity";
+import lambdaTester from "lambda-tester";
 
 const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8";
 describe("updateActivity", () => {
+    const existingId: string = "5e4bd304-446e-4678-8289-d34fca925612"; // Existing ID
+    const lambda = lambdaTester(updateActivity);
+    context("when the updateActivity function is invoked", () => {
+        const payload: any = [
+            {id: existingId, waitReason: ["Other", "Waiting for vehicle"], notes: "sample"}
+        ];
+        it("should respond with HTTP 204", () => {
+            return lambda.event(payload)
+                .expectResolve((response: any) => {
+                    expect("access-control-allow-origin", "*");
+                    expect("access-control-allow-credentials", "true");
+                    expect(204);
+                });
+        });
+    });
+
     const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
     const activityId: string = "9e4b9304-446e-4678-8289-d34fca9259e4"; // Existing ID
 
