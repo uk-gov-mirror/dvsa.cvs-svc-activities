@@ -180,7 +180,9 @@ export class ActivityService {
                     // Assign the notes
                     Object.assign(dbActivity, {notes: each.notes});
                     activitiesList.push(dbActivity);
-                    console.log(`Adding activity: ${dbActivity.id} for batch update.`);
+                    console.log(`Updating each activity: ${dbActivity.id} with waitReason.`);
+                    await this.dbClient.put(dbActivity);
+                    // console.log(`Adding activity: ${dbActivity.id} for batch update.`);
                 })
                 .catch((error: AWSError | HTTPResponse) => {
 
@@ -194,8 +196,8 @@ export class ActivityService {
                 });
         }
         // Batch update of activities
-        await this.dbClient.batchPut(activitiesList);
-        console.log(`Updating: ${activitiesList.length} activities.`);
+        // await this.dbClient.batchPut(activitiesList);
+        // console.log(`Updating: ${activitiesList.length} activities.`);
     }
 
 }
