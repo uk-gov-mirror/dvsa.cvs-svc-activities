@@ -195,7 +195,7 @@ export class ActivityService {
                     throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
                 });
         }
-        // Batch update of activities
+        // Batch update of activities- Currently commented since waiting for DevOps fix on policy: CVSB-5442
         // await this.dbClient.batchPut(activitiesList);
         // console.log(`Updating: ${activitiesList.length} activities.`);
     }
