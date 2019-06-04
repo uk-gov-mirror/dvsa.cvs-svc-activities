@@ -180,12 +180,6 @@ export class ActivityService {
                     // Assign the notes
                     Object.assign(dbActivity, {notes: each.notes});
                     activitiesList.push(dbActivity);
-<<<<<<< HEAD
-                    console.log(`Updating each activity: ${dbActivity.id} with waitReason.`);
-                    await this.dbClient.put(dbActivity);
-                    // console.log(`Adding activity: ${dbActivity.id} for batch update.`);
-=======
->>>>>>> CVSB-5505: Use BatchWrite option once Devops is ready
                 })
                 .catch((error: AWSError | HTTPResponse) => {
 
@@ -198,14 +192,8 @@ export class ActivityService {
                     throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
                 });
         }
-<<<<<<< HEAD
-        // Batch update of activities- Currently commented since waiting for DevOps fix on policy: CVSB-5442
-        // await this.dbClient.batchPut(activitiesList);
-        // console.log(`Updating: ${activitiesList.length} activities.`);
-=======
         // Batch update of activities
         await this.dbClient.batchPut(activitiesList);
->>>>>>> CVSB-5505: Use BatchWrite option once Devops is ready
     }
 
 }
