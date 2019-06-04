@@ -143,6 +143,7 @@ export class ActivityService {
             .catch((error: AWSError | HTTPResponse) => {
                 // If we get HTTPResponse, we rethrow it
                 if (error instanceof HTTPResponse) {
+                    console.error(`Error occurred: ${error.body}`);
                     throw error;
                 }
 

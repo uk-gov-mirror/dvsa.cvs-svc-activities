@@ -89,6 +89,7 @@ describe("POST /activities", () => {
                         expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
 
                         postedActivity = { id: response.body.id };
+                        console.log(`Visit created: ${postedActivity.id}`);
                     });
             });
         });
@@ -116,7 +117,7 @@ describe("PUT /activities/:id/end", () => {
 
     context("when an existing activity is ended", () => {
         it("should respond with HTTP 204", () => {
-
+            console.log(`Ending visit: ${postedActivity.id}`);
             // End the just-create test activity
             return request.put(`/activities/${postedActivity.id}/end`)
                 .expect("access-control-allow-origin", "*")
