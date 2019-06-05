@@ -58,6 +58,7 @@ describe("POST /activities", () => {
                         expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
 
                         postedActivity = { id: response.body.id };
+                        console.log(`Creating visit: ${postedActivity.id}`);
                     });
             });
         });
@@ -88,8 +89,7 @@ describe("POST /activities", () => {
                         expect(response.body).to.have.property("id");
                         expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
 
-                        postedActivity = { id: response.body.id };
-                        console.log(`Visit created: ${postedActivity.id}`);
+                        // postedActivity = { id: response.body.id };
                     });
             });
         });
