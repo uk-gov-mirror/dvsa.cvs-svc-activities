@@ -89,8 +89,6 @@ describe("POST /activities", () => {
                     .then((response: Response) => {
                         expect(response.body).to.have.property("id");
                         expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-
-                        // postedActivity = { id: response.body.id };
                     });
             });
         });

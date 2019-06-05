@@ -56,11 +56,10 @@ export class ActivityService {
         }
         // non-'visit' activity validations and object field assignments
         if (activity.activityType !== ActivityType.VISIT && await this.performNonVisitActValidations(activity)) {
-            // Assign startTime as currentTS
-            const startTime: string = new Date().toISOString();
-            Object.assign(activity, {startTime});
-            // The endTime will be null
-            Object.assign(activity, { endTime: null });
+            // Assign startTime
+            Object.assign(activity, {startTime : activity.startTime });
+            // Assign endTime
+            Object.assign(activity, {endTime : activity.endTime });
         }
 
         // Assign an id
