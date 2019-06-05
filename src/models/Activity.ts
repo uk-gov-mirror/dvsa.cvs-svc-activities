@@ -1,16 +1,9 @@
-export enum ActivityType {
-    visit = "visit",
-    wait = "wait",
-    unaccountableTime = "unaccountable time"
-}
-
-export enum StationType {
-    atf = "atf",
-    gvts = "gvts",
-    hq = "hq"
-}
+import { ActivityType, StationType } from "../assets/enums";
 
 export const waitReasons: string[] = ["Waiting for vehicle", "Break", "Admin", "Site issue", "Other"];
+export const stationTypes: string[] = [StationType.ATF, StationType.GVTS, StationType.HQ];
+export const activitiesTypes: string[] = [ActivityType.VISIT, ActivityType.WAIT, ActivityType.UNACCOUNTABLE_TIME];
+
 
 export interface IActivity {
     id?: string;

@@ -106,10 +106,10 @@ describe("updateActivity", () => {
             return activityService.createActivity(waitPayload)
                 .then((result: { id: string }) => {
                     waitId = result.id;
-                    console.log(`Created wait: ${waitId}`);
+                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
                 })
                 .catch((error: HTTPResponse) => {
-                    console.error(`Error creating visit activity.`);
+                    expect.fail();
                 });
         });
 
@@ -120,7 +120,6 @@ describe("updateActivity", () => {
             // If the call does not throw errors, it is successful
             return activityService.updateActivity(payload)
                 .catch((error: HTTPResponse) => {
-                    console.error(`Error occurred: ${error.statusCode}`);
                     expect.fail();
                 });
         });

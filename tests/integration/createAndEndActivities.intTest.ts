@@ -1,6 +1,7 @@
 import { describe, Done } from "mocha";
 import { expect } from "chai";
-import { ActivityType, IActivity, StationType } from "../../src/models/Activity";
+import { IActivity} from "../../src/models/Activity";
+import { ActivityType, StationType } from "../../src/assets/enums";
 import { Configuration } from "../../src/utils/Configuration";
 import supertest, { Response } from "supertest";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
@@ -19,11 +20,11 @@ describe("POST /activities", () => {
     context("when a new activity is started", () => {
         context("and the payload is malformed", () => {
             const payload: any = {
-                activityType: ActivityType.visit,
+                activityType: ActivityType.VISIT,
                 badAttr: "badValue",
                 testStationPNumber: "87-1369569",
                 testStationEmail: "malformed",
-                testStationType: StationType.gvts,
+                testStationType: StationType.GVTS,
                 testerName: "Gica"
             };
 
@@ -38,11 +39,11 @@ describe("POST /activities", () => {
 
         context("and the payload is correct for visit activityType", () => {
             const payload: IActivity = {
-                activityType: ActivityType.visit,
+                activityType: ActivityType.VISIT,
                 testStationName: "Rowe, Wunsch and Wisoky",
                 testStationPNumber: "87-1369569",
                 testStationEmail: "teststationname@dvsa.gov.uk",
-                testStationType: StationType.gvts,
+                testStationType: StationType.GVTS,
                 testerName: "Dorel",
                 testerStaffId: "1664"
             };
@@ -66,11 +67,11 @@ describe("POST /activities", () => {
         context("and the payload is correct for wait activityType", () => {
             const payload: IActivity = {
                 parentId: visitId,
-                activityType: ActivityType.wait,
+                activityType: ActivityType.WAIT,
                 testStationName: "Rowe, Wunsch and Wisoky",
                 testStationPNumber: "87-1369569",
                 testStationEmail: "teststationname@dvsa.gov.uk",
-                testStationType: StationType.gvts,
+                testStationType: StationType.GVTS,
                 testerName: "Dorel",
                 testerStaffId: "1664",
                 startTime: new Date().toISOString(),

@@ -30,3 +30,15 @@ export enum QUERY_PARAMS {
     TEST_STATION_P_NUMBER = "testStationPNumber",
     TESTER_STAFF_ID= "testerStaffId"
 }
+
+export enum ActivityType {
+    VISIT = "visit",
+    WAIT = "wait",
+    UNACCOUNTABLE_TIME = "unaccountable time"
+}
+
+export enum StationType {
+    ATF = "atf",
+    GVTS = "gvts",
+    HQ = "hq"
+}

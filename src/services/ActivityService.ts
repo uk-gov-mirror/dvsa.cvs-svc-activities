@@ -8,7 +8,7 @@ import { ActivityUpdateSchema } from "../models/ActivityUpdateSchema";
 import { Service } from "../models/injector/ServiceDecorator";
 import { HTTPResponse } from "../utils/HTTPResponse";
 import { DynamoDBService } from "./DynamoDBService";
-import { HTTPRESPONSE } from "../assets/enums";
+import {ActivityType, HTTPRESPONSE} from "../assets/enums";
 
 
 @Service()
@@ -47,55 +47,22 @@ export class ActivityService {
             throw new HTTPResponse(400, {error : HTTPRESPONSE.PARENT_ID_REQUIRED});
         }
 
-        // Check if parentId exists in activities table and validate startTime field for an activity.
-        if (activity.activityType !== "visit") {
-            await this.dbClient.get({id: activity.parentId})
-                .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
-                    // Result checks
-                    if (result.Item === undefined) {
-                        throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_EXIST});
-                    }
-                })
-                .catch((error: AWSError | HTTPResponse) => {
-                    // If we get HTTPResponse, we rethrow it
-                    if (error instanceof HTTPResponse) {
-                        throw error;
-                    }
-
-                    // Otherwise, if DynamoDB errors, we throw 500
-                    throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
-                });
-            // Assign a startTime if activityType is visit, else should be provided in request
-            if (activity.startTime) {
-                Object.assign(activity, {startTime : activity.startTime });
-            } else {
-                throw new HTTPResponse(400, {error : HTTPRESPONSE.START_TIME_EMPTY});
-            }
-            // Assign a endTime if activityType is visit, else should be provided in request
-            if (activity.endTime) {
-                Object.assign(activity, {endTime : activity.endTime });
-            } else {
-                throw new HTTPResponse(400, {error : HTTPRESPONSE.END_TIME_EMPTY});
-            }
-        } else {
-            // Check if staff already has an ongoing activity if activityType is visit
-            const ongoingCount: number = await this.dbClient.getOngoingByStaffId(activity.testerStaffId)
-                .then((result: DocumentClient.QueryOutput): number => {
-                    return result.Count as number;
-                })
-                .catch((error: AWSError) => {
-                    throw new HTTPResponse(error.statusCode, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
-                });
-
-            if (ongoingCount && ongoingCount > 0) {
-                throw new HTTPResponse(403, { error: HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID + " " + activity.testerStaffId + " " + HTTPRESPONSE.ONGING_ACTIVITY});
-            }
+        // 'visit' activity validations and object field assignments
+        if (activity.activityType === ActivityType.VISIT && await this.performVisitActValidations(activity)) {
+            const startTime: string = new Date().toISOString();
+            Object.assign(activity, {startTime});
+            // The endTime will be null
+            Object.assign(activity, {endTime: null});
+        }
+        // non-'visit' activity validations and object field assignments
+        if (activity.activityType !== ActivityType.VISIT && await this.performNonVisitActValidations(activity)) {
             // Assign startTime as currentTS
             const startTime: string = new Date().toISOString();
             Object.assign(activity, {startTime});
             // The endTime will be null
             Object.assign(activity, { endTime: null });
         }
+
         // Assign an id
         const id: string = uuid();
         Object.assign(activity, { id });
@@ -195,6 +162,74 @@ export class ActivityService {
         }
         // Batch update of activities
         await this.dbClient.batchPut(activitiesList);
+    }
+
+    /**
+     * Validates the 'visit' activity fields and throws error if not invalid
+     * @param activity - the payload containing the activity
+     * @returns boolean
+     */
+
+    protected async performVisitActValidations(activity: IActivity): Promise<boolean> {
+        // Visit activity should not have parent IDs
+        if (activity.parentId) {
+            throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_REQUIRED});
+        }
+
+        // Check if staff already has an ongoing activity if activityType is visit
+        const ongoingCount: number = await this.dbClient.getOngoingByStaffId(activity.testerStaffId)
+            .then((result: DocumentClient.QueryOutput): number => {
+                return result.Count as number;
+            })
+            .catch((error: AWSError) => {
+                throw new HTTPResponse(error.statusCode, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
+            });
+
+        if (ongoingCount && ongoingCount > 0) {
+            throw new HTTPResponse(403, { error: HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID + " " + activity.testerStaffId + " " + HTTPRESPONSE.ONGING_ACTIVITY});
+        }
+        // If no errors, then return true.
+        return true;
+    }
+
+    /**
+     * Validates the non-'visit' activity fields and throws error if not invalid
+     * @param activity - the payload containing the activity
+     * @returns boolean
+     */
+    protected async performNonVisitActValidations(activity: IActivity): Promise<boolean> {
+        // Non-visit activity requires parent ID
+        if (!activity.parentId) {
+            throw new HTTPResponse(400, {error : HTTPRESPONSE.PARENT_ID_REQUIRED});
+        }
+        // Validate if parentId exists.
+        await this.dbClient.get({id: activity.parentId})
+            .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
+                // Result checks
+                if (result.Item === undefined) {
+                    throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_EXIST});
+                }
+                // Validate if startTime is provided in request
+                if (!activity.startTime) {
+                    throw new HTTPResponse(400, {error : HTTPRESPONSE.START_TIME_EMPTY});
+                }
+                // Validate if endTime is provided in request
+                if (!activity.endTime) {
+                    throw new HTTPResponse(400, {error : HTTPRESPONSE.END_TIME_EMPTY});
+                }
+            })
+            .catch((error: AWSError | HTTPResponse) => {
+
+                // If we get HTTPResponse, we rethrow it
+                if (error instanceof HTTPResponse) {
+                    throw error;
+                }
+
+                // Otherwise, if DynamoDB errors, we throw 500
+                throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
+
+            });
+        return true;
     }
 
 }
