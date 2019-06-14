@@ -49,10 +49,20 @@ export class ActivityService {
 
         // 'visit' activity validations and object field assignments
         if (activity.activityType === ActivityType.VISIT && await this.performVisitActValidations(activity)) {
-            const startTime: string = new Date().toISOString();
-            Object.assign(activity, {startTime});
-            // The endTime will be null
-            Object.assign(activity, {endTime: null});
+            if (!activity.startTime) {
+                const startTime: string = new Date().toISOString();
+                Object.assign(activity, {startTime});
+            } else {
+                // Assign startTime
+                Object.assign(activity, {startTime : activity.startTime });
+            }
+            if (!activity.endTime) {
+                // The endTime will be null
+                Object.assign(activity, {endTime: null});
+            } else {
+                // Assign endTime
+                Object.assign(activity, {endTime : activity.endTime });
+            }
         }
         // non-'visit' activity validations and object field assignments
         if (activity.activityType !== ActivityType.VISIT && await this.performNonVisitActValidations(activity)) {

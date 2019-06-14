@@ -11,7 +11,7 @@ export const ActivitySchema = Joi.object().keys({
     testerName: Joi.string().min(1).max(60).required(),
     testerStaffId: Joi.string().required(),
     startTime: Joi.string().optional(),
-    endTime: Joi.string().optional(),
+    endTime: Joi.string().optional().allow(null),
     waitReason: Joi.array().items([ waitReasons ]).optional(),
     notes: Joi.string().allow(null)
 });

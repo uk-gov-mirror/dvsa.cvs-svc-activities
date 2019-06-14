@@ -340,6 +340,30 @@ describe("createActivity", () => {
         });
     });
 
+    context("when the payload for 'visit' activityType has startTime and endTime", () => {
+        const payload: any = {
+            activityType: "visit",
+            testStationName: "Rowe, Wunsch and Wisoky",
+            testStationPNumber: "87-1369569",
+            testStationEmail: "teststationname@dvsa.gov.uk",
+            testStationType: "gvts",
+            testerName: "Gica",
+            testerStaffId: "139",
+            startTime: new Date().toISOString(),
+            endTime: new Date().toISOString(),
+        };
+
+        it("should return an activity", () => {
+            return activityService.createActivity(payload)
+                .then((result: { id: string }) => {
+                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+                })
+                .catch((error: HTTPResponse) => {
+                    expect.fail();
+                });
+        });
+    });
+
     context("when the payload is correct for 'wait' activityType", () => {
         const payload: any = {
             parentId: visitId,
