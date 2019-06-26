@@ -13,7 +13,6 @@ const config: any = Configuration.getInstance().getConfig();
 const request = supertest(`http://localhost:${config.serverless.port}`);
 const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService);
 
-const postedActivity: DocumentClient.Key = {};
 const activityId: string = "5e4bd304-446e-4678-8289-d34fca925612"; // Existing ID
 
 describe("PUT /activities/update", () => {
@@ -78,10 +77,5 @@ describe("PUT /activities/update", () => {
                 .send()
                 .expect(400);
         });
-    });
-
-    after((done: Done) => {
-        activityService.dbClient.delete(postedActivity)
-            .then(() => done());
     });
 });

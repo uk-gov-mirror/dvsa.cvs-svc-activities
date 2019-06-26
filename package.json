@@ -13,7 +13,7 @@
     "prepush": "BRANCH=local npm test && npm run tslint",
     "predeploy": "npm install && npm run prepush",
     "security-checks": "git secrets --scan && git log -p | scanrepo",
-    "tslint": "tslint src/**/*.ts tests/**/*.ts",
+    "tslint": "tslint --fix src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local nyc mocha tests/unit/*.ts && nyc report --reporter=lcov",
     "audit-dep": "npm audit --json | audit-filter --nsp-config=.nsprc --audit=-"
