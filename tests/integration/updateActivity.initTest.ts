@@ -72,6 +72,14 @@ describe("PUT /activities/update", () => {
         });
     });
 
+    context("When the payload is empty", () => {
+        it("should return a HTTP 400, bad request", () => {
+            return request.put(`/activities/update`)
+                .send()
+                .expect(400);
+        });
+    });
+
     after((done: Done) => {
         activityService.dbClient.delete(postedActivity)
             .then(() => done());
