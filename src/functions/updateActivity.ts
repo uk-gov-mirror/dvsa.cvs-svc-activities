@@ -7,7 +7,7 @@ import {HTTPRESPONSE} from "../assets/enums";
 const updateActivity: Handler = async (event: any, context: Context): Promise<APIGatewayProxyResult> => {
     const activityService = Injector.resolve<ActivityService>(ActivityService);
 
-    if ( !event.body || event.body.length === 0 ) {
+    if ( !event.body || event.body.length === 0 || Object.keys(event.body).length === 0) {
         return new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
     }
 
