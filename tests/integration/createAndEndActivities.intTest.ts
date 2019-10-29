@@ -1,5 +1,3 @@
-import { describe, Done } from "mocha";
-import { expect } from "chai";
 import { IActivity} from "../../src/models/Activity";
 import { ActivityType, StationType } from "../../src/assets/enums";
 import { Configuration } from "../../src/utils/Configuration";
@@ -55,8 +53,8 @@ describe("POST /activities", () => {
                     .expect("access-control-allow-credentials", "true")
                     .expect(201)
                     .then((response: Response) => {
-                        expect(response.body).to.have.property("id");
-                        expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+                        expect(response.body).toHaveProperty("id");
+                        expect(response.body.id).toMatch(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
 
                         postedActivity = { id: response.body.id };
                         console.log(`Creating visit: ${postedActivity.id}`);
@@ -87,8 +85,8 @@ describe("POST /activities", () => {
                     .expect("access-control-allow-credentials", "true")
                     .expect(201)
                     .then((response: Response) => {
-                        expect(response.body).to.have.property("id");
-                        expect(response.body.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+                        expect(response.body).toHaveProperty("id");
+                        expect(response.body.id).toMatch(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
                     });
             });
         });
@@ -134,8 +132,7 @@ describe("PUT /activities/:id/end", () => {
         });
     });
 
-    after((done: Done) => {
-        activityService.dbClient.delete(postedActivity)
-            .then(() => done());
+    afterAll(async   () => {
+        return await activityService.dbClient.delete(postedActivity);
     });
 });

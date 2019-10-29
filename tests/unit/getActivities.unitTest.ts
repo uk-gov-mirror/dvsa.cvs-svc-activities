@@ -1,5 +1,3 @@
-import { describe } from "mocha";
-import { expect } from "chai";
 import { Injector } from "../../src/models/injector/Injector";
 import { GetActivityService } from "../../src/services/GetActivitiesService";
 import { DynamoDBMockService } from "../models/DynamoDBMockService";
@@ -9,20 +7,20 @@ import * as jsonData from "../resources/activities.json";
 describe("getActivities", () => {
     const getActivityService: GetActivityService = Injector.resolve<GetActivityService>(GetActivityService, [DynamoDBMockService]);
     context("when no data is returned from database", () => {
-        it("should throw error", (done) => {
+        it("should throw error", () => {
             const event = {
                 queryStringParameters: {
                     fromStartTime: "2020-02-12"
                 }
             };
-            getActivityService.getActivities(event).then(() => {
-                expect.fail();
-            }).catch((error: HTTPResponse) => {
+            expect.assertions(2);
+
+            return getActivityService.getActivities(event)
+              .catch((error: HTTPResponse) => {
                 const body: any = JSON.parse(error.body);
-                expect(error.statusCode).to.equal(404);
-                expect(JSON.parse(body)).to.equal("No resources match the search criteria");
+                expect(error.statusCode).toEqual(404);
+                expect(JSON.parse(body)).toEqual("No resources match the search criteria");
             });
-            done();
         });
     });
     context("when the fromStarTime is valid", () => {
@@ -34,7 +32,7 @@ describe("getActivities", () => {
             };
             const dataMock: any = jsonData;
             dataMock.Items = dataMock.default;
-            expect(getActivityService. filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+            expect(getActivityService. filterActivities(dataMock, event)).not.toHaveLength(0);
         });
         describe("and the toStartTime is valid", () => {
             it("should return array of activities", () => {
@@ -46,7 +44,7 @@ describe("getActivities", () => {
                 };
                 const dataMock: any = jsonData;
                 dataMock.Items = dataMock.default;
-                expect(getActivityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+                expect(getActivityService.filterActivities(dataMock, event)).not.toHaveLength(0);
             });
         });
         describe("and the activityType is valid", () => {
@@ -60,7 +58,7 @@ describe("getActivities", () => {
                 };
                 const dataMock: any = jsonData;
                 dataMock.Items = dataMock.default;
-                expect(getActivityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+                expect(getActivityService.filterActivities(dataMock, event)).not.toHaveLength(0);
             });
         });
         describe("and the testStationPNumber is valid", () => {
@@ -75,7 +73,7 @@ describe("getActivities", () => {
                 };
                 const dataMock: any = jsonData;
                 dataMock.Items = dataMock.default;
-                expect(getActivityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+                expect(getActivityService.filterActivities(dataMock, event)).not.toHaveLength(0);
             });
         });
         describe("and the testerStaffId is valid", () => {
@@ -91,7 +89,7 @@ describe("getActivities", () => {
                 };
                 const dataMock: any = jsonData;
                 dataMock.Items = dataMock.default;
-                expect(getActivityService.filterActivities(dataMock, event)).to.not.have.lengthOf(0);
+                expect(getActivityService.filterActivities(dataMock, event)).not.toHaveLength(0);
             });
         });
     });

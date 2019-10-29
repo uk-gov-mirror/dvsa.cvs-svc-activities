@@ -1,8 +1,5 @@
-import { describe } from "mocha";
-import { expect } from "chai";
 import { Configuration } from "../../src/utils/Configuration";
 import supertest, { Response } from "supertest";
-
 
 const config: any = Configuration.getInstance().getConfig();
 const request = supertest(`http://localhost:${config.serverless.port}`);
@@ -33,7 +30,7 @@ describe("GET /activities/details", () => {
                 .expect("access-control-allow-credentials", "true")
                 .expect(200)
                 .then((response: Response) => {
-                    expect(response.body).to.not.have.lengthOf(0);
+                    expect(response.body).not.toHaveLength(0);
                 });
         });
     });

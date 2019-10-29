@@ -1,17 +1,13 @@
-import { describe } from "mocha";
-import { expect } from "chai";
-import { Injector } from "../../src/models/injector/Injector";
 import { ActivityService } from "../../src/services/ActivityService";
-import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import { HTTPRESPONSE } from "../../src/assets/enums";
+import {DynamoDBService} from "../../src/services/DynamoDBService";
 
 const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
 
 describe("createActivity", () => {
-    const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
-
     context("when the payload is missing the", () => {
+        const activityService = new ActivityService(new DynamoDBService());
         context("activityType attribute", () => {
             const payload: any = {
                 testStationName: "Rowe, Wunsch and Wisoky",
@@ -23,13 +19,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"activityType\" is required");
+                        expect(body.error).toEqual("\"activityType\" is required");
                     });
             });
         });
@@ -47,13 +41,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal(`${HTTPRESPONSE.PARENT_ID_NOT_REQUIRED}`);
+                        expect(body.error).toEqual(`${HTTPRESPONSE.PARENT_ID_NOT_REQUIRED}`);
                     });
             });
         });
@@ -69,13 +61,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationName\" is required");
+                        expect(body.error).toEqual("\"testStationName\" is required");
                     });
             });
         });
@@ -91,14 +81,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
-                    .catch((error: HTTPResponse) => {
-                        const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationPNumber\" is required");
-                    });
+                  .catch((error: HTTPResponse) => {
+                      const body: any = JSON.parse(error.body);
+                      expect(body.error).toEqual("\"testStationPNumber\" is required");
+                  });
             });
         });
 
@@ -113,13 +101,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationEmail\" is required");
+                        expect(body.error).toEqual("\"testStationEmail\" is required");
                     });
             });
         });
@@ -135,13 +121,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationType\" is required");
+                        expect(body.error).toEqual("\"testStationType\" is required");
                     });
             });
         });
@@ -157,10 +141,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testerName\" is required");
+                        expect(body.error).toEqual("\"testerName\" is required");
                     });
             });
         });
@@ -176,13 +161,11 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testerStaffId\" is required");
+                        expect(body.error).toEqual("\"testerStaffId\" is required");
                     });
             });
         });
@@ -201,13 +184,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"activityType\" must be one of [visit, wait, unaccountable time]");
+                        expect(body.error).toEqual("\"activityType\" must be one of [visit, wait, unaccountable time]");
                     });
             });
         });
@@ -224,13 +206,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationEmail\" must be a valid email");
+                        expect(body.error).toEqual("\"testStationEmail\" must be a valid email");
                     });
             });
         });
@@ -247,14 +228,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        // The creation should not succeed
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationType\" must be one of [atf, gvts, hq]");
+                        expect(body.error).toEqual("\"testStationType\" must be one of [atf, gvts, hq]");
                     });
             });
         });
@@ -276,14 +255,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        // The creation should not succeed
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"waitReason\" at position 0 does not match any of the allowed types");
+                        expect(body.error).toEqual("\"waitReason\" at position 0 does not match any of the allowed types");
                     });
             });
         });
@@ -305,14 +282,13 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                DynamoDBService.prototype.get = jest.fn().mockResolvedValue({startTime: new Date(), endTime: new Date()});
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        // The creation should not succeed
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal(`${HTTPRESPONSE.PARENT_ID_NOT_EXIST}`);
+                        expect(body.error).toEqual(`${HTTPRESPONSE.PARENT_ID_NOT_EXIST}`);
                     });
             });
         });
@@ -330,13 +306,17 @@ describe("createActivity", () => {
         };
 
         it("should return a uuid", () => {
+            DynamoDBService.prototype.getOngoingByStaffId = jest.fn().mockResolvedValue({Count: 0});
+            DynamoDBService.prototype.put = jest.fn().mockResolvedValue({id: "00000000-0000-0000-0000-0000000000000"});
+            const activityService = new ActivityService(new DynamoDBService());
+            expect.assertions(1);
             return activityService.createActivity(payload)
                 .then((result: { id: string }) => {
-                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+                    expect(result.id).toMatch(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
                 })
-                .catch((error: HTTPResponse) => {
-                    expect.fail();
-                });
+              .catch((e) => {
+                  console.log("Error", e);
+              });
         });
     });
 
@@ -354,12 +334,13 @@ describe("createActivity", () => {
         };
 
         it("should return an activity", () => {
+            DynamoDBService.prototype.getOngoingByStaffId = jest.fn().mockResolvedValue({Count: 0});
+            DynamoDBService.prototype.put = jest.fn().mockResolvedValue({id: "00000000-0000-0000-0000-0000000000000"});
+            const activityService = new ActivityService(new DynamoDBService());
+            expect.assertions(1);
             return activityService.createActivity(payload)
                 .then((result: { id: string }) => {
-                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-                })
-                .catch((error: HTTPResponse) => {
-                    expect.fail();
+                    expect(result.id).toMatch(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
                 });
         });
     });
@@ -381,17 +362,18 @@ describe("createActivity", () => {
         };
 
         it("should return a uuid", () => {
+            DynamoDBService.prototype.get = jest.fn().mockResolvedValue({Item: {}, startTime: new Date(), endTime: new Date()});
+            DynamoDBService.prototype.put = jest.fn().mockResolvedValue({id: "00000000-0000-0000-0000-0000000000000"});
+            const activityService = new ActivityService(new DynamoDBService());
+            expect.assertions(1);
             return activityService.createActivity(payload)
                 .then((result: { id: string }) => {
-                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-                })
-                .catch((error: HTTPResponse) => {
-                    expect.fail();
+                    expect(result.id).toMatch(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
                 });
         });
     });
 
-    // 'wait' or 'unaacountable time' activityType creation Test validations
+    // 'wait' or 'unaccountable time' activityType creation Test validations
     context("when the payload is missing the", () => {
         context("parentId attribute for 'wait' or 'unaccountable time' activityType", () => {
             const payload: any = {
@@ -407,13 +389,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal(`${HTTPRESPONSE.PARENT_ID_REQUIRED}`);
+                        expect(body.error).toEqual(`${HTTPRESPONSE.PARENT_ID_REQUIRED}`);
                     });
             });
         });
@@ -432,13 +413,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationName\" is required");
+                        expect(body.error).toEqual("\"testStationName\" is required");
                     });
             });
         });
@@ -457,13 +437,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationPNumber\" is required");
+                        expect(body.error).toEqual("\"testStationPNumber\" is required");
                     });
             });
         });
@@ -482,13 +461,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationEmail\" is required");
+                        expect(body.error).toEqual("\"testStationEmail\" is required");
                     });
             });
         });
@@ -507,13 +485,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testStationType\" is required");
+                        expect(body.error).toEqual("\"testStationType\" is required");
                     });
             });
         });
@@ -532,10 +509,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testerName\" is required");
+                        expect(body.error).toEqual("\"testerName\" is required");
                     });
             });
         });
@@ -554,13 +533,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal("\"testerStaffId\" is required");
+                        expect(body.error).toEqual("\"testerStaffId\" is required");
                     });
             });
         });
@@ -579,13 +557,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal(`${HTTPRESPONSE.START_TIME_EMPTY}`);
+                        expect(body.error).toEqual(`${HTTPRESPONSE.START_TIME_EMPTY}`);
                     });
             });
         });
@@ -604,13 +581,12 @@ describe("createActivity", () => {
             };
 
             it("should return an error", () => {
+                const activityService = new ActivityService(new DynamoDBService());
+                expect.assertions(1);
                 return activityService.createActivity(payload)
-                    .then((result: { id: string }) => {
-                        expect.fail();
-                    })
                     .catch((error: HTTPResponse) => {
                         const body: any = JSON.parse(error.body);
-                        expect(body.error).to.equal(`${HTTPRESPONSE.END_TIME_EMPTY}`);
+                        expect(body.error).toEqual(`${HTTPRESPONSE.END_TIME_EMPTY}`);
                     });
             });
         });

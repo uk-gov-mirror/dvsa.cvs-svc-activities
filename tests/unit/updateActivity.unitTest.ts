@@ -1,47 +1,22 @@
-import { describe } from "mocha";
-import { expect } from "chai";
-import { Injector } from "../../src/models/injector/Injector";
 import { ActivityService } from "../../src/services/ActivityService";
-import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import { HTTPRESPONSE } from "../../src/assets/enums";
-import { updateActivity } from "../../src/functions/updateActivity";
-import lambdaTester from "lambda-tester";
+import {DynamoDBService} from "../../src/services/DynamoDBService";
 
-const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8";
-describe("updateActivity", () => {
-    const existingId: string = "5e4bd304-446e-4678-8289-d34fca925612"; // Existing ID
-    const lambda = lambdaTester(updateActivity);
-    context("when the updateActivity function is invoked", () => {
-        const payload: any = [
-            {id: existingId, waitReason: ["Other", "Waiting for vehicle"], notes: "sample"}
-        ];
-        it("should respond with HTTP 204", () => {
-            return lambda.event(payload)
-                .expectResolve((response: any) => {
-                    expect("access-control-allow-origin", "*");
-                    expect("access-control-allow-credentials", "true");
-                    expect(204);
-                });
-        });
-    });
-
-    const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
+describe("Activity Service - update Activity path", () => {
     const activityId: string = "9e4b9304-446e-4678-8289-d34fca9259e4"; // Existing ID
-
     context("when the payload is malformed", () => {
         const payload: any = [
             {id: activityId, notes: "sample"}
         ];
         it("should return an error", () => {
+            const activityService = new ActivityService(new DynamoDBService());
+
+            expect.assertions(1);
             return activityService.updateActivity(payload)
-                .then(() => {
-                    // The update should not succeed
-                    expect.fail();
-                })
                 .catch((error: HTTPResponse) => {
                     const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"waitReason\" is required");
+                    expect(body.error).toEqual("\"waitReason\" is required");
                 });
         });
     });
@@ -51,76 +26,30 @@ describe("updateActivity", () => {
             {id: "non-existing-id", waitReason: ["Other", "Waiting for vehicle"], notes: "sample"}
         ];
         it("should return an error", () => {
+            DynamoDBService.prototype.get = jest.fn().mockResolvedValue({});
+            const activityService = new ActivityService(new DynamoDBService());
+            expect.assertions(1);
             return activityService.updateActivity(payload)
-            .then(() => {
-                // The update should not succeed
-                expect.fail();
-            })
             .catch((error: HTTPResponse) => {
                 const body: any = JSON.parse(error.body);
-                expect(body.error).to.equal(`${HTTPRESPONSE.NOT_EXIST}`);
+                expect(body.error).toEqual(`${HTTPRESPONSE.NOT_EXIST}`);
             });
         });
     });
 
     context("when the activity was successfully updated", () => {
-        // Create visit activity and then update it
-        let createdId: string = "test";
-        let waitId: string = "waitId";
-        const visitPayload: any = {
-            activityType: "visit",
-            testStationName: "Rowe, Wunsch and Wisoky",
-            testStationPNumber: "87-1369569",
-            testStationEmail: "teststationname@dvsa.gov.uk",
-            testStationType: "gvts",
-            testerName: "Gica",
-            testerStaffId: "132"
-        };
-        it("should return a uuid", () => {
-            return activityService.createActivity(visitPayload)
-                .then((result: { id: string }) => {
-                    createdId = result.id;
-                    console.log(`Created visit: ${createdId}`);
-                })
-                .catch((error: HTTPResponse) => {
-                    console.error(`Error creating visit activity.`);
-                });
-        });
-        // Create wait activity
-        const waitPayload: any = {
-            parentId: createdId,
-            activityType: "wait",
-            testStationName: "Rowe, Wunsch and Wisoky",
-            testStationPNumber: "87-1369569",
-            testStationEmail: "teststationname@dvsa.gov.uk",
-            testStationType: "gvts",
-            testerName: "Gica",
-            testerStaffId: "132",
-            startTime: new Date().toISOString(),
-            endTime: new Date().toISOString(),
-            waitReason: [],
-            notes: null
-        };
-
-        it("should return a uuid", () => {
-            return activityService.createActivity(waitPayload)
-                .then((result: { id: string }) => {
-                    waitId = result.id;
-                    expect(result.id).to.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-                })
-                .catch((error: HTTPResponse) => {
-                    expect.fail();
-                });
-        });
-
         const payload: any = [
-            {id: waitId, waitReason: ["Waiting for vehicle"], notes: "sample"}
+            {id: "waitId", waitReason: ["Waiting for vehicle"], notes: "sample"}
         ];
         it("should return void", async () => {
+            DynamoDBService.prototype.get = jest.fn().mockResolvedValue({Item: {test: true}});
+            DynamoDBService.prototype.batchPut = jest.fn().mockResolvedValue({id: "00000000-0000-0000-0000-000000000000"});
+            const activityService = new ActivityService(new DynamoDBService());
             // If the call does not throw errors, it is successful
+            expect.assertions(0);
             return activityService.updateActivity(payload)
                 .catch((error: HTTPResponse) => {
-                    expect.fail();
+                    expect(error).toBeFalsy();
                 });
         });
     });
@@ -130,14 +59,13 @@ describe("updateActivity", () => {
             {id: activityId, waitReason: ["invalidReason", "Waiting for vehicle"], notes: null}
         ];
         it("should return an error", async () => {
+            const activityService = new ActivityService(new DynamoDBService());
+
+            expect.assertions(1);
             return activityService.updateActivity(payload)
-                .then(() => {
-                    // The update should not succeed
-                    expect.fail();
-                })
                 .catch((error: HTTPResponse) => {
                     const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal("\"waitReason\" at position 0 does not match any of the allowed types");
+                    expect(body.error).toEqual("\"waitReason\" at position 0 does not match any of the allowed types");
                 });
         });
     });

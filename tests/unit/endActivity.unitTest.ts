@@ -1,5 +1,4 @@
-import { describe } from "mocha";
-import { expect } from "chai";
+
 import { Injector } from "../../src/models/injector/Injector";
 import { ActivityService } from "../../src/services/ActivityService";
 import { DynamoDBMockService } from "../models/DynamoDBMockService";
@@ -11,14 +10,11 @@ describe("endActivity", () => {
 
     context("when the activity does not exist", () => {
         it("should return an error", () => {
+            expect.assertions(1);
             return activityService.endActivity(activityId)
-            .then(() => {
-                // The creation should not succeed
-                expect.fail();
-            })
             .catch((error: HTTPResponse) => {
                 const body: any = JSON.parse(error.body);
-                expect(body.error).to.equal(`Activity id does not exist`);
+                expect(body.error).toEqual(`Activity id does not exist`);
             });
         });
     });
@@ -39,23 +35,21 @@ describe("endActivity", () => {
             activityId = (await activityService.createActivity(payload)).id;
 
             // If the call does not throw errors, it is successful
+            expect.assertions(0);
             return activityService.endActivity(activityId)
                 .catch((error: HTTPResponse) => {
-                    expect.fail();
+                    expect(error).toBeFalsy();
                 });
         });
     });
 
     context("when the activity has already ended", () => {
         it("should return an error", async () => {
+            expect.assertions(1);
             return activityService.endActivity(activityId)
-                .then(() => {
-                    // The creation should not succeed
-                    expect.fail();
-                })
                 .catch((error: HTTPResponse) => {
                     const body: any = JSON.parse(error.body);
-                    expect(body.error).to.equal(`Activity already ended`);
+                    expect(body.error).toEqual(`Activity already ended`);
                 });
         });
     });

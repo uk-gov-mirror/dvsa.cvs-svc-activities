@@ -90,3 +90,5 @@ custom:
         sources:
         - table: cvs-local-activities
           sources: [./tests/resources/activities.json]
+    stages:
+      - dev
