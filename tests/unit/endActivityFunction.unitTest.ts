@@ -1,6 +1,7 @@
 import {endActivity} from "../../src/functions/endActivity";
 import {ActivityService} from "../../src/services/ActivityService";
-import mockContext from "aws-lambda-mock-context"; import {HTTPResponse} from "../../src/utils/HTTPResponse";
+import mockContext from "aws-lambda-mock-context";
+import {HTTPResponse} from "../../src/utils/HTTPResponse";
 
 describe("startActivity Function", () => {
   context("calls activity service", () => {

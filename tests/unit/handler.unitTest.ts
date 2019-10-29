@@ -51,10 +51,11 @@ describe("The lambda function handler", () => {
                 // Stub out the actual functions
                 ActivityService.prototype.createActivity = jest.fn().mockResolvedValue({testResponse: 1234});
 
-                const ctx: any = mockContext(opts);
+                let ctx: any = mockContext(opts);
 
                 const result = await handler(testEvent, ctx, () => { return; });
                 ctx.succeed(result);
+                ctx  = null;
                 expect(result.statusCode).toEqual(201);
                 expect(ActivityService.prototype.createActivity).toHaveBeenCalled();
             });
@@ -72,10 +73,11 @@ describe("The lambda function handler", () => {
                 // Stub out the actual functions
                 ActivityService.prototype.updateActivity = jest.fn().mockResolvedValue({testResponse: 1234});
 
-                const ctx: any = mockContext(opts);
+                let ctx: any = mockContext(opts);
 
                 const result = await handler(testEvent, ctx, () => { return; });
                 ctx.succeed(result);
+                ctx = null;
                 expect(result.statusCode).toEqual(204);
                 expect(ActivityService.prototype.updateActivity).toHaveBeenCalled();
             });
@@ -92,11 +94,10 @@ describe("The lambda function handler", () => {
 
                 // Stub out the actual functions
                 ActivityService.prototype.endActivity = jest.fn().mockResolvedValue({testResponse: 1234});
-
-                const ctx: any = mockContext(opts);
-
+                let ctx: any = mockContext(opts);
                 const result = await handler(testEvent, ctx, () => { return; });
                 ctx.succeed(result);
+                ctx = null;
                 expect(result.statusCode).toEqual(204);
                 expect(ActivityService.prototype.endActivity).toHaveBeenCalled();
             });
@@ -116,8 +117,10 @@ describe("The lambda function handler", () => {
                 const invalidBodyEvent: any = {};
                 invalidBodyEvent.body = '{"hello":}';
 
-                const ctx: any = mockContext(opts);
+                let ctx: any = mockContext(opts);
                 const result = await handler(invalidBodyEvent, ctx, () => { return; });
+                ctx.succeed(result);
+                ctx = null;
                 expect(result).toBeInstanceOf(HTTPResponse);
                 expect(result.statusCode).toEqual(400);
                 expect(result.body).toEqual(JSON.stringify("Body is not a valid JSON."));

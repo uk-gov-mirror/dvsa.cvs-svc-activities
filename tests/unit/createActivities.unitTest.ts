@@ -3,9 +3,8 @@ import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import { HTTPRESPONSE } from "../../src/assets/enums";
 import {DynamoDBService} from "../../src/services/DynamoDBService";
 
-const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
-
 describe("createActivity", () => {
+    const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
     context("when the payload is missing the", () => {
         const activityService = new ActivityService(new DynamoDBService());
         context("activityType attribute", () => {

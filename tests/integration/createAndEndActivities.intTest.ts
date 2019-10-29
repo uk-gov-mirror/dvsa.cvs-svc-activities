@@ -4,17 +4,13 @@ import { Configuration } from "../../src/utils/Configuration";
 import supertest, { Response } from "supertest";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import {ActivityService} from "../../src/services/ActivityService";
-import {Injector} from "../../src/models/injector/Injector";
-
-const config: any = Configuration.getInstance().getConfig();
-const request = supertest(`http://localhost:${config.serverless.port}`);
-const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService);
-
+import {DynamoDBService} from "../../src/services/DynamoDBService";
 let postedActivity: DocumentClient.Key = {};
-const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
 
 describe("POST /activities", () => {
-
+    const config: any = Configuration.getInstance().getConfig();
+    const request = supertest(`http://localhost:${config.serverless.port}`);
+    const visitId: string = "5e4bd304-446e-4678-8289-d34fca9256e8"; // existing-parentId
     context("when a new activity is started", () => {
         context("and the payload is malformed", () => {
             const payload: any = {
@@ -91,7 +87,6 @@ describe("POST /activities", () => {
             });
         });
     });
-
 });
 
 
@@ -101,6 +96,9 @@ describe("POST /activities", () => {
 // endActivity tests put here instead of separate as they use variables from the tests created above which are difficult to get access to otherwise.
 
 describe("PUT /activities/:id/end", () => {
+    const activityService: ActivityService = new ActivityService(new DynamoDBService());
+    const config: any = Configuration.getInstance().getConfig();
+    const request = supertest(`http://localhost:${config.serverless.port}`);
 
     context("when a non-existing activity is ended", () => {
         it("should respond with HTTP 201", () => {
@@ -132,7 +130,7 @@ describe("PUT /activities/:id/end", () => {
         });
     });
 
-    afterAll(async   () => {
+    afterAll(async () => {
         return await activityService.dbClient.delete(postedActivity);
     });
 });
