@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/updateActivity.unitTest.ts">
+        <testCase name="Activity Service - update Activity path when the payload is malformed should return an error" duration="6"/>
+        <testCase name="Activity Service - update Activity path when the activity does not exist should return an error" duration="2"/>
+        <testCase name="Activity Service - update Activity path when the activity was successfully updated should return void" duration="0"/>
+        <testCase name="Activity Service - update Activity path when the waitReason does not meet the requirements should return an error" duration="1"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/getActivityFunction.unitTest.ts">
+        <testCase name="startActivity Function calls activity service gets a successful response returns 201 and stringinfied empty string as body" duration="5"/>
+        <testCase name="startActivity Function calls activity service gets an unsuccessful response returns the thrown  error" duration="0"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/endActivityFunction.unitTest.ts">
+        <testCase name="startActivity Function calls activity service gets a successful response returns 201 and stringinfied empty string as body" duration="4"/>
+        <testCase name="startActivity Function calls activity service gets an unsuccessful response returns the thrown  error" duration="1198"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/startActivityFunction.unitTest.ts">
+        <testCase name="startActivity Function calls activity service gets a successful response returns 201 and stringified id of created Activity" duration="1"/>
+        <testCase name="startActivity Function calls activity service gets an unsuccessful response returns the thrown  error" duration="847"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/handler.unitTest.ts">
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should call getActivities function when called with appropriate event payload" duration="772"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should call startActivities function when called with appropriate event payload" duration="7"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should call updateActivities function when called with appropriate event payload" duration="4"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should call endActivities function when called with appropriate event payload" duration="5"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should return error on empty event" duration="1"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should return error on invalid body json" duration="0"/>
+        <testCase name="The lambda function handler With correct Config should correctly handle incoming events should return a Route Not Found error on invalid path" duration="2"/>
+        <testCase name="The lambda function handler With no routes defined in config should return a Route Not Found error" duration="2"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/getActivities.unitTest.ts">
+        <testCase name="getActivities when no data is returned from database should throw error" duration="7"/>
+        <testCase name="getActivities when the fromStarTime is valid should return array of activities" duration="4"/>
+        <testCase name="getActivities when the fromStarTime is valid and the toStartTime is valid should return array of activities" duration="1"/>
+        <testCase name="getActivities when the fromStarTime is valid and the activityType is valid should return array of activities" duration="1"/>
+        <testCase name="getActivities when the fromStarTime is valid and the testStationPNumber is valid should return array of activities" duration="1"/>
+        <testCase name="getActivities when the fromStarTime is valid and the testerStaffId is valid should return array of activities" duration="1"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/createActivities.unitTest.ts">
+        <testCase name="createActivity when the payload is missing the activityType attribute should return an error" duration="6"/>
+        <testCase name="createActivity when the payload is missing the parentId attribute for &apos;visit&apos; activityType is not required should return an error" duration="35"/>
+        <testCase name="createActivity when the payload is missing the testStationName attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testStationPNumber attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testStationEmail attribute should return an error" duration="0"/>
+        <testCase name="createActivity when the payload is missing the testStationType attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testerName attribute should return an error" duration="0"/>
+        <testCase name="createActivity when the payload is missing the testerStaffId attribute should return an error" duration="1"/>
+        <testCase name="createActivity when payload is malformed and activityType does not meet the requirements should return an error" duration="1"/>
+        <testCase name="createActivity when payload is malformed and testStationEmail does not meet the requirements should return an error" duration="0"/>
+        <testCase name="createActivity when payload is malformed and testStationType does not meet the requirements should return an error" duration="1"/>
+        <testCase name="createActivity when payload is malformed and waitReason does not meet the requirements should return an error" duration="2"/>
+        <testCase name="createActivity when payload is malformed and parentId does not exist as a visit activity should return an error" duration="2"/>
+        <testCase name="createActivity when the payload is correct for &apos;visit&apos; activityType should return a uuid" duration="1"/>
+        <testCase name="createActivity when the payload for &apos;visit&apos; activityType has startTime and endTime should return an activity" duration="1"/>
+        <testCase name="createActivity when the payload is correct for &apos;wait&apos; activityType should return a uuid" duration="1"/>
+        <testCase name="createActivity when the payload is missing the parentId attribute for &apos;wait&apos; or &apos;unaccountable time&apos; activityType should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testStationName attribute should return an error" duration="0"/>
+        <testCase name="createActivity when the payload is missing the testStationPNumber attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testStationEmail attribute should return an error" duration="0"/>
+        <testCase name="createActivity when the payload is missing the testStationType attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the testerName attribute should return an error" duration="0"/>
+        <testCase name="createActivity when the payload is missing the testerStaffId attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the startTime attribute should return an error" duration="1"/>
+        <testCase name="createActivity when the payload is missing the endTime attribute should return an error" duration="0"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/endActivity.unitTest.ts">
+        <testCase name="endActivity when the activity does not exist should return an error" duration="21"/>
+        <testCase name="endActivity when the activity has successfully ended should return void" duration="359"/>
+        <testCase name="endActivity when the activity has already ended should return an error" duration="5"/>
+    </file>
+    <file path="/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/updateActivityFunction.unitTest.ts">
+        <testCase name="Activity lambda - updateActivity path when the updateActivity function is invoked should respond with HTTP 204" duration="7">
+            <failure message="Error: Please test with node.js versions: 8.10.0 - 8.999.0 || 10.0.0 - 10.999.0"><![CDATA[Error: Please test with node.js versions: 8.10.0 - 8.999.0 || 10.0.0 - 10.999.0
+    at doVersionCheck (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/lambda-tester/lib/index.js:30:15)
+    at /Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/lambda-tester/lib/index.js:40:13
+    at new WrappedPromise (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/async-listener/es6-wrapped-promise.js:13:18)
+    at resolveHandler (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/lambda-tester/lib/index.js:36:12)
+    at LambdaTester.expectResolve (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/lambda-tester/lib/index.js:265:23)
+    at Object.<anonymous> (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/tests/unit/updateActivityFunction.unitTest.ts:23:10)
+    at Object.asyncJestTest (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)
+    at /Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/jest-jasmine2/build/queueRunner.js:43:12
+    at new Promise (<anonymous>)
+    at mapper (/Users/nblore/Projects/dvsa/services/cvs-svc-activities/node_modules/jest-jasmine2/build/queueRunner.js:26:19)]]></failure>
+        </testCase>
+    </file>
+</testExecutions>
