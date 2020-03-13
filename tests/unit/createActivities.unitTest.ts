@@ -36,6 +36,7 @@ describe("createActivity", () => {
                 testStationEmail: "teststationname@dvsa.gov.uk",
                 testStationType: "gvts",
                 testerName: "Gica",
+                testerEmail: "tester@dvsa.gov.uk",
                 testerStaffId: "132"
             };
 
@@ -301,6 +302,7 @@ describe("createActivity", () => {
             testStationEmail: "teststationname@dvsa.gov.uk",
             testStationType: "gvts",
             testerName: "Gica",
+            testerEmail: "tester@dvsa.gov.uk",
             testerStaffId: "132"
         };
 
@@ -328,6 +330,7 @@ describe("createActivity", () => {
             testStationType: "gvts",
             testerName: "Gica",
             testerStaffId: "139",
+            testerEmail: "tester@dvsa.gov.uk",
             startTime: new Date().toISOString(),
             endTime: new Date().toISOString(),
         };

@@ -15,6 +15,7 @@ export interface IActivity {
     testStationType: StationType;
     testerName: string;
     testerStaffId: string;
+    testerEmail?: string;
     startTime?: string;
     endTime?: string;
     waitReason?: [string];

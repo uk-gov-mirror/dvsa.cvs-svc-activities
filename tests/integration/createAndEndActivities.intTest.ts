@@ -39,7 +39,8 @@ describe("POST /activities", () => {
                 testStationEmail: "teststationname@dvsa.gov.uk",
                 testStationType: StationType.GVTS,
                 testerName: "Dorel",
-                testerStaffId: "1664"
+                testerStaffId: "1664",
+                testerEmail: "tester@dvsa.gov.uk",
             };
 
             it("should respond with HTTP 201", () => {

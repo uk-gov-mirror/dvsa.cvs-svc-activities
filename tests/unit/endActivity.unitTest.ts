@@ -29,7 +29,8 @@ describe("endActivity", () => {
                 testStationEmail: "teststationname@dvsa.gov.uk",
                 testStationType: "gvts",
                 testerName: "Gica",
-                testerStaffId: "132"
+                testerStaffId: "132",
+                testerEmail: "tester@dvsa.gov.uk",
             };
 
             activityId = (await activityService.createActivity(payload)).id;
