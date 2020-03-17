@@ -35,6 +35,9 @@ functions:
     - http:
         path: activities/details
         method: get
+    - http:
+        path: activities/open
+        method: get
 
 resources:
   Resources:
