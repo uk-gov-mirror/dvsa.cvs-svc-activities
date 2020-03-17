@@ -1,11 +1,11 @@
-import { Injector } from "../../src/models/injector/Injector";
 import { GetActivityService } from "../../src/services/GetActivitiesService";
 import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 import * as jsonData from "../resources/activities.json";
 
 describe("getActivities", () => {
-    const getActivityService: GetActivityService = Injector.resolve<GetActivityService>(GetActivityService, [DynamoDBMockService]);
+    // @ts-ignore
+    const getActivityService: GetActivityService = new GetActivityService(new DynamoDBMockService());
     context("when no data is returned from database", () => {
         it("should throw error", () => {
             const event = {

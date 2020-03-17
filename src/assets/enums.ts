@@ -28,7 +28,8 @@ export enum ENV_VARIABLES {
 export enum QUERY_PARAMS {
     ACTIVITY_TYPE = "activityType",
     TEST_STATION_P_NUMBER = "testStationPNumber",
-    TESTER_STAFF_ID= "testerStaffId"
+    TESTER_STAFF_ID = "testerStaffId",
+    END_TIME = "endTime"
 }
 
 export enum ActivityType {

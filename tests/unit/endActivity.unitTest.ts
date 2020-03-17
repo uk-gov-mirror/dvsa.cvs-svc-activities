@@ -1,11 +1,10 @@
-
-import { Injector } from "../../src/models/injector/Injector";
 import { ActivityService } from "../../src/services/ActivityService";
 import { DynamoDBMockService } from "../models/DynamoDBMockService";
 import { HTTPResponse } from "../../src/utils/HTTPResponse";
 
 describe("endActivity", () => {
-    const activityService: ActivityService = Injector.resolve<ActivityService>(ActivityService, [DynamoDBMockService]);
+    // @ts-ignore
+    const activityService = new ActivityService(new DynamoDBMockService());
     let activityId: string = "5e4bd304-446e-4678-8289-d34fca9256e9"; // Non-existing ID
 
     context("when the activity does not exist", () => {

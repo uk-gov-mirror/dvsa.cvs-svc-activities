@@ -38,7 +38,7 @@ export class ActivityFilters {
      * @param field activityType | testStationPNumber | testerStaffId
      * @returns Array of Activities filtered by activityType | testStationPNumber | testerStaffId
      */
-    public filterActivitiesByParameter(activities: string[], value: string, field: string) {
+    public filterActivitiesByParameter(activities: string[], value: string | null, field: string) {
         const filteredArrayOfActivities = activities.filter((element: any) => {
             return element[field] === value;
         });

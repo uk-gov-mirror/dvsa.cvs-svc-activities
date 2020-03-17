@@ -19,6 +19,11 @@ functions:
     path: /activities/details
     proxy: null
     function: getActivity
+- openVisitCheck:
+    method: GET
+    path: /activities/open
+    proxy: null
+    function: openVisitCheck
 dynamodb:
   local:
     params:

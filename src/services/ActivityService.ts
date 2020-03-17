@@ -5,13 +5,11 @@ import uuid from "uuid";
 import { IActivity } from "../models/Activity";
 import { ActivitySchema } from "../models/ActivitySchema";
 import { ActivityUpdateSchema } from "../models/ActivityUpdateSchema";
-import { Service } from "../models/injector/ServiceDecorator";
 import { HTTPResponse } from "../utils/HTTPResponse";
 import { DynamoDBService } from "./DynamoDBService";
 import {ActivityType, HTTPRESPONSE} from "../assets/enums";
 
 
-@Service()
 export class ActivityService {
     public readonly dbClient: DynamoDBService;
 

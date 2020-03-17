@@ -110,7 +110,7 @@ export class DynamoDBService {
      * @param keys - a list of keys you wish to retrieve
      * @returns Promise<PromiseResult<BatchGetItemOutput, AWSError>>
      */
-    public batchGet(keys: DocumentClient.KeyList): Promise<Array<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>>> {
+    public batchGet(keys: DocumentClient.KeyList): Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>[]> {
         const keyList: DocumentClient.KeyList = keys.slice();
         const keyBatches: DocumentClient.KeyList[] = [];
 
@@ -118,7 +118,7 @@ export class DynamoDBService {
             keyBatches.push(keyList.splice(0, 100));
         }
 
-        const promiseBatch: Array<Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>>> = keyBatches.map((batch: DocumentClient.KeyList) => {
+        const promiseBatch: Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>>[] = keyBatches.map((batch: DocumentClient.KeyList) => {
             const query: DocumentClient.BatchGetItemInput = {
                 RequestItems: {
                     [this.tableName]: {
@@ -139,7 +139,7 @@ export class DynamoDBService {
      * @param items - items to add or update
      * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]>
      */
-    public batchPut(items: any[]): Promise<Array<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>> {
+    public batchPut(items: any[]): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]> {
         const itemList: DocumentClient.WriteRequests = items.slice();
         const itemBatches: DocumentClient.WriteRequests[] = [];
 
@@ -147,7 +147,7 @@ export class DynamoDBService {
             itemBatches.push(itemList.splice(0, 25));
         }
 
-        const promiseBatch: Array<Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>> = itemBatches.map((batch: any[]) => {
+        const promiseBatch: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = itemBatches.map((batch: any[]) => {
             const query: DocumentClient.BatchWriteItemInput = {
                 RequestItems: {
                     [this.tableName]: batch.map((item: any) => ({ PutRequest: { Item: item } })),
@@ -166,7 +166,7 @@ export class DynamoDBService {
      * @param keys - keys for the items to delete
      * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]>
      */
-    public batchDelete(keys: DocumentClient.KeyList): Promise<Array<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>> {
+    public batchDelete(keys: DocumentClient.KeyList): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]> {
         const keyList: DocumentClient.KeyList = keys.slice();
         const keyBatches: DocumentClient.KeyList[] = [];
 
@@ -174,7 +174,7 @@ export class DynamoDBService {
             keyBatches.push(keyList.splice(0, 25));
         }
 
-        const promiseBatch: Array<Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>> = keyBatches.map((batch: any[]) => {
+        const promiseBatch: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = keyBatches.map((batch: any[]) => {
             const query: DocumentClient.BatchWriteItemInput = {
                 RequestItems: {
                     [this.tableName]: batch.map((item: any) => ({ DeleteRequest: { Key: item } })),

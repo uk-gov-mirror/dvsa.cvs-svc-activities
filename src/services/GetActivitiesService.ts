@@ -1,11 +1,9 @@
 import { QUERY_PARAMS } from "./../assets/enums";
 import { ActivityFilters } from "./../utils/Filters";
-import { Service } from "../models/injector/ServiceDecorator";
 import { HTTPResponse } from "../utils/HTTPResponse";
 import { DynamoDBService } from "./DynamoDBService";
 import { HTTPRESPONSE } from "../assets/enums";
 
-@Service()
 export class GetActivityService {
     public readonly dbClient: DynamoDBService;
 
