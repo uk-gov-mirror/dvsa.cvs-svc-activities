@@ -20,4 +20,5 @@ export interface IActivity {
     endTime?: string;
     waitReason?: [string];
     notes?: string;
+    activityDay?: string;
 }

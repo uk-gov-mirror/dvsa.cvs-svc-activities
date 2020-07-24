@@ -8,6 +8,7 @@ import { ActivityUpdateSchema } from "../models/ActivityUpdateSchema";
 import { HTTPResponse } from "../utils/HTTPResponse";
 import { DynamoDBService } from "./DynamoDBService";
 import {ActivityType, HTTPRESPONSE} from "../assets/enums";
+import moment from "moment";
 
 
 export class ActivityService {
@@ -65,7 +66,8 @@ export class ActivityService {
         const id: string = uuid();
         Object.assign(activity, { id });
 
-
+        const activityDay = moment(activity.startTime!).format("YYYY-MM-DD");
+        Object.assign(activity, {activityDay});
 
         return this.dbClient.put(activity)
             .then(() => {

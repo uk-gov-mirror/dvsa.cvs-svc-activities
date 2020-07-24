@@ -23,21 +23,24 @@ functions:
   main:
     handler: src/handler.handler
     events:
-    - http:
-        path: activities
-        method: post
-    - http:
-        path: activities/{id}/end
-        method: put
-    - http:
-        path: activities/update
-        method: put
-    - http:
-        path: activities/details
-        method: get
-    - http:
-        path: activities/open
-        method: get
+      - http:
+          path: activities
+          method: post
+      - http:
+          path: activities/{id}/end
+          method: put
+      - http:
+          path: activities/update
+          method: put
+      - http:
+          path: activities/details
+          method: get
+      - http:
+          path: activities/open
+          method: get
+      - http:
+          path: activities/cleanup
+          method: get
 
 resources:
   Resources:
@@ -46,35 +49,58 @@ resources:
       Properties:
         TableName: cvs-local-activities
         AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-        - AttributeName: testerStaffId
-          AttributeType: S
-        KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-        GlobalSecondaryIndexes:
-        - IndexName: StaffIndex
-          KeySchema:
+          - AttributeName: id
+            AttributeType: S
           - AttributeName: testerStaffId
+            AttributeType: S
+          - AttributeName: startTime
+            AttributeType: S
+          - AttributeName: activityDay
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
             KeyType: HASH
-          Projection:
-            NonKeyAttributes:
-            - parentId
-            - activityType
-            - testStationName
-            - testStationPNumber
-            - testStationEmail
-            - testStationType
-            - testerName
-            - startTime
-            - endTime
-            - waitReason
-            - notes
-            ProjectionType: INCLUDE
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: StaffIndex
+            KeySchema:
+              - AttributeName: testerStaffId
+                KeyType: HASH
+            Projection:
+              NonKeyAttributes:
+                - parentId
+                - activityType
+                - testStationName
+                - testStationPNumber
+                - testStationEmail
+                - testStationType
+                - testerName
+                - startTime
+                - endTime
+                - waitReason
+                - notes
+              ProjectionType: INCLUDE
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: ActivityDayIndex
+            KeySchema:
+              - AttributeName: activityDay
+                KeyType: HASH
+              - AttributeName: startTime
+                KeyType: RANGE
+            Projection:
+              NonKeyAttributes:
+                - id
+                - activityType
+                - testStationEmail
+                - testStationType
+                - testerName
+                - startTime
+                - endTime
+              ProjectionType: INCLUDE
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -91,7 +117,7 @@ custom:
     seed:
       activities:
         sources:
-        - table: cvs-local-activities
-          sources: [./tests/resources/activities.json]
+          - table: cvs-local-activities
+            sources: [./tests/resources/activities.json]
     stages:
       - dev

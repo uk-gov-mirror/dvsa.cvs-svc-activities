@@ -24,6 +24,11 @@ functions:
     path: /activities/open
     proxy: null
     function: openVisitCheck
+- getActivitiesForCleanup:
+    method: GET
+    path: /activities/cleanup
+    proxy: null
+    function: getActivitiesForCleanup
 dynamodb:
   local:
     params:
