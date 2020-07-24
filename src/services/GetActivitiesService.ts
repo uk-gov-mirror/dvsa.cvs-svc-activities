@@ -1,8 +1,10 @@
-import { QUERY_PARAMS } from "./../assets/enums";
-import { ActivityFilters } from "./../utils/Filters";
-import { HTTPResponse } from "../utils/HTTPResponse";
-import { DynamoDBService } from "./DynamoDBService";
-import { HTTPRESPONSE } from "../assets/enums";
+import {QUERY_PARAMS} from "./../assets/enums";
+import {ActivityFilters} from "./../utils/Filters";
+import {HTTPResponse} from "../utils/HTTPResponse";
+import {DynamoDBService} from "./DynamoDBService";
+import {HTTPRESPONSE} from "../assets/enums";
+import {IActivity} from "../models/Activity";
+import moment from "moment";
 
 export class GetActivityService {
     public readonly dbClient: DynamoDBService;
@@ -34,6 +36,20 @@ export class GetActivityService {
                     throw new HTTPResponse(error.statusCode, error.body);
                 }
             });
+    }
+
+    /**
+     * Get activities of type visit based on startTime from Dynamodb
+     * @param fromStartTime - query param used for range key
+     * @returns Promise - Array of activities of type visit filtered based on the given params
+     */
+    public async getActivitiesForCleanup(fromStartTime: string): Promise<IActivity[]> {
+        const activityDay = moment().format("YYYY-MM-DD");
+        const activities = await this.dbClient.getActivitiesWhereStartTimeGreaterThan(activityDay, fromStartTime);
+        if (!activities.Count) {
+            return Promise.reject({statusCode: 404, message: HTTPRESPONSE.NO_RESOURCES});
+        }
+        return activities.Items as IActivity[];
     }
 
     /**

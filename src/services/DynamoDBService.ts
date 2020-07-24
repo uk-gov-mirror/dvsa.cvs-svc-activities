@@ -1,4 +1,6 @@
 /* tslint:disable */
+import {ActivityType} from "../assets/enums";
+
 const AWSXRay = require("aws-xray-sdk");
 const AWS = AWSXRay.captureAWS(require("aws-sdk"));
 /* tslint:enable */
@@ -71,6 +73,25 @@ export class DynamoDBService {
 
         return DynamoDBService.client.query(query)
             .promise();
+    }
+
+    /**
+     * Retrieves the activity of type visit where startTime is greater or equal than the query param fromStartTime
+     * @param staffId - query param start time for which to retrieve activity
+     * @returns Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>>
+     */
+    public getActivitiesWhereStartTimeGreaterThan(activityDay: string, startTime: string): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
+        const query: DocumentClient.QueryInput = {
+            TableName: this.tableName,
+            IndexName: "ActivityDayIndex",
+            KeyConditionExpression: "activityDay = :activityDay AND startTime >= :startTime",
+            ExpressionAttributeValues: {
+                ":startTime": startTime,
+                ":activityDay": activityDay
+            }
+        };
+
+        return DynamoDBService.client.query(query).promise();
     }
 
     /**
@@ -151,33 +172,6 @@ export class DynamoDBService {
             const query: DocumentClient.BatchWriteItemInput = {
                 RequestItems: {
                     [this.tableName]: batch.map((item: any) => ({ PutRequest: { Item: item } })),
-                },
-            };
-
-            return DynamoDBService.client.batchWrite(query)
-            .promise();
-        });
-
-        return Promise.all(promiseBatch);
-    }
-
-    /**
-     * Deletes the items provided, and returns a list of result batches
-     * @param keys - keys for the items to delete
-     * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]>
-     */
-    public batchDelete(keys: DocumentClient.KeyList): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]> {
-        const keyList: DocumentClient.KeyList = keys.slice();
-        const keyBatches: DocumentClient.KeyList[] = [];
-
-        while (keyList.length > 0) {
-            keyBatches.push(keyList.splice(0, 25));
-        }
-
-        const promiseBatch: Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>[] = keyBatches.map((batch: any[]) => {
-            const query: DocumentClient.BatchWriteItemInput = {
-                RequestItems: {
-                    [this.tableName]: batch.map((item: any) => ({ DeleteRequest: { Key: item } })),
                 },
             };
 
