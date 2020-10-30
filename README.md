@@ -1,7 +1,7 @@
 # cvs-svc-activities
 
 ### Prerequisites
-- NodeJS 8.10
+- NodeJS 8.10 (current version in use is 10.x, please refer to `"engines"` meta in the package.json file)
 - Typescript - `npm install -g typescript`
 - Serverless - `npm install -g serverless`
 
@@ -62,6 +62,7 @@ serverless:
 ### Git Hooks
 
 Please set up the following prepush git hook in .git/hooks/pre-push
+In order to push you must start service as pre-push runs integrations tests as well.
 
 ```
 #!/bin/sh

@@ -8,14 +8,14 @@
     "npm": "5.6.0"
   },
   "scripts": {
-    "start": "npm run tslint && npm run build:dev && BRANCH=local node_modules/serverless/bin/serverless offline start",
+    "start": "npm run tslint && npm run build:dev && BRANCH=local AWS_XRAY_CONTEXT_MISSING=LOG_ERROR node_modules/serverless/bin/serverless.js offline start",
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir .build --sourceMap false && npm run build:copy",
     "build:dev": "node_modules/typescript/bin/tsc && npm run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find tests -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "test": "BRANCH=local SLS_DEBUG=* AWS_XRAY_CONTEXT_MISSING=LOG_ERROR jest --testMatch=\"**/*.unitTest.ts\" --coverage",
     "test-i": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
-    "prepush": "BRANCH=local npm test && npm run tslint",
-    "predeploy": "npm install && npm run prepush",
+    "prepush": "BRANCH=local npm test && npm run test-i",
+    "predeploy": "npm install && npm run tslint && npm run prepush",
     "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint --fix src/**/*.ts tests/**/*.ts",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
@@ -82,7 +82,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prepush && npm run security-checks",
+      "pre-commit": "npm run tslint && npm run security-checks",
       "pre-push": "npm run prepush"
     }
   }

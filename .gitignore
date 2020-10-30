@@ -16,6 +16,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+.reports/
 
 # Idea specific hidden files
 .idea/**
