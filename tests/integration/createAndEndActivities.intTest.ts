@@ -102,7 +102,7 @@ describe("PUT /activities/:id/end", () => {
     const request = supertest(`http://localhost:${config.serverless.port}`);
 
     context("when a non-existing activity is ended", () => {
-        it("should respond with HTTP 201", () => {
+        it("should respond with HTTP 404", () => {
             return request.put(`/activities/bad_id/end`)
                 .send({})
                 .expect("access-control-allow-origin", "*")
@@ -111,23 +111,25 @@ describe("PUT /activities/:id/end", () => {
         });
     });
 
-    context("when an existing activity is ended", () => {
-        it("should respond with HTTP 204", () => {
-            console.log(`Ending visit: ${postedActivity.id}`);
-            // End the just-create test activity
+    context("when an activity is not already ended", () => {
+        it("should respond with HTTP 200 (wasVisitAlreadyClosed = false)", () => {
             return request.put(`/activities/${postedActivity.id}/end`)
                 .expect("access-control-allow-origin", "*")
                 .expect("access-control-allow-credentials", "true")
-                .expect(204);
+                .expect(200, {
+                    wasVisitAlreadyClosed: false
+                });
         });
     });
 
-    context("when an already ended activity is ended", () => {
-        it("should respond with HTTP 403", () => {
+    context("when an activity is already ended", () => {
+        it("should respond with HTTP 200 (wasVisitAlreadyClosed = true)", () => {
             return request.put(`/activities/${postedActivity.id}/end`)
                 .expect("access-control-allow-origin", "*")
                 .expect("access-control-allow-credentials", "true")
-                .expect(403);
+                .expect(200, {
+                    wasVisitAlreadyClosed: true
+                });
         });
     });
 

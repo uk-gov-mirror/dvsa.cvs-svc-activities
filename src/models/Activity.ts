@@ -17,7 +17,7 @@ export interface IActivity {
     testerStaffId: string;
     testerEmail?: string;
     startTime?: string;
-    endTime?: string;
+    endTime?: null | string;
     waitReason?: [string];
     notes?: string;
     activityDay?: string;

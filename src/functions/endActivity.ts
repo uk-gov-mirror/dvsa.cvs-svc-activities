@@ -8,8 +8,8 @@ const endActivity: Handler = async (event: any, context: Context): Promise<APIGa
     const id: string = event.pathParameters.id;
 
     return activityService.endActivity(id)
-        .then(() => {
-            return new HTTPResponse(204, "");
+        .then((wasVisitAlreadyClosed) => {
+            return new HTTPResponse(200, wasVisitAlreadyClosed);
         })
         .catch((error: HTTPResponse) => {
             console.log(error.body);

@@ -93,13 +93,19 @@ describe("The lambda function handler", () => {
                 };
 
                 // Stub out the actual functions
-                ActivityService.prototype.endActivity = jest.fn().mockResolvedValue({testResponse: 1234});
+                ActivityService.prototype.endActivity = jest.fn().mockResolvedValue({wasVisitAlreadyClosed: true});
                 let ctx: any = mockContext(opts);
+
                 const result = await handler(testEvent, ctx, () => { return; });
                 ctx.succeed(result);
                 ctx = null;
-                expect(result.statusCode).toEqual(204);
-                expect(ActivityService.prototype.endActivity).toHaveBeenCalled();
+
+                const { body, statusCode } = result
+                const { wasVisitAlreadyClosed } = JSON.parse(body)
+
+                expect(ActivityService.prototype.endActivity).toHaveBeenCalledTimes(1);
+                expect(statusCode).toEqual(200);
+                expect(wasVisitAlreadyClosed).toBe(true);
             });
 
             it("should return error on empty event", async () => {

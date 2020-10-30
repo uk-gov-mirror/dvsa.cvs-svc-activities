@@ -1,14 +1,16 @@
+import * as Joi from "joi";
+import moment from "moment";
+import uuid from "uuid";
 import { AWSError } from "aws-sdk"; // Only used as a type, so not wrapped by XRay
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client"; // Only used as a type, so not wrapped by XRay
-import * as Joi from "joi";
-import uuid from "uuid";
+
+import { DynamoDBService } from "./DynamoDBService";
 import { IActivity } from "../models/Activity";
 import { ActivitySchema } from "../models/ActivitySchema";
 import { ActivityUpdateSchema } from "../models/ActivityUpdateSchema";
 import { HTTPResponse } from "../utils/HTTPResponse";
-import { DynamoDBService } from "./DynamoDBService";
-import {ActivityType, HTTPRESPONSE} from "../assets/enums";
-import moment from "moment";
+import * as Constants from "../assets/enums";
+
 
 
 export class ActivityService {
@@ -40,14 +42,14 @@ export class ActivityService {
 
         // Check if parentId is not null if activityType is 'wait' or 'accountable time' and is null when activityType is 'visit'
         if (activity.activityType === "visit" && activity.parentId) {
-            throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_REQUIRED});
+            throw new HTTPResponse(400, {error: Constants.HTTPRESPONSE.PARENT_ID_NOT_REQUIRED});
         }
         if (activity.activityType !== "visit" && !activity.parentId) {
-            throw new HTTPResponse(400, {error : HTTPRESPONSE.PARENT_ID_REQUIRED});
+            throw new HTTPResponse(400, {error : Constants.HTTPRESPONSE.PARENT_ID_REQUIRED});
         }
 
         // 'visit' activity validations and object field assignments
-        if (activity.activityType === ActivityType.VISIT && await this.performVisitActValidations(activity)) {
+        if (activity.activityType === Constants.ActivityType.VISIT && await this.performVisitActValidations(activity)) {
             const startTime = activity.startTime ? activity.startTime : new Date().toISOString();
             Object.assign(activity, {startTime});
 
@@ -55,7 +57,7 @@ export class ActivityService {
             Object.assign(activity, {endTime});
         }
         // non-'visit' activity validations and object field assignments
-        if (activity.activityType !== ActivityType.VISIT && await this.performNonVisitActValidations(activity)) {
+        if (activity.activityType !== Constants.ActivityType.VISIT && await this.performNonVisitActValidations(activity)) {
             // Assign startTime
             Object.assign(activity, {startTime : activity.startTime });
             // Assign endTime
@@ -84,39 +86,39 @@ export class ActivityService {
 
     /**
      * Ends an activity with the given id
+     * if the visit was already closed, the response will be 200 and the flag wasVisitAlreadyClosed will be set to true
      * @param id - id of the activity to end
-     * @returns Promise void
+     * @returns Promise<{wasVisitAlreadyClosed: boolean}>
      */
-    public async endActivity(id: string): Promise<void> {
-        return this.dbClient.get({ id })
-            .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
-                // Result checks
-                if (result.Item === undefined) {
-                    throw new HTTPResponse(404, { error: HTTPRESPONSE.NOT_EXIST });
-                }
+    public async endActivity(id: string): Promise<{ wasVisitAlreadyClosed: boolean }> {
+        try {
 
-                if (result.Item.endTime !== null) {
-                    throw new HTTPResponse(403, { error: HTTPRESPONSE.ALREADY_ENDED });
-                }
+            const result: DocumentClient.GetItemOutput = await this.dbClient.get({ id });
 
-                const activity: IActivity = result.Item as IActivity;
+            if (result.Item === undefined) {
+                console.log(`Error occurred: ${Constants.HTTPRESPONSE.NOT_EXIST} with statusCode: 404`);
+                throw new HTTPResponse(404, { error: Constants.HTTPRESPONSE.NOT_EXIST });
+            }
 
-                // Assign the endTime
-                const endTime: string = new Date().toISOString();
-                Object.assign(activity, { endTime });
+            if (result.Item.endTime !== null) {
+                console.log(`Visit with ID ${id} is already closed`);
+                return { wasVisitAlreadyClosed: true };
+            }
 
-                await this.dbClient.put(activity);
-            })
-            .catch((error: AWSError | HTTPResponse) => {
-                // If we get HTTPResponse, we rethrow it
-                if (error instanceof HTTPResponse) {
-                    console.error(`Error occurred: ${error.body}`);
-                    throw error;
-                }
+            const activity: IActivity = result.Item as IActivity;
+            activity.endTime = new Date().toISOString();
+            await this.dbClient.put(activity);
 
-                // Otherwise, if DynamoDB errors, we throw 500
-                throw new HTTPResponse(error.statusCode, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
-            });
+            return { wasVisitAlreadyClosed: false };
+
+        } catch (e) {
+
+            // client error so we rethrow
+            if (e instanceof HTTPResponse) throw e
+
+            const { statusCode, code, message, hostname, region, requestId} = e
+            throw new HTTPResponse(statusCode, {error: `${code}: ${message} At: ${hostname} - ${region} Request id: ${requestId}`})
+        }
     }
 
     /**
@@ -138,7 +140,8 @@ export class ActivityService {
                 .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
                     // Result checks
                     if (result.Item === undefined) {
-                        throw new HTTPResponse(404, {error: HTTPRESPONSE.NOT_EXIST});
+
+                        throw new HTTPResponse(404, {error: Constants.HTTPRESPONSE.NOT_EXIST});
                     }
 
                     const dbActivity: IActivity = result.Item as IActivity;
@@ -173,7 +176,7 @@ export class ActivityService {
     protected async performVisitActValidations(activity: IActivity): Promise<boolean> {
         // Visit activity should not have parent IDs
         if (activity.parentId) {
-            throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_REQUIRED});
+            throw new HTTPResponse(400, {error: Constants.HTTPRESPONSE.PARENT_ID_NOT_REQUIRED});
         }
 
         // Check if staff already has an ongoing activity if activityType is visit
@@ -186,7 +189,7 @@ export class ActivityService {
             });
 
         if (ongoingCount && ongoingCount > 0) {
-            throw new HTTPResponse(403, { error: HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID + " " + activity.testerStaffId + " " + HTTPRESPONSE.ONGING_ACTIVITY});
+            throw new HTTPResponse(403, { error: `${Constants.HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID} ${activity.testerStaffId} ${Constants.HTTPRESPONSE.ONGING_ACTIVITY}`});
         }
         // If no errors, then return true.
         return true;
@@ -200,22 +203,22 @@ export class ActivityService {
     protected async performNonVisitActValidations(activity: IActivity): Promise<boolean> {
         // Non-visit activity requires parent ID
         if (!activity.parentId) {
-            throw new HTTPResponse(400, {error : HTTPRESPONSE.PARENT_ID_REQUIRED});
+            throw new HTTPResponse(400, {error : Constants.HTTPRESPONSE.PARENT_ID_REQUIRED});
         }
         // Validate if parentId exists.
         await this.dbClient.get({id: activity.parentId})
             .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
                 // Result checks
                 if (result.Item === undefined) {
-                    throw new HTTPResponse(400, {error: HTTPRESPONSE.PARENT_ID_NOT_EXIST});
+                    throw new HTTPResponse(400, {error: Constants.HTTPRESPONSE.PARENT_ID_NOT_EXIST});
                 }
                 // Validate if startTime is provided in request
                 if (!activity.startTime) {
-                    throw new HTTPResponse(400, {error : HTTPRESPONSE.START_TIME_EMPTY});
+                    throw new HTTPResponse(400, {error : Constants.HTTPRESPONSE.START_TIME_EMPTY});
                 }
                 // Validate if endTime is provided in request
                 if (!activity.endTime) {
-                    throw new HTTPResponse(400, {error : HTTPRESPONSE.END_TIME_EMPTY});
+                    throw new HTTPResponse(400, {error : Constants.HTTPRESPONSE.END_TIME_EMPTY});
                 }
             })
             .catch((error: AWSError | HTTPResponse) => {
