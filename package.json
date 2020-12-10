@@ -16,13 +16,13 @@
     "test-i": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
     "prepush": "BRANCH=local npm test && npm run test-i",
     "predeploy": "npm install && npm run tslint && npm run prepush",
-    "security-checks": "git secrets --scan && git log -p | scanrepo",
     "tslint": "tslint --fix src/**/*.ts tests/**/*.ts",
-    "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
+    "sonar-scanner": "AWS_XRAY_CONTEXT_MISSING=LOG_ERROR npm run tslint && AWS_XRAY_CONTEXT_MISSING=LOG_ERROR npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local SLS_DEBUG=* jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
     "audit-dep": "npm audit --json | node_modules/.bin/audit-filter --nsp-config=.nsprc --audit=-",
     "package": "mkdir ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip .",
-    "tools-setup": "sls dynamodb migrate && BRANCH=local node_modules/gulp/bin/gulp.js start-serverless && sls dynamodb seed --seed=activities"
+    "security-checks": "npm audit --audit-level=critical && git secrets --register-aws && git secrets --scan && git log -p | scanrepo",
+    "tools-setup": "node_modules/.bin/sls config credentials --provider aws --key RANDOM --secret RANDOM && node_modules/.bin/sls dynamodb migrate && node_modules/.bin/sls dynamodb seed --seed=activities && AWS_XRAY_CONTEXT_MISSING=LOG_ERROR BRANCH=local node_modules/gulp/bin/gulp.js start-serverless"
   },
   "author": "",
   "license": "ISC",
