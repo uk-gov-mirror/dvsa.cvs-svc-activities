@@ -76,7 +76,7 @@ export class ActivityService {
                 return { id };
             })
             .catch((error: AWSError) => {
-                throw new HTTPResponse(error.statusCode, {
+                throw new HTTPResponse(error.statusCode || 500, {
                     error: `${error.code}: ${error.message}
                 At: ${error.hostname} - ${error.region}
                 Request id: ${error.requestId}`
@@ -160,7 +160,7 @@ export class ActivityService {
                     }
 
                     // Otherwise, if DynamoDB errors, we throw 500
-                    throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
+                    throw new HTTPResponse(error.statusCode || 500, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
                 });
         }
         // Batch update of activities
@@ -185,7 +185,7 @@ export class ActivityService {
                 return result.Count as number;
             })
             .catch((error: AWSError) => {
-                throw new HTTPResponse(error.statusCode, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
+                throw new HTTPResponse(error.statusCode || 500, { error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}` });
             });
 
         if (ongoingCount && ongoingCount > 0) {
@@ -229,7 +229,7 @@ export class ActivityService {
                 }
 
                 // Otherwise, if DynamoDB errors, we throw 500
-                throw new HTTPResponse(error.statusCode, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
+                throw new HTTPResponse(error.statusCode || 500, {error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`});
 
             });
         return true;

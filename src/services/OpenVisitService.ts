@@ -25,7 +25,7 @@ export default class OpenVisitService {
       })
       .catch((error: AWSError) => {
         console.log("Failed to get open visits from DynamoDB: ", error);
-        throw new HTTPResponse(error.statusCode, { error: `Failed to get open visits` });
+        throw new HTTPResponse(error.statusCode || 500, { error: `Failed to get open visits` });
       });
     return visits > 0;
   }
