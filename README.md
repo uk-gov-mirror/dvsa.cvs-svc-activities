@@ -128,7 +128,7 @@ custom:
 
 ### Developing locally
 
-The following configuration must be updated in your `serverless.yml` to be able to run the service locally.
+The following configuration must be updated in your `serverless.yml` to be able to run the service locally before you run `npm start` and installed `serverless dynamodb`.
 
 To run this locally, add the following environment variables to your run configuration(s):
 
