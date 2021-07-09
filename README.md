@@ -6,7 +6,7 @@ The activities microservice used CVS services and mobile application allows to c
 
 ## Dependencies
 
-The project runs on node 10.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
+The project runs on node >10.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
 [nvm](https://github.com/nvm-sh/nvm/blob/master/README.md) is used to managed node versions and configuration explicitly done per project using an `.npmrc` file.
 
 ### Prerequisites
@@ -22,22 +22,32 @@ These will be run as part of your projects hooks so you don't accidentally intro
 
 ## Architecture
 
-Data is used is made available to VTA for searching a vehicle.
-
 ### End to end design
 
 [All in one view](https://wiki.dvsacloud.uk/pages/viewpage.action?pageId=79254695)
 
 ### Activities microservice
 
-More information about technical designs can be found under the [Defects Microservice](https://wiki.dvsacloud.uk/display/HVT/Activities+Service) section.
+More information about technical designs can be found under the [Activities Microservice](https://wiki.dvsacloud.uk/display/HVT/Activities+Service) section.
 
 ## Getting started
 
 Set up your nodejs environment running `nvm use` and once the dependencies are installed using `npm i`, you can run the scripts from `package.json` to build your project.
 This code repository uses [serverless framework](https://www.serverless.com/framework/docs/) to mock AWS capabilities for local development.
-You will also require to install dynamodb serverless to run your project with by running the following command `node_modules/.bin/sls dynamodb install` in your preferred shell.
-Please refer to the local development section to [configure your project locally](#developing-locally)
+You will also require to install dynamodb serverless to run your project with by running the following command `npm run tools-setup` in your preferred shell.
+Once dynamoDB is installed, you will need a local serverless profile to be created so that you can start developping locally.
+The profiles are stored under `~/.aws/credentials`.
+```sh
+# ~/.aws/credentials
+
+# Please not only serverless is used to develop locally, not deployment of services are done with this framework
+# It might look like this
+[default]
+aws_access_key_id=<yourDummyAccesskey>
+aws_secret_access_key=<yourDummySecret>
+
+```
+Please refer to the local development section to [configure your project locally](#developing-locally).
 
 ### Environmental variables
 
@@ -51,7 +61,7 @@ The configuration file can be found under `src/config/config.yml`.
 Environment variable injection is possible with the syntax:
 `${BRANCH}`, or you can specify a default value: `${BRANCH:local}`
 
-The real lambda function of this repository can be found under `src/handler.ts`, and is a middleware function that calls lambda functions created by you according to the mapping declared in the configuration.
+The real lambda function of this repository can be found under `src/handler.ts`, and is a middleware function that calls lambda functions created by you according to the mapping declared in the configuration as a proxy integration pattern.
 Here is an example:
 
 ```yml
@@ -100,16 +110,18 @@ dynamodb:
 
 The following scripts are available, however you can refer to the `package.json` to see the details:
 
-- `npm install`
-- `npm start`
-- `npm run build`
-- `npm t`
+- install dependencies: `npm install` or `npm i`
+- start local development (or service): `npm start`
+- build project: `npm run build`
+- unit tests: `npm test` or `npm t`
+- integration tests: `npm run test-i`
 
 ### DynamoDB and seeding
 
-If you want the database to be populated with mock data on start, in your `serverless.yml` file, you need to set `seed` to `true`. You can find this setting under `custom > dynamodb > start`.
+You will not require to change the serverless-local-dynamodb config.
 
-By default, the `noStart` setting under `custom > dynamodb > start` is true. That means the DynamoDB instance will not be started automatically. To start the instance automatically on `npm run start`, you have to set this value to `false`.
+If you want the database to be populated with mock data on start, in your `serverless.yml` file, you need to set `seed` to `true`.
+You can find this setting under `custom > dynamodb > start`.
 
 If you choose to run the DynamoDB instance separately, you can send the seed command with the following command:
 
@@ -128,12 +140,10 @@ custom:
 
 ### Developing locally
 
-The following configuration must be updated in your `serverless.yml` to be able to run the service locally before you run `npm start` and installed `serverless dynamodb`.
-
-To run this locally, add the following environment variables to your run configuration(s):
+You will not require to change the config to run the service locally.
+The local dynamoDB config will be the following for seeding the table:
 
 ```yml
-# **NB: Do not push these changes. They are for local running only**
 migrate: true
 seed: true
 noStart: false

@@ -26,9 +26,7 @@
     "startTime": "2017-02-13T04:00:40.561Z",
     "activityDay": "2017-02-13",
     "endTime": null,
-    "waitReason": [
-      "Admin"
-    ],
+    "waitReason": ["Admin"],
     "notes": null
   },
   {

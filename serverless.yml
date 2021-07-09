@@ -1,17 +1,22 @@
 service: cvs-svc-activities
-
+configValidationMode: warn
 provider:
+  lambdaHashingVersion: 20201221
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs14.x
   stage: dev
-  tracing: true # enable tracing
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource:
-        - "*"
+  tracing:
+    apiGateway: true
+    lambda: true
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'xray:PutTraceSegments'
+            - 'xray:PutTelemetryRecords'
+          Resource:
+            - '*'
 
 plugins:
   - serverless-dynamodb-local
@@ -111,9 +116,9 @@ custom:
     start:
       port: 8005
       inMemory: true
-      migrate: false
-      seed: false
-      noStart: true
+      migrate: true
+      seed: true
+      noStart: false
     seed:
       activities:
         sources:

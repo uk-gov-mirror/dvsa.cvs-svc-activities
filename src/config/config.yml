@@ -1,34 +1,34 @@
 functions:
-- startActivity:
-    method: POST
-    path: /activities
-    proxy: null
-    function: startActivity
-- endActivity:
-    method: PUT
-    path: /activities/{+proxy}
-    proxy: :id/end
-    function: endActivity
-- updateActivity:
-    method: PUT
-    path: /activities/update
-    proxy: null
-    function: updateActivity
-- getActivity:
-    method: GET
-    path: /activities/details
-    proxy: null
-    function: getActivity
-- openVisitCheck:
-    method: GET
-    path: /activities/open
-    proxy: null
-    function: openVisitCheck
-- getActivitiesForCleanup:
-    method: GET
-    path: /activities/cleanup
-    proxy: null
-    function: getActivitiesForCleanup
+  - startActivity:
+      method: POST
+      path: /activities
+      proxy: null
+      function: startActivity
+  - endActivity:
+      method: PUT
+      path: /activities/{+proxy}
+      proxy: :id/end
+      function: endActivity
+  - updateActivity:
+      method: PUT
+      path: /activities/update
+      proxy: null
+      function: updateActivity
+  - getActivity:
+      method: GET
+      path: /activities/details
+      proxy: null
+      function: getActivity
+  - openVisitCheck:
+      method: GET
+      path: /activities/open
+      proxy: null
+      function: openVisitCheck
+  - getActivitiesForCleanup:
+      method: GET
+      path: /activities/cleanup
+      proxy: null
+      function: getActivitiesForCleanup
 dynamodb:
   local:
     params:

@@ -1,55 +1,60 @@
+import OpenVisitService from '../../src/services/OpenVisitService';
 
-import OpenVisitService from "../../src/services/OpenVisitService";
-
-describe("OpenVisitService", () => {
-  describe("checkOpenVisit function", () => {
-    describe("when DB query returns open visits", () => {
-      it("returns true", async () => {
+describe('OpenVisitService', () => {
+  describe('checkOpenVisit function', () => {
+    describe('when DB query returns open visits', () => {
+      it('returns true', async () => {
         // Only care about the size of the return, not the content
         const mockDB = jest.fn().mockImplementation(() => {
           return {
-            getOngoingByStaffId: () => {return Promise.resolve({Count : 2})}
-          }
+            getOngoingByStaffId: () => {
+              return Promise.resolve({ Count: 2 });
+            }
+          };
         });
         const svc = new OpenVisitService(new mockDB());
         expect.assertions(1);
-        const output = await svc.checkOpenVisit("abc123");
+        const output = await svc.checkOpenVisit('abc123');
         expect(output).toEqual(true);
       });
     });
-    describe("when DB query returns no open visits", () => {
-      it("returns false", async () => {
+    describe('when DB query returns no open visits', () => {
+      it('returns false', async () => {
         // Only care about the size of the return, not the content
         const mockDB = jest.fn().mockImplementation(() => {
           return {
-            getOngoingByStaffId: () => {return Promise.resolve({Count: 0})}
-          }
+            getOngoingByStaffId: () => {
+              return Promise.resolve({ Count: 0 });
+            }
+          };
         });
         const svc = new OpenVisitService(new mockDB());
         expect.assertions(1);
-        const output = await svc.checkOpenVisit("abc123");
+        const output = await svc.checkOpenVisit('abc123');
         expect(output).toEqual(false);
-      })
+      });
     });
-    describe("when DB query throws error", () => {
-      it("throws new error", async () => {
+    describe('when DB query throws error', () => {
+      it('throws new error', async () => {
         // Only care about the size of the return, not the content
         const mockDB = jest.fn().mockImplementation(() => {
           return {
-            getOngoingByStaffId: () => {return Promise.reject({
-              statusCode: 418,
-              message: "It broke!"
-            })}
-          }
+            getOngoingByStaffId: () => {
+              return Promise.reject({
+                statusCode: 418,
+                message: 'It broke!'
+              });
+            }
+          };
         });
         const svc = new OpenVisitService(new mockDB());
         expect.assertions(1);
         try {
-          await svc.checkOpenVisit("abc123")
+          await svc.checkOpenVisit('abc123');
         } catch (e) {
           expect(e.statusCode).toEqual(418);
         }
-      })
-    })
-  })
+      });
+    });
+  });
 });

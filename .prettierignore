@@ -1,0 +1,6 @@
+node_modules
+.build
+.dynamodb
+.reports
+coverage
+vscode

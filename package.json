@@ -4,26 +4,27 @@
   "description": "A template application containing boilerplate code for writing CVS microservices.",
   "main": "handler.js",
   "engines": {
-    "node": "10.18.1",
+    "node": "14.*",
     "npm": "5.6.0"
   },
   "scripts": {
-    "start": "npm run tslint && npm run build:dev && BRANCH=local AWS_XRAY_CONTEXT_MISSING=LOG_ERROR serverless offline start",
+    "start": "BRANCH=local AWS_XRAY_CONTEXT_MISSING=LOG_ERROR serverless offline start",
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir .build --sourceMap false && npm run build:copy",
     "build:dev": "node_modules/typescript/bin/tsc && npm run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find tests -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
-    "test": "BRANCH=local SLS_DEBUG=* AWS_XRAY_CONTEXT_MISSING=LOG_ERROR jest --testMatch=\"**/*.unitTest.ts\"",
-    "test-i": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
-    "prepush": "npm run coverage && npm run build",
-    "predeploy": "npm install && npm run tslint && npm run prepush",
+    "test:unit": "BRANCH=local SLS_DEBUG=* AWS_XRAY_CONTEXT_MISSING=LOG_ERROR jest --testMatch=\"**/*.unitTest.ts\"",
+    "test": "npm run coverage",
+    "coverage": "npm run test:unit -- --runInBand --coverage",
+    "test-i": "npm run test:integration -- --globalSetup='./scripts/setUp.ts' --globalTeardown='./scripts/tearDown.ts'",
+    "test:integration": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
+    "prepush": "npm run coverage && npm run build && npm run test-i",
     "security-checks": "git secrets --scan && git log -p | scanrepo",
-    "tslint": "tslint --fix src/**/*.ts tests/**/*.ts",
-    "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
-    "coverage": "BRANCH=local SLS_DEBUG=* jest --testMatch=\"**/*.unitTest.ts\" --runInBand --coverage",
-    "audit-dep": "npm audit",
-    "audit:check": "npm audit --json | node_modules/.bin/audit-filter --nsp-config=.nsprc --audit=-",
+    "lint": "tslint --fix src/**/*.ts tests/**/*.ts",
+    "format": "prettier --write .",
+    "sonar-scanner": "sonar-scanner",
+    "audit": "npm audit",
     "package": "mkdir ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip .",
-    "tools-setup": "sls dynamodb migrate && BRANCH=local gulp start-serverless && sls dynamodb seed --seed=activities"
+    "tools-setup": "ts-node scripts/installDynamoDB.ts"
   },
   "author": "",
   "license": "ISC",
@@ -51,12 +52,12 @@
     "@types/uuid": "^3.4.6",
     "audit-filter": "^0.5.0",
     "aws-lambda-mock-context": "^3.2.1",
-    "gulp": "^4.0.2",
     "husky": "^3.1.0",
     "jest": "^25.5.4",
     "jest-plugin-context": "^2.9.0",
     "jest-sonar-reporter": "^2.0.0",
     "lambda-tester": "^3.6.0",
+    "prettier": "2.3.2",
     "serverless": "^2.43.1",
     "serverless-dynamodb-local": "0.2.40",
     "serverless-offline": "5.12.0",
@@ -83,7 +84,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run security-checks && npm audit && npm run tslint",
+      "pre-commit": "npm run security-checks && npm audit && npm run lint && npm run format",
       "pre-push": "npm run prepush"
     }
   }
