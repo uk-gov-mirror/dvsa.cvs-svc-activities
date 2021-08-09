@@ -1,0 +1,93 @@
+{
+  "info": {
+    "_postman_id": "26f1c0ae-6209-4401-affb-bde63f603baf",
+    "name": "activities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "create visit activity",
+      "request": {
+        "auth": {
+          "type": "apikey",
+          "apikey": [
+            {
+              "key": "key",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "key": "value",
+              "value": "{{api_key}}",
+              "type": "string"
+            },
+            {
+              "key": "in",
+              "value": "header",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"activityType\":\"visit\",\n    \"testStationName\":\"Abshire-Kub\",\n    \"testStationPNumber\":\"09-4129632\",\n    \"testStationEmail\":\"automation@nonprod.cvs.dvsacloud.uk\",\n    \"testerEmail\": \"toto_local2@mail.com\",\n    \"testStationType\":\"gvts\",\n    \"testerName\":\"CVS Dev\",\n    \"testerStaffId\":\"11111111\",\n    \"startTime\":\"2020-10-13T12:19:09.522Z\",\n    \"waitReason\":[]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.{{api}}.cvs.dvsacloud.uk/{{branch}}/activities",
+          "protocol": "https",
+          "host": ["api", "{{api}}", "cvs", "dvsacloud", "uk"],
+          "path": ["{{branch}}", "activities"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get activity details",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{bearer_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "https://api.{{api}}.cvs.dvsacloud.uk/{{branch}}/activities/details?testerStaffId=11111111&fromStartTime=02/11/2020",
+          "protocol": "https",
+          "host": ["api", "{{api}}", "cvs", "dvsacloud", "uk"],
+          "path": ["{{branch}}", "activities", "details"],
+          "query": [
+            {
+              "key": "testerStaffId",
+              "value": "11111111"
+            },
+            {
+              "key": "fromStartTime",
+              "value": "02/11/2020"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
