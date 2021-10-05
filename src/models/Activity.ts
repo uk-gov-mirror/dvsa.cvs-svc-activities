@@ -31,3 +31,11 @@ export interface IActivity {
   notes?: string;
   activityDay?: string;
 }
+
+export interface IActivityParams {
+  fromStartTime: string;
+  toStartTime: string;
+  activityType?: string;
+  testStationPNumber?: string;
+  testerStaffId?: string;
+}

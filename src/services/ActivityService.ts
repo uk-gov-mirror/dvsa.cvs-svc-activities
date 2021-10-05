@@ -6,10 +6,10 @@ import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only u
 
 import { DynamoDBService } from './DynamoDBService';
 import { IActivity } from '../models/Activity';
-import { ActivitySchema } from '../models/ActivitySchema';
-import { ActivityUpdateSchema } from '../models/ActivityUpdateSchema';
 import { HTTPResponse } from '../utils/HTTPResponse';
 import * as Constants from '../assets/enums';
+import { ActivitySchema } from '../models/ActivitySchema';
+import { ActivityUpdateSchema } from '../models/ActivityUpdateSchema';
 
 export class ActivityService {
   public readonly dbClient: DynamoDBService;
@@ -189,7 +189,7 @@ export class ActivityService {
 
     // Check if staff already has an ongoing activity if activityType is visit
     const ongoingCount: number = await this.dbClient
-      .getOngoingByStaffId(activity.testerStaffId)
+      .getOngoingByStaffId(activity.testerStaffId, activity.startTime as string)
       .then((result: DocumentClient.QueryOutput): number => {
         return result.Count as number;
       })

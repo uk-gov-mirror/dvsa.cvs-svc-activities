@@ -1,13 +1,12 @@
-/* tslint:disable */
-import { ActivityType } from '../assets/enums';
-
+// tslint:disable-next-line: no-var-requires
 const AWSXRay = require('aws-xray-sdk');
+// tslint:disable-next-line: no-var-requires
 const AWS = AWSXRay.captureAWS(require('aws-sdk'));
-/* tslint:enable */
 import { AWSError } from 'aws-sdk'; // Only used as a type, so not wrapped by XRay
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only used as a type, so not wrapped by XRay
 import { PromiseResult } from 'aws-sdk/lib/request'; // Only used as a type, so not wrapped by XRay
 import { Configuration } from '../utils/Configuration';
+import { IActivity, IActivityParams } from '../models/Activity';
 
 export class DynamoDBService {
   private static client: DocumentClient;
@@ -23,14 +22,6 @@ export class DynamoDBService {
     if (!DynamoDBService.client) {
       DynamoDBService.client = new AWS.DynamoDB.DocumentClient(config.params);
     }
-  }
-
-  /**
-   * Scan the entire table and retrieve all data
-   * @returns Promise<PromiseResult<DocumentClient.ScanOutput, AWSError>>
-   */
-  public scan(): Promise<PromiseResult<DocumentClient.ScanOutput, AWSError>> {
-    return DynamoDBService.client.scan({ TableName: this.tableName }).promise();
   }
 
   /**
@@ -56,44 +47,70 @@ export class DynamoDBService {
   }
 
   /**
-   * Retrieves the ongoing activity for a given staffId
-   * @param staffId - staff id for which to retrieve activity
-   * @returns Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>>
+   * queries the entire table and retrieves all data based on filterParams
+   * @param filterParams - parameters used for filtering data in the database
+   * @returns Promise<IActivity[]> an array of activities
    */
-  public getOngoingByStaffId(
-    staffId: string
-  ): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
-    const query: DocumentClient.QueryInput = {
+  public async getActivities(filterParams: IActivityParams): Promise<IActivity[]> {
+    const { activityType, fromStartTime, toStartTime } = filterParams;
+    const keyExpressionAttribute = {
+      [':activityType']: activityType,
+      [':fromStartTime']: fromStartTime,
+      [':toStartTime']: toStartTime
+    };
+    const expressionAttributeValues = Object.assign(
+      {},
+      keyExpressionAttribute,
+      ...this.mapOptionalFilterValues(filterParams)
+    );
+    const params = {
       TableName: this.tableName,
-      IndexName: 'StaffIndex',
-      KeyConditionExpression: 'testerStaffId = :staffId',
-      FilterExpression: 'attribute_type(endTime, :NULL)',
+      IndexName: 'ActivityTypeIndex',
+      KeyConditionExpression:
+        'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
       ExpressionAttributeValues: {
-        ':staffId': staffId,
-        ':NULL': 'NULL'
+        ...expressionAttributeValues
       }
     };
-
-    return DynamoDBService.client.query(query).promise();
+    const filterExpression = this.getOptionalFilters('', filterParams);
+    if (filterExpression) {
+      (params as any).FilterExpression = filterExpression;
+    }
+    console.log('params for getActivity', params);
+    try {
+      const result = await this.queryAllData(params);
+      return result;
+    } catch (err) {
+      console.error('error on getActivities', err);
+      throw err;
+    }
   }
 
   /**
-   * Retrieves the activity of type visit where startTime is greater or equal than the query param fromStartTime
-   * @param staffId - query param start time for which to retrieve activity
+   * Retrieves the ongoing activity for a given staffId
+   * @param staffId - staff id for which to retrieve activity
+   * @param startTime - optional parameter to be used as sort key in the key condition
    * @returns Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>>
    */
-  public getActivitiesWhereStartTimeGreaterThan(
-    activityDay: string,
-    startTime: string
+  public getOngoingByStaffId(
+    staffId: string,
+    startTime?: string
   ): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
+    let keyCondition = 'testerStaffId = :staffId';
+    let filterValues = {
+      ':staffId': staffId,
+      ':NULL': 'NULL'
+    };
+    if (startTime) {
+      keyCondition = keyCondition.concat(' AND startTime > :startTime');
+      filterValues = Object.assign(filterValues, { ':startTime': startTime });
+    }
     const query: DocumentClient.QueryInput = {
       TableName: this.tableName,
-      IndexName: 'ActivityDayIndex',
-      KeyConditionExpression: 'activityDay = :activityDay AND startTime >= :startTime',
-      ExpressionAttributeValues: {
-        ':startTime': startTime,
-        ':activityDay': activityDay
-      }
+      IndexName: 'StaffIndex',
+      KeyConditionExpression: keyCondition,
+      FilterExpression: 'attribute_type(endTime, :NULL)',
+      ExpressionAttributeValues: filterValues
     };
 
     return DynamoDBService.client.query(query).promise();
@@ -132,37 +149,6 @@ export class DynamoDBService {
   }
 
   /**
-   * Retrieves a list of batches containing results for the given keys
-   * @param keys - a list of keys you wish to retrieve
-   * @returns Promise<PromiseResult<BatchGetItemOutput, AWSError>>
-   */
-  public batchGet(
-    keys: DocumentClient.KeyList
-  ): Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>[]> {
-    const keyList: DocumentClient.KeyList = keys.slice();
-    const keyBatches: DocumentClient.KeyList[] = [];
-
-    while (keyList.length > 0) {
-      keyBatches.push(keyList.splice(0, 100));
-    }
-
-    const promiseBatch: Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>>[] =
-      keyBatches.map((batch: DocumentClient.KeyList) => {
-        const query: DocumentClient.BatchGetItemInput = {
-          RequestItems: {
-            [this.tableName]: {
-              Keys: batch
-            }
-          }
-        };
-
-        return DynamoDBService.client.batchGet(query).promise();
-      });
-
-    return Promise.all(promiseBatch);
-  }
-
-  /**
    * Updates or creates the items provided, and returns a list of result batches
    * @param items - items to add or update
    * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>[]>
@@ -189,5 +175,65 @@ export class DynamoDBService {
       });
 
     return Promise.all(promiseBatch);
+  }
+
+  /**
+   * To map optional filters to filterExpression
+   * @param filterExpress The filterExpression which needs to be updated
+   * @param filters all optional filters
+   * @returns returns the updated filterExpression
+   */
+  private getOptionalFilters(filterExpression: string, filters: any): string {
+    const { testStationPNumber, testerStaffId } = filters;
+    const appendAnd = (fullExpression: string, expression: string) =>
+      fullExpression === ''
+        ? fullExpression.concat(expression)
+        : fullExpression.concat(' AND ', expression);
+    filterExpression = testStationPNumber
+      ? appendAnd(filterExpression, 'testStationPNumber = :testStationPNumber')
+      : filterExpression;
+    filterExpression = testerStaffId
+      ? appendAnd(filterExpression, 'testerStaffId = :testerStaffId')
+      : filterExpression;
+    return filterExpression;
+  }
+
+  /**
+   * Returns all data in the database recursively using paginated query
+   * @param params parameters to filter data from the database
+   * @param allData the result set which is recursively populated.
+   * @returns array of activities
+   */
+  private async queryAllData(params: any, allData: IActivity[] = []): Promise<IActivity[]> {
+    const data: PromiseResult<DocumentClient.QueryOutput, AWSError> = await DynamoDBService.client
+      .query(params)
+      .promise();
+    if (data.Items && data.Items.length > 0) {
+      allData = [...allData, ...(data.Items as IActivity[])];
+    }
+    if (data.LastEvaluatedKey) {
+      params.ExclusiveStartKey = data.LastEvaluatedKey;
+      return this.queryAllData(params, allData);
+    } else {
+      return allData;
+    }
+  }
+
+  /**
+   * map filter values to dynamo variables
+   * @param filters filters passed in with the query string
+   * @returns returns array of key value pairs
+   */
+  private mapOptionalFilterValues(filters: IActivityParams) {
+    const filterValues = [];
+    const { testStationPNumber, testerStaffId } = filters;
+
+    if (testStationPNumber) {
+      filterValues.push({ [':testStationPNumber']: testStationPNumber });
+    }
+    if (testerStaffId) {
+      filterValues.push({ [':testerStaffId']: testerStaffId });
+    }
+    return filterValues;
   }
 }

@@ -8,19 +8,22 @@ const getActivitiesForCleanup: Handler = async (
   event: any,
   context?: Context
 ): Promise<HTTPResponse> => {
-  const fromStartTime = event.queryStringParameters && event.queryStringParameters.fromStartTime;
-
-  if (!fromStartTime) {
+  if (!(event && event.queryStringParameters)) {
     return new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
   }
 
   const activityService = new GetActivityService(new DynamoDBService());
   try {
-    const data = await activityService.getActivitiesForCleanup(fromStartTime);
+    const { fromStartTime, toStartTime, activityType } = event.queryStringParameters;
+    const data = await activityService.getActivities({
+      fromStartTime,
+      toStartTime,
+      activityType
+    });
     return new HTTPResponse(200, data);
   } catch (error) {
     console.error(error);
-    return new HTTPResponse(error.statusCode, error.message);
+    return error as HTTPResponse;
   }
 };
 

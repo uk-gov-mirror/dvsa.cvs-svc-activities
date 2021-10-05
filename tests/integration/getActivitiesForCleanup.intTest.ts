@@ -3,37 +3,31 @@ import supertest, { Response } from 'supertest';
 
 const config: any = Configuration.getInstance().getConfig();
 const request = supertest(`http://localhost:${config.serverless.port}`);
-describe('GET /activities/details', () => {
+describe('GET /activities/cleanup', () => {
   const queryEventParams = {
     fromStartTime: '2014-02-12',
     toStartTime: '2019-02-12',
-    activityType: 'visit',
-    testStationPNumber: '87-1369561',
-    testerStaffId: '132'
+    activityType: 'visit'
   };
   context('when no parameters were passed', () => {
     it('should respond with HTTP 400', () => {
       return request
-        .get('/activities/details')
+        .get('/activities/cleanup')
         .expect('access-control-allow-origin', '*')
         .expect('access-control-allow-credentials', 'true')
         .expect(400);
     });
   });
-  context('when all the parameters were passed', () => {
+  context('when all the required parameters were passed', () => {
     it('should respond with HTTP 200', () => {
       return request
         .get(
-          '/activities/details/?activityType=' +
+          '/activities/cleanup/?activityType=' +
             queryEventParams.activityType +
             '&fromStartTime=' +
             queryEventParams.fromStartTime +
             '&toStartTime=' +
-            queryEventParams.toStartTime +
-            '&testerStaffId=' +
-            queryEventParams.testerStaffId +
-            '&testStationPNumber=' +
-            queryEventParams.testStationPNumber
+            queryEventParams.toStartTime
         )
         .expect('access-control-allow-origin', '*')
         .expect('access-control-allow-credentials', 'true')
@@ -47,14 +41,10 @@ describe('GET /activities/details', () => {
     it('should respond with HTTP 400', () => {
       return request
         .get(
-          '/activities/details/?activityType=' +
+          '/activities/cleanup/?activityType=' +
             queryEventParams.activityType +
             '&toStartTime=' +
-            queryEventParams.toStartTime +
-            '&testerStaffId=' +
-            queryEventParams.testerStaffId +
-            '&testStationPNumber=' +
-            queryEventParams.testStationPNumber
+            queryEventParams.toStartTime
         )
         .expect('access-control-allow-origin', '*')
         .expect('access-control-allow-credentials', 'true')
@@ -68,16 +58,12 @@ describe('GET /activities/details', () => {
         queryEventParams.toStartTime = '2011-02-12';
         return request
           .get(
-            '/activities/details/?activityType=' +
+            '/activities/cleanup/?activityType=' +
               queryEventParams.activityType +
               '&fromStartTime=' +
               queryEventParams.fromStartTime +
               '&toStartTime=' +
-              queryEventParams.toStartTime +
-              '&testerStaffId=' +
-              queryEventParams.testerStaffId +
-              '&testStationPNumber=' +
-              queryEventParams.testStationPNumber
+              queryEventParams.toStartTime
           )
           .expect('access-control-allow-origin', '*')
           .expect('access-control-allow-credentials', 'true')

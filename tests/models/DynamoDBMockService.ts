@@ -2,7 +2,7 @@ import { AWSError, Response } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { Configuration } from '../../src/utils/Configuration';
-import { IActivity } from '../../src/models/Activity';
+import { IActivity, IActivityParams } from '../../src/models/Activity';
 
 export class DynamoDBMockService {
   private db: any;
@@ -18,8 +18,8 @@ export class DynamoDBMockService {
    * Seeds the database with the provided items
    * @param items - an array of items
    */
-  public seed(items: any[]): void {
-    this.batchPut(items);
+  public seed(items: IActivity[]): void {
+    this.db = items;
   }
 
   /**
@@ -265,6 +265,18 @@ export class DynamoDBMockService {
       };
 
       resolve(response);
+    });
+  }
+
+  /**
+   * Retrieves the item with the given key
+   * @param key - the key of the item you wish to fetch
+   * @param attributes - optionally, you can request only a set of attributes
+   * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, AWSError>>
+   */
+  public getActivities(params: IActivityParams): Promise<IActivity[]> {
+    return new Promise((resolve, reject) => {
+      return resolve(this.db as IActivity[]);
     });
   }
 }

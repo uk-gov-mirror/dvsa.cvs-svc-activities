@@ -25,7 +25,7 @@ describe('The lambda function handler', () => {
           pathParameters: null,
           resource: '/activities/details/',
           httpMethod: 'GET',
-          queryStringParameters: null
+          queryStringParameters: {}
         };
 
         // Stub out the actual functions

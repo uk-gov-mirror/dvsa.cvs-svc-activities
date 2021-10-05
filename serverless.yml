@@ -60,7 +60,7 @@ resources:
             AttributeType: S
           - AttributeName: startTime
             AttributeType: S
-          - AttributeName: activityDay
+          - AttributeName: activityType
             AttributeType: S
         KeySchema:
           - AttributeName: id
@@ -70,6 +70,8 @@ resources:
             KeySchema:
               - AttributeName: testerStaffId
                 KeyType: HASH
+              - AttributeName: startTime
+                KeyType: RANGE
             Projection:
               NonKeyAttributes:
                 - parentId
@@ -87,22 +89,14 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-          - IndexName: ActivityDayIndex
+          - IndexName: ActivityTypeIndex
             KeySchema:
-              - AttributeName: activityDay
+              - AttributeName: activityType
                 KeyType: HASH
               - AttributeName: startTime
                 KeyType: RANGE
             Projection:
-              NonKeyAttributes:
-                - id
-                - activityType
-                - testStationEmail
-                - testStationType
-                - testerName
-                - startTime
-                - endTime
-              ProjectionType: INCLUDE
+              ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1

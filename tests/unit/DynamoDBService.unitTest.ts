@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
 import { DynamoDBService } from '../../src/services/DynamoDBService';
+import { IActivityParams } from '../../src/models/Activity';
 
 describe('DynamoDBService', () => {
   context('Query activities', () => {
@@ -21,26 +22,7 @@ describe('DynamoDBService', () => {
           };
         });
 
-      it('for getActivitiesWhereStartTimeGreaterThan', async () => {
-        const expectedCall = {
-          TableName: 'cvs-local-activities',
-          IndexName: 'ActivityDayIndex',
-          KeyConditionExpression: 'activityDay = :activityDay AND startTime >= :startTime',
-          ExpressionAttributeValues: {
-            ':startTime': '2020-07-29T10:00:40.561Z',
-            ':activityDay': '2020-07-29'
-          }
-        };
-        const dynamoDbService = new DynamoDBService();
-        await dynamoDbService.getActivitiesWhereStartTimeGreaterThan(
-          '2020-07-29',
-          '2020-07-29T10:00:40.561Z'
-        );
-
-        expect(stub).toStrictEqual(expectedCall);
-      });
-
-      it('for getOngoingByStaffId', async () => {
+      it('for getOngoingByStaffId without startTime', async () => {
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'StaffIndex',
@@ -53,68 +35,105 @@ describe('DynamoDBService', () => {
         };
         const dynamoDbService = new DynamoDBService();
         await dynamoDbService.getOngoingByStaffId('1234');
-
         expect(stub).toStrictEqual(expectedCall);
       });
-    });
 
-    context('builds correct request for GET', () => {
-      beforeEach(() => {
-        jest.resetModules();
-      });
-      // Mock once
-      let stub: any = null;
-      AWS.DynamoDB.DocumentClient.prototype.get = jest
-        .fn()
-        .mockImplementation((params: DocumentClient.Get) => {
-          return {
-            promise: () => {
-              stub = params;
-              return Promise.resolve([]);
-            }
-          };
-        });
-
-      it('for get', async () => {
+      it('for getOngoingByStaffId with startTime', async () => {
         const expectedCall = {
           TableName: 'cvs-local-activities',
-          Key: {
-            id: '1234'
+          IndexName: 'StaffIndex',
+          KeyConditionExpression: 'testerStaffId = :staffId AND startTime > :startTime',
+          FilterExpression: 'attribute_type(endTime, :NULL)',
+          ExpressionAttributeValues: {
+            ':staffId': '1234',
+            ':NULL': 'NULL',
+            ':startTime': '2021-07-01'
           }
         };
         const dynamoDbService = new DynamoDBService();
-        await dynamoDbService.get({ id: '1234' });
+        await dynamoDbService.getOngoingByStaffId('1234', '2021-07-01');
+
+        expect(stub).toStrictEqual(expectedCall);
+      });
+
+      it('for getActivities with optional params', async () => {
+        const expectedCall = {
+          TableName: 'cvs-local-activities',
+          IndexName: 'ActivityTypeIndex',
+          KeyConditionExpression:
+            'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
+          FilterExpression: 'testStationPNumber = :testStationPNumber',
+          ExpressionAttributeValues: {
+            ':activityType': 'visit',
+            ':fromStartTime': '2021-01-01',
+            ':toStartTime': '2021-01-01',
+            ':testStationPNumber': 'abc123'
+          }
+        };
+        const dynamoDbService = new DynamoDBService();
+        const params: IActivityParams = {
+          fromStartTime: '2021-01-01',
+          toStartTime: '2021-01-01',
+          activityType: 'visit',
+          testStationPNumber: 'abc123'
+        };
+        await dynamoDbService.getActivities(params);
+
+        expect(stub).toStrictEqual(expectedCall);
+      });
+
+      it('for getActivities without optional params', async () => {
+        const expectedCall = {
+          TableName: 'cvs-local-activities',
+          IndexName: 'ActivityTypeIndex',
+          KeyConditionExpression:
+            'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
+          ExpressionAttributeValues: {
+            ':activityType': 'visit',
+            ':fromStartTime': '2021-01-01',
+            ':toStartTime': '2021-01-01'
+          }
+        };
+        const dynamoDbService = new DynamoDBService();
+        const params: IActivityParams = {
+          fromStartTime: '2021-01-01',
+          toStartTime: '2021-01-01',
+          activityType: 'visit'
+        };
+        await dynamoDbService.getActivities(params);
 
         expect(stub).toStrictEqual(expectedCall);
       });
     });
-
-    context('builds correct request for SCAN', () => {
-      beforeEach(() => {
-        jest.resetModules();
-      });
-      // Mock once
-      let stub: any = null;
-      AWS.DynamoDB.DocumentClient.prototype.scan = jest
-        .fn()
-        .mockImplementation((params: DocumentClient.ScanInput) => {
-          return {
-            promise: () => {
-              stub = params;
-              return Promise.resolve([]);
-            }
-          };
-        });
-
-      it('for scan', async () => {
-        const expectedCall = {
-          TableName: 'cvs-local-activities'
+  });
+  context('builds correct request for GET', () => {
+    beforeEach(() => {
+      jest.resetModules();
+    });
+    // Mock once
+    let stub: any = null;
+    AWS.DynamoDB.DocumentClient.prototype.get = jest
+      .fn()
+      .mockImplementation((params: DocumentClient.Get) => {
+        return {
+          promise: () => {
+            stub = params;
+            return Promise.resolve([]);
+          }
         };
-        const dynamoDbService = new DynamoDBService();
-        await dynamoDbService.scan();
-
-        expect(stub).toStrictEqual(expectedCall);
       });
+
+    it('for get', async () => {
+      const expectedCall = {
+        TableName: 'cvs-local-activities',
+        Key: {
+          id: '1234'
+        }
+      };
+      const dynamoDbService = new DynamoDBService();
+      await dynamoDbService.get({ id: '1234' });
+
+      expect(stub).toStrictEqual(expectedCall);
     });
   });
 

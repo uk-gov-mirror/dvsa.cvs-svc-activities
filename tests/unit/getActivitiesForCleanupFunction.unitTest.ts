@@ -10,11 +10,17 @@ describe('getActivitiesForCleanup Function', () => {
     context('gets a successful response', () => {
       it('returns 200 and the array of activities', async () => {
         const expectedResponse = [{ testActivity: 1234 }];
-        GetActivityService.prototype.getActivitiesForCleanup = jest
+        GetActivityService.prototype.getActivities = jest
           .fn()
           .mockResolvedValue(expectedResponse);
         const resp: HTTPResponse = await getActivitiesForCleanup(
-          { queryStringParameters: { fromStartTime: '2020-07-22' } },
+          {
+            queryStringParameters: {
+              fromStartTime: '2020-07-22',
+              toStartTime: '2020-07-22',
+              activityType: 'visit'
+            }
+          },
           ctx,
           () => {
             return;
@@ -27,7 +33,7 @@ describe('getActivitiesForCleanup Function', () => {
     });
 
     context('gets an unsuccessful response', () => {
-      it("returns a Bad Request error if query parameter 'fromStartTime is not provided", async () => {
+      it('returns a Bad Request error if all required query parameters are not provided', async () => {
         try {
           await getActivitiesForCleanup({}, ctx, () => {
             return;
@@ -39,7 +45,7 @@ describe('getActivitiesForCleanup Function', () => {
       });
 
       it('returns the thrown error', async () => {
-        GetActivityService.prototype.getActivitiesForCleanup = jest
+        GetActivityService.prototype.getActivities = jest
           .fn()
           .mockRejectedValue(new Error('Oh No!'));
         try {

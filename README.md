@@ -181,7 +181,7 @@ npm run test # unit tests
 In order to test, you need to run the following, with the service running locally:
 
 ```sh
-npm run test-i # for integration tests
+npm run test:integration # for integration tests
 ```
 
 ### End to end

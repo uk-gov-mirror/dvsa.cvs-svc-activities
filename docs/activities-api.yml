@@ -95,7 +95,7 @@ paths:
   /activities/details:
     get:
       summary: >-
-        Get activities based on activity details passed as querry parameters.
+        Get activities based on activity details passed as query parameters.
         The system will return maximum the last 10 activities order descendent
         by the startTime of the activity.
       tags:
@@ -108,6 +108,7 @@ paths:
             enum:
               - visit
               - wait
+          required: true
         - in: query
           name: fromStartTime
           schema:
@@ -115,7 +116,7 @@ paths:
             format: date-time
           description: >-
             The returned id should be for an activity with the startDate greater
-            or equal to the value provided in the querry parameter
+            or equal to the value provided in the query parameter
           required: true
         - in: query
           name: toStartTime
@@ -124,7 +125,8 @@ paths:
             format: date-time
           description: >-
             The returned id should be for an activity with the startDate lower
-            or equal to the value provided in the querry parameter
+            or equal to the value provided in the query parameter
+          required: true
         - in: query
           name: testStationPNumber
           schema:
@@ -151,12 +153,20 @@ paths:
   /activities/cleanup:
     get:
       summary: >-
-        Get activities based on activity startTime passed as querry parameter.
+        Get activities based on activity startTime passed as query parameter.
         Used for the automatic end visit process.
         The system will return the activities created in the current day, starting from startTime until current time.
       tags:
         - getActivitiesForCleanup
       parameters:
+        - in: query
+          name: activityType
+          schema:
+            type: string
+            enum:
+              - visit
+              - wait
+          required: true
         - in: query
           name: fromStartTime
           schema:
@@ -164,7 +174,16 @@ paths:
             format: date-time
           description: >-
             The returned id should be for an activity with the startDate greater
-            or equal to the value provided in the querry parameter
+            or equal to the value provided in the query parameter
+          required: true
+        - in: query
+          name: toStartTime
+          schema:
+            type: string
+            format: date-time
+          description: >-
+            The returned id should be for an activity with the startDate lower
+            or equal to the value provided in the query parameter
           required: true
       responses:
         '200':

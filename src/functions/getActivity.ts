@@ -1,18 +1,27 @@
 import { GetActivityService } from './../services/GetActivitiesService';
-import { Context, Handler } from 'aws-lambda';
+import { Context } from 'aws-lambda';
 import { HTTPResponse } from '../utils/HTTPResponse';
 import { DynamoDBService } from '../services/DynamoDBService';
+import { HTTPRESPONSE } from '../assets/enums';
 
-const getActivity: Handler = async (event: any, context?: Context): Promise<any> => {
+export async function getActivity(event: any, context?: Context): Promise<any> {
+  if (!(event && event.queryStringParameters)) {
+    return new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
+  }
+
   const activityService = new GetActivityService(new DynamoDBService());
-  return activityService
-    .getActivities(event)
-    .then((data: any) => {
-      return new HTTPResponse(200, data);
-    })
-    .catch((error: HTTPResponse) => {
-      return error;
+  const { fromStartTime, toStartTime, activityType, testStationPNumber, testerStaffId } =
+    event.queryStringParameters && event.queryStringParameters;
+  try {
+    const data = await activityService.getActivities({
+      fromStartTime,
+      toStartTime,
+      activityType,
+      testStationPNumber,
+      testerStaffId
     });
-};
-
-export { getActivity };
+    return new HTTPResponse(200, data);
+  } catch (error) {
+    return error;
+  }
+}
