@@ -189,7 +189,7 @@ export class ActivityService {
 
     // Check if staff already has an ongoing activity if activityType is visit
     const ongoingCount: number = await this.dbClient
-      .getOngoingByStaffId(activity.testerStaffId, activity.startTime as string)
+      .getOngoingByStaffId(activity.testerStaffId)
       .then((result: DocumentClient.QueryOutput): number => {
         return result.Count as number;
       })

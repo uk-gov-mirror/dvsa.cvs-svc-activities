@@ -89,22 +89,16 @@ export class DynamoDBService {
   /**
    * Retrieves the ongoing activity for a given staffId
    * @param staffId - staff id for which to retrieve activity
-   * @param startTime - optional parameter to be used as sort key in the key condition
    * @returns Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>>
    */
   public getOngoingByStaffId(
-    staffId: string,
-    startTime?: string
+    staffId: string
   ): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
-    let keyCondition = 'testerStaffId = :staffId';
-    let filterValues = {
+    const keyCondition = 'testerStaffId = :staffId';
+    const filterValues = {
       ':staffId': staffId,
       ':NULL': 'NULL'
     };
-    if (startTime) {
-      keyCondition = keyCondition.concat(' AND startTime > :startTime');
-      filterValues = Object.assign(filterValues, { ':startTime': startTime });
-    }
     const query: DocumentClient.QueryInput = {
       TableName: this.tableName,
       IndexName: 'StaffIndex',

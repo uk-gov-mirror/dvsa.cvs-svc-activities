@@ -22,7 +22,7 @@ describe('DynamoDBService', () => {
           };
         });
 
-      it('for getOngoingByStaffId without startTime', async () => {
+      it('for getOngoingByStaffId', async () => {
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'StaffIndex',
@@ -35,24 +35,6 @@ describe('DynamoDBService', () => {
         };
         const dynamoDbService = new DynamoDBService();
         await dynamoDbService.getOngoingByStaffId('1234');
-        expect(stub).toStrictEqual(expectedCall);
-      });
-
-      it('for getOngoingByStaffId with startTime', async () => {
-        const expectedCall = {
-          TableName: 'cvs-local-activities',
-          IndexName: 'StaffIndex',
-          KeyConditionExpression: 'testerStaffId = :staffId AND startTime > :startTime',
-          FilterExpression: 'attribute_type(endTime, :NULL)',
-          ExpressionAttributeValues: {
-            ':staffId': '1234',
-            ':NULL': 'NULL',
-            ':startTime': '2021-07-01'
-          }
-        };
-        const dynamoDbService = new DynamoDBService();
-        await dynamoDbService.getOngoingByStaffId('1234', '2021-07-01');
-
         expect(stub).toStrictEqual(expectedCall);
       });
 
