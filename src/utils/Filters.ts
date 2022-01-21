@@ -22,8 +22,6 @@ export class ActivityFilters {
       return 0;
     };
     activities.sort(sortDateDesc);
-    const { length } = activities;
-    activities.length = length <= 10 ? length : 10;
     return activities;
   }
 }
