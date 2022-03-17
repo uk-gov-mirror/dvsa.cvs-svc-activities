@@ -4,3 +4,4 @@ node_modules
 .reports
 coverage
 vscode
+handler.ts

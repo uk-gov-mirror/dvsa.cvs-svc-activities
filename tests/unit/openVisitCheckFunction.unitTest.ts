@@ -22,6 +22,86 @@ describe('openVisitCheck Function', () => {
       expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
     });
   });
+  describe('with staffId query param that is empty string', () => {
+    it('return BAD REQUEST error', async () => {
+      const event = {
+        queryStringParameters: {
+          testerStaffId: ' '
+        }
+      };
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck(event, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+    });
+  });
+  describe('with staffId query param that is the string "undefined"', () => {
+    it('return BAD REQUEST error', async () => {
+      const event = {
+        queryStringParameters: {
+          testerStaffId: 'undefined'
+        }
+      };
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck(event, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+    });
+  });
+  describe('with staffId query param that is the string "null"', () => {
+    it('return BAD REQUEST error', async () => {
+      const event = {
+        queryStringParameters: {
+          testerStaffId: 'null'
+        }
+      };
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck(event, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+    });
+  });
+  describe('with staffId query param that is undefined', () => {
+    it('return BAD REQUEST error', async () => {
+      const event = {
+        queryStringParameters: {
+          testerStaffId: undefined
+        }
+      };
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck(event, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+    });
+  });
+  describe('with staffId query param that is null', () => {
+    it('return BAD REQUEST error', async () => {
+      const event = {
+        queryStringParameters: {
+          testerStaffId: null
+        }
+      };
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck(event, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+    });
+  });
   describe('with staffId query param', () => {
     describe('and with a successful return from the Service call', () => {
       it('returns 200 and the data from the service call', async () => {

@@ -25,6 +25,8 @@ class HTTPResponse extends Error implements APIGatewayProxyResult {
 
     this.statusCode = statusCode;
     this.body = JSON.stringify(body);
+
+    console.log(`HTTP STATUS CODE RETURNED: ${this.statusCode}`);
   }
 }
 
