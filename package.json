@@ -18,7 +18,7 @@
     "test-i": "npm run test:integration -- --globalSetup='./scripts/setUp.ts' --globalTeardown='./scripts/tearDown.ts'",
     "test:integration": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
     "prepush": "npm run coverage && npm run build && npm run test-i",
-    "security-checks": "git secrets --scan",
+    "security-checks": "git secrets --scan && git log -p | scanrepo",
     "lint": "tslint --fix src/**/*.ts tests/**/*.ts",
     "format": "prettier --write .",
     "sonar-scanner": "sonar-scanner",

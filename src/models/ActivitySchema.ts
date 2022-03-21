@@ -7,7 +7,7 @@ export const ActivitySchema = Joi.object().keys({
   activityType: Joi.any().only([activitiesTypes]).required(),
   testStationName: Joi.string().required(),
   testStationPNumber: Joi.string().required(),
-  testStationEmail: Joi.string().email().required(),
+  testStationEmail: Joi.string().email().required().allow(""),
   testStationType: Joi.any().only([stationTypes]).required(),
   testerName: Joi.string().min(1).max(60).required(),
   testerStaffId: Joi.string().required(),
