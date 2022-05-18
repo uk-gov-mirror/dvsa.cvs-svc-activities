@@ -5,6 +5,7 @@ import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { HTTPRESPONSE } from '../../src/assets/enums';
 
 describe('endActivity Function', () => {
+  const endTime: string = '2020-03-05T13:29:45.938Z' // test date
   context('calls activity service', () => {
     const ctx = mockContext();
     context('gets a successful response', () => {
@@ -19,6 +20,17 @@ describe('endActivity Function', () => {
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual(JSON.stringify({ wasVisitAlreadyClosed: false }));
       });
+      it('returns 200 when endTime is provided in the request body', async () => {
+        ActivityService.prototype.endActivity = jest
+          .fn()
+          .mockResolvedValue({ wasVisitAlreadyClosed: false });
+        const resp: HTTPResponse = await endActivity({ pathParameters: { id: '1' }, body: { "endTime": endTime } }, ctx, () => {
+          return;
+        });
+        expect(resp).toBeInstanceOf(HTTPResponse);
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual(JSON.stringify({ wasVisitAlreadyClosed: false }));
+      });
     });
 
     context('gets an unsuccessful response', () => {
@@ -26,6 +38,16 @@ describe('endActivity Function', () => {
         ActivityService.prototype.endActivity = jest.fn().mockRejectedValue(new Error('Oh No!'));
         try {
           await endActivity({ pathParameters: { id: '1' } }, ctx, () => {
+            return;
+          });
+        } catch (e) {
+          expect(e.message).toEqual('Oh No!');
+        }
+      });
+      it('returns the thrown error', async () => {
+        ActivityService.prototype.endActivity = jest.fn().mockRejectedValue(new Error('Oh No!'));
+        try {
+          await endActivity({ pathParameters: { id: '1' }, body: { "endTime": endTime } }, ctx, () => {
             return;
           });
         } catch (e) {

@@ -169,5 +169,19 @@
     "endTime": "2015-02-13",
     "waitReason": [],
     "notes": null
+  },
+  {
+    "id": "6e4bd304-446e-4678-8289-d34fca9256e9",
+    "activityType": "visit",
+    "testStationName": "Rowe, Wunsch and Wisoky",
+    "testStationPNumber": "87-1369564",
+    "testStationEmail": "teststationname@dvsa.gov.uk",
+    "testStationType": "gvts",
+    "testerName": "Gica",
+    "testerStaffId": "132",
+    "testerEmail": "tester@dvsa.gov.uk",
+    "startTime": "2022-01-01T10:00:40.561Z",
+    "activityDay": "2022-01-01",
+    "endTime": null
   }
 ]

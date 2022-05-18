@@ -90,12 +90,13 @@ export class ActivityService {
   }
 
   /**
-   * Ends an activity with the given id
-   * if the visit was already closed, the response will be 200 and the flag wasVisitAlreadyClosed will be set to true
+   * Ends an activity with the given id, and given endTime if provided.
+   * If the visit was already closed, the response will be 200 and the flag wasVisitAlreadyClosed will be set to true
    * @param id - id of the activity to end
+   * @param endTime - endTime provided by auto-close function
    * @returns Promise<{wasVisitAlreadyClosed: boolean}>
    */
-  public async endActivity(id: string): Promise<{ wasVisitAlreadyClosed: boolean }> {
+  public async endActivity(id: string, endTime: string): Promise<{ wasVisitAlreadyClosed: boolean }> {
     try {
       const result: DocumentClient.GetItemOutput = await this.dbClient.get({ id });
 
@@ -110,7 +111,10 @@ export class ActivityService {
       }
 
       const activity: IActivity = result.Item as IActivity;
-      activity.endTime = new Date().toISOString();
+
+      // use value provided by auto-close as activityEndTime, otherwise use Date.now()
+      (endTime) ? activity.endTime = new Date(endTime).toISOString() : activity.endTime = new Date().toISOString();
+
       await this.dbClient.put(activity);
 
       return { wasVisitAlreadyClosed: false };
@@ -127,7 +131,7 @@ export class ActivityService {
 
   /**
    * Updates an activity in the database.
-   * @param activity - the payload containing the activity
+   * @param activities - the payload containing the activity
    * @returns Promise - void
    */
   public async updateActivity(activities: IActivity[]): Promise<void> {

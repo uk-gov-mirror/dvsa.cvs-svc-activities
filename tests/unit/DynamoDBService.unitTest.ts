@@ -44,12 +44,13 @@ describe('DynamoDBService', () => {
           IndexName: 'ActivityTypeIndex',
           KeyConditionExpression:
             'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
-          FilterExpression: 'testStationPNumber = :testStationPNumber',
+          FilterExpression: 'testStationPNumber = :testStationPNumber AND testerStaffId = :testerStaffId',
           ExpressionAttributeValues: {
             ':activityType': 'visit',
             ':fromStartTime': '2021-01-01',
             ':toStartTime': '2021-01-01',
-            ':testStationPNumber': 'abc123'
+            ':testStationPNumber': 'abc123',
+            ':testerStaffId': 'test123'
           }
         };
         const dynamoDbService = new DynamoDBService();
@@ -57,7 +58,8 @@ describe('DynamoDBService', () => {
           fromStartTime: '2021-01-01',
           toStartTime: '2021-01-01',
           activityType: 'visit',
-          testStationPNumber: 'abc123'
+          testStationPNumber: 'abc123',
+          testerStaffId: 'test123'
         };
         await dynamoDbService.getActivities(params);
 
@@ -80,6 +82,29 @@ describe('DynamoDBService', () => {
         const params: IActivityParams = {
           fromStartTime: '2021-01-01',
           toStartTime: '2021-01-01',
+          activityType: 'visit'
+        };
+        await dynamoDbService.getActivities(params);
+
+        expect(stub).toStrictEqual(expectedCall);
+      });
+
+      it('for get openVisit activities', async () => {
+        const expectedCall = {
+          TableName: 'cvs-local-activities',
+          IndexName: 'ActivityTypeIndex',
+          KeyConditionExpression:
+            'activityType = :activityType AND startTime >= :fromStartTime',
+          ExpressionAttributeValues: {
+            ":NULL": "NULL",
+            ':activityType': 'visit',
+            ':fromStartTime': new Date(2020, 0, 1).toISOString()
+          },
+          FilterExpression: "attribute_type(endTime, :NULL)"
+        };
+        const dynamoDbService = new DynamoDBService();
+        const params: any = {
+          isOpen: true,
           activityType: 'visit'
         };
         await dynamoDbService.getActivities(params);

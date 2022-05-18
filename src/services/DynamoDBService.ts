@@ -53,33 +53,57 @@ export class DynamoDBService {
    */
   public async getActivities(filterParams: IActivityParams): Promise<IActivity[]> {
     const { activityType, fromStartTime, toStartTime } = filterParams;
-    const keyExpressionAttribute = {
+    let keyExpressionAttribute;
+    let params;
+
+    // create keyExpressionAttribute object
+    keyExpressionAttribute = {
       [':activityType']: activityType,
-      [':fromStartTime']: fromStartTime,
-      [':toStartTime']: toStartTime
-    };
+    }
+
+    // isOpen is used to determine which additional expressions are needed
+    // fromStartTime is mandatory but not provided by auto-close so always set to 01-01-2020
+    if (filterParams.isOpen) {
+      Object.assign(keyExpressionAttribute, { [':fromStartTime']: new Date(2020, 0, 1).toISOString() })
+      Object.assign(keyExpressionAttribute, { [':NULL']: 'NULL' } )
+    } else {
+      Object.assign(keyExpressionAttribute, { [':fromStartTime']: fromStartTime });
+      Object.assign(keyExpressionAttribute, { [':toStartTime']: toStartTime });
+    }
+
     const expressionAttributeValues = Object.assign(
       {},
       keyExpressionAttribute,
       ...this.mapOptionalFilterValues(filterParams)
     );
-    const params = {
+
+    // create params
+    params = {
       TableName: this.tableName,
       IndexName: 'ActivityTypeIndex',
-      KeyConditionExpression:
-        'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
+      KeyConditionExpression: 'activityType = :activityType AND startTime >= :fromStartTime',
       ExpressionAttributeValues: {
         ...expressionAttributeValues
-      }
+      },
     };
-    const filterExpression = this.getOptionalFilters('', filterParams);
-    if (filterExpression) {
-      (params as any).FilterExpression = filterExpression;
+
+    // isOpen is used to determine which additional conditions are needed
+    // auto-close only retrieves activities with no endTime
+    if (filterParams.isOpen) {
+      Object.assign(params, { FilterExpression: 'attribute_type(endTime, :NULL)' })
+    } else {
+      Object.assign(params, { KeyConditionExpression: 'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime' });
+
+      const filterExpression = this.getOptionalFilters('', filterParams);
+
+      if (filterExpression) {
+        (params as any).FilterExpression = filterExpression;
+      }
     }
+
     console.log('params for getActivity', params);
     try {
-      const result = await this.queryAllData(params);
-      return result;
+      return await this.queryAllData(params);
     } catch (err) {
       console.error('error on getActivities', err);
       throw err;
