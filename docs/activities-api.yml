@@ -242,6 +242,7 @@ components:
             - atf
             - gvts
             - hq
+            - potf
         testerName:
           type: string
         testerStaffId:

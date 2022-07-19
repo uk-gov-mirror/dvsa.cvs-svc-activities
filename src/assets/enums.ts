@@ -41,5 +41,6 @@ export enum ActivityType {
 export enum StationType {
   ATF = 'atf',
   GVTS = 'gvts',
-  HQ = 'hq'
+  HQ = 'hq',
+  POTF = 'potf'
 }

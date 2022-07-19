@@ -7,7 +7,7 @@ export const waitReasons: string[] = [
   'Site issue',
   'Other'
 ];
-export const stationTypes: string[] = [StationType.ATF, StationType.GVTS, StationType.HQ];
+export const stationTypes: string[] = [StationType.ATF, StationType.GVTS, StationType.HQ, StationType.POTF];
 export const activitiesTypes: string[] = [
   ActivityType.VISIT,
   ActivityType.WAIT,

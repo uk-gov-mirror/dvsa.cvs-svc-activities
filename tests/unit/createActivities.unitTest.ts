@@ -224,7 +224,7 @@ describe('createActivity', () => {
         expect.assertions(1);
         return activityService.createActivity(payload).catch((error: HTTPResponse) => {
           const body: any = JSON.parse(error.body);
-          expect(body.error).toEqual('"testStationType" must be one of [atf, gvts, hq]');
+          expect(body.error).toEqual('"testStationType" must be one of [atf, gvts, hq, potf]');
         });
       });
     });
@@ -294,6 +294,38 @@ describe('createActivity', () => {
       testStationPNumber: '87-1369569',
       testStationEmail: 'teststationname@dvsa.gov.uk',
       testStationType: 'gvts',
+      testerName: 'Gica',
+      testerEmail: 'tester@dvsa.gov.uk',
+      testerStaffId: '132'
+    };
+
+    it('should return a uuid', () => {
+      DynamoDBService.prototype.getOngoingByStaffId = jest.fn().mockResolvedValue({ Count: 0 });
+      DynamoDBService.prototype.put = jest
+        .fn()
+        .mockResolvedValue({ id: '00000000-0000-0000-0000-0000000000000' });
+      const activityService = new ActivityService(new DynamoDBService());
+      expect.assertions(1);
+      return activityService
+        .createActivity(payload)
+        .then((result: { id: string }) => {
+          expect(result.id).toMatch(
+            /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
+          );
+        })
+        .catch((e) => {
+          console.log('Error', e);
+        });
+    });
+  });
+
+  context("when the payload is correct for 'potf' testStationType", () => {
+    const payload: any = {
+      activityType: 'visit',
+      testStationName: 'Rowe, Wunsch and Wisoky',
+      testStationPNumber: '87-1369569',
+      testStationEmail: 'teststationname@dvsa.gov.uk',
+      testStationType: 'potf',
       testerName: 'Gica',
       testerEmail: 'tester@dvsa.gov.uk',
       testerStaffId: '132'
