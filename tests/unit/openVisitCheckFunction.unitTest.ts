@@ -2,7 +2,7 @@ import { openVisitCheck } from '../../src/functions/openVisitCheck';
 import { Context } from 'aws-lambda';
 import OpenVisitService from '../../src/services/OpenVisitService';
 import { HTTPRESPONSE } from '../../src/assets/enums';
-import { HTTPResponse } from '../../src/utils/HTTPResponse';
+import {HTTPResponse} from "../../src/utils/HTTPResponse";
 
 describe('openVisitCheck Function', () => {
   // @ts-ignore
@@ -10,7 +10,7 @@ describe('openVisitCheck Function', () => {
   describe('without staffId query param', () => {
     it('return BAD REQUEST error', async () => {
       const event = {
-        queryStringParameters: {}
+        queryStringParameters: null
       };
       // const svcSpy = jest.spyOn(OpenVisitService.prototype, "checkOpenVisit").mockResolvedValue(true)
       expect.assertions(2);
@@ -19,7 +19,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param that is empty string', () => {
@@ -35,7 +35,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param that is the string "undefined"', () => {
@@ -51,7 +51,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param that is the string "null"', () => {
@@ -67,7 +67,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param that is undefined', () => {
@@ -83,7 +83,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param that is null', () => {
@@ -99,7 +99,7 @@ describe('openVisitCheck Function', () => {
         return;
       });
       expect(output.statusCode).toEqual(400);
-      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.BAD_REQUEST));
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
     });
   });
   describe('with staffId query param', () => {
