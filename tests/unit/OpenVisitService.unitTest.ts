@@ -1,4 +1,5 @@
 import OpenVisitService from '../../src/services/OpenVisitService';
+import * as jsonData from '../resources/activities.json';
 
 describe('OpenVisitService', () => {
   describe('checkOpenVisit function', () => {
@@ -8,7 +9,7 @@ describe('OpenVisitService', () => {
         const mockDB = jest.fn().mockImplementation(() => {
           return {
             getOngoingByStaffId: () => {
-              return Promise.resolve({ Count: 2 });
+              return Promise.resolve(Array.of(jsonData));
             }
           };
         });
@@ -24,7 +25,7 @@ describe('OpenVisitService', () => {
         const mockDB = jest.fn().mockImplementation(() => {
           return {
             getOngoingByStaffId: () => {
-              return Promise.resolve({ Count: 0 });
+              return Promise.resolve([]);
             }
           };
         });
@@ -53,6 +54,25 @@ describe('OpenVisitService', () => {
           await svc.checkOpenVisit('abc123');
         } catch (e) {
           expect(e.statusCode).toEqual(418);
+        }
+      });
+      it('throws new error', async () => {
+        // Only care about the size of the return, not the content
+        const mockDB2 = jest.fn().mockImplementation(() => {
+          return {
+            getOngoingByStaffId: () => {
+              return Promise.reject({
+                message: 'Random error!'
+              });
+            }
+          };
+        });
+        const svc = new OpenVisitService(new mockDB2());
+        expect.assertions(1);
+        try {
+          await svc.checkOpenVisit('abc123');
+        } catch (e) {
+          expect(e.statusCode).toEqual(500);
         }
       });
     });

@@ -7,6 +7,17 @@ import {HTTPResponse} from "../../src/utils/HTTPResponse";
 describe('openVisitCheck Function', () => {
   // @ts-ignore
   const ctx: Context = null;
+  describe('without query params', () => {
+    it('return BAD REQUEST error', async () => {
+      expect.assertions(2);
+
+      const output: HTTPResponse = await openVisitCheck({}, ctx, () => {
+        return;
+      });
+      expect(output.statusCode).toEqual(400);
+      expect(output.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));
+    });
+  });
   describe('without staffId query param', () => {
     it('return BAD REQUEST error', async () => {
       const event = {

@@ -1,7 +1,6 @@
 import { DynamoDBService } from './DynamoDBService';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
-import { AWSError } from 'aws-sdk';
 import { HTTPResponse } from '../utils/HTTPResponse';
+import { IActivity } from '../models/Activity';
 
 export default class OpenVisitService {
   public readonly dbClient: DynamoDBService;
@@ -19,15 +18,13 @@ export default class OpenVisitService {
    * @param staffId
    */
   public async checkOpenVisit(staffId: string): Promise<boolean> {
-    const visits: number = await this.dbClient
-      .getOngoingByStaffId(staffId)
-      .then((result: DocumentClient.QueryOutput): number => {
-        return result.Count as number;
-      })
-      .catch((error: AWSError) => {
-        console.log('Failed to get open visits from DynamoDB: ', error);
-        throw new HTTPResponse(error.statusCode || 500, { error: `Failed to get open visits` });
-      });
-    return visits > 0;
+    try {
+      const visits: IActivity[] = await this.dbClient.getOngoingByStaffId(staffId);
+      console.log(`Open visit for user ${staffId} : ${!!visits.length}`);
+      return !!visits.length;
+    } catch (error) {
+      console.log('Failed to get open visits from DynamoDB: ', error);
+      throw new HTTPResponse(error.statusCode || 500, { error: `Failed to get open visits` });
+    }
   }
 }

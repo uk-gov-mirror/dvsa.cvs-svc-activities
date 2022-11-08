@@ -93,24 +93,13 @@ export class DynamoDBMockService {
   /**
    * Get ongoing by staff id
    * @param staffId
-   * @returns null
+   * @returns Promise<IActivity[]>
    */
   public getOngoingByStaffId(
     staffId: string
-  ): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
+  ): Promise<IActivity[]> {
     return new Promise((resolve, reject) => {
-      const matches: any = this.db
-        .filter((item: IActivity) => item.testerStaffId === staffId)
-        .filter((item: IActivity) => item.endTime === null);
-
-      const response: PromiseResult<DocumentClient.QueryOutput, AWSError> = {
-        $response: new Response<DocumentClient.GetItemOutput, AWSError>(),
-        Items: matches,
-        Count: matches.length,
-        ScannedCount: this.db.length
-      };
-
-      resolve(response);
+      return resolve(this.db as IActivity[]);
     });
   }
 

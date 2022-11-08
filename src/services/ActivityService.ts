@@ -191,21 +191,20 @@ export class ActivityService {
       throw new HTTPResponse(400, { error: Constants.HTTPRESPONSE.PARENT_ID_NOT_REQUIRED });
     }
 
-    // Check if staff already has an ongoing activity if activityType is visit
-    const ongoingCount: number = await this.dbClient
-      .getOngoingByStaffId(activity.testerStaffId)
-      .then((result: DocumentClient.QueryOutput): number => {
-        return result.Count as number;
-      })
-      .catch((error: AWSError) => {
-        throw new HTTPResponse(error.statusCode || 500, {
-          error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`
-        });
-      });
+    let ongoingVisits: IActivity[];
 
-    if (ongoingCount && ongoingCount > 0) {
+    try {
+      // Check if staff already has an ongoing activity if activityType is visit
+      ongoingVisits = await this.dbClient.getOngoingByStaffId(activity.testerStaffId);
+    } catch (error) {
+      throw new HTTPResponse(error.statusCode || 500, {
+        error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`
+      });
+    }
+
+    if (ongoingVisits && ongoingVisits.length > 0) {
       throw new HTTPResponse(403, {
-        error: `${Constants.HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID} ${activity.testerStaffId} ${Constants.HTTPRESPONSE.ONGING_ACTIVITY}`
+        error: `${Constants.HTTPRESPONSE.ONGOING_ACTIVITY_STAFF_ID} ${activity.testerStaffId} ${Constants.HTTPRESPONSE.ONGOING_ACTIVITY}`
       });
     }
     // If no errors, then return true.

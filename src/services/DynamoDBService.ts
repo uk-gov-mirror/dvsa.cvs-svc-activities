@@ -113,11 +113,11 @@ export class DynamoDBService {
   /**
    * Retrieves the ongoing activity for a given staffId
    * @param staffId - staff id for which to retrieve activity
-   * @returns Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>>
+   * @returns Promise<Activity[]>
    */
-  public getOngoingByStaffId(
+  public async getOngoingByStaffId(
     staffId: string
-  ): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
+  ): Promise<IActivity[]> {
     const keyCondition = 'testerStaffId = :staffId';
     const filterValues = {
       ':staffId': staffId,
@@ -131,7 +131,13 @@ export class DynamoDBService {
       ExpressionAttributeValues: filterValues
     };
 
-    return DynamoDBService.client.query(query).promise();
+    console.log('params for getOngoingByStaffId', query);
+    try {
+      return await this.queryAllData(query);
+    } catch (err) {
+      console.error('error on getOngoingByStaffId', err);
+      throw err;
+    }
   }
 
   /**

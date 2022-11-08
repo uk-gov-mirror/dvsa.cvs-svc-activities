@@ -5,7 +5,7 @@ export enum HTTPRESPONSE {
   PARENT_ID_NOT_EXIST = 'Parent id does not exist',
   ALREADY_ENDED = 'Activity already ended',
   ONGOING_ACTIVITY_STAFF_ID = 'Staff ID',
-  ONGING_ACTIVITY = 'already has an ongoing activity',
+  ONGOING_ACTIVITY = 'already has an ongoing activity',
   NOT_VALID_JSON = 'Body is not a valid JSON.',
   AWS_EVENT_EMPTY = 'AWS event is empty. Check your test event.',
   PARENT_ID_NOT_REQUIRED = 'ParentId not required for visit activity type.',
