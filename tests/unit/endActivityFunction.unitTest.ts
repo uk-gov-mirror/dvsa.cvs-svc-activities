@@ -1,13 +1,14 @@
 import { endActivity } from '../../src/functions/endActivity';
 import { ActivityService } from '../../src/services/ActivityService';
-import mockContext from 'aws-lambda-mock-context';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { HTTPRESPONSE } from '../../src/assets/enums';
+import {Context} from "aws-lambda";
 
 describe('endActivity Function', () => {
   const endTime: string = '2020-03-05T13:29:45.938Z' // test date
   context('calls activity service', () => {
-    const ctx = mockContext();
+    // @ts-ignore
+    const ctx: Context = {} as Context ;
     context('gets a successful response', () => {
       it('returns 200 containing the response body value', async () => {
         ActivityService.prototype.endActivity = jest

@@ -1,12 +1,13 @@
 import { GetActivityService } from '../../src/services/GetActivitiesService';
-import mockContext from 'aws-lambda-mock-context';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { getActivitiesForCleanup } from '../../src/functions/getActivitiesForCleanup';
 import { HTTPRESPONSE } from '../../src/assets/enums';
+import {Context} from "aws-lambda";
 
 describe('getActivitiesForCleanup Function', () => {
   context('calls activity service', () => {
-    const ctx = mockContext();
+    // @ts-ignore
+    const ctx: Context = null ;
     context('gets a successful response', () => {
       it('returns 200 and the array of activities', async () => {
         const expectedResponse = [{ testActivity: 1234 }];

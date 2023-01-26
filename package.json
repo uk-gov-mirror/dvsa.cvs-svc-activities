@@ -4,8 +4,8 @@
   "description": "A template application containing boilerplate code for writing CVS microservices.",
   "main": "handler.js",
   "engines": {
-    "node": "14.*",
-    "npm": "5.6.0"
+    "node": "16.*",
+    "npm": "8.*"
   },
   "scripts": {
     "start": "BRANCH=local AWS_XRAY_CONTEXT_MISSING=LOG_ERROR serverless offline start",
@@ -52,12 +52,11 @@
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^3.4.6",
     "audit-filter": "^0.5.0",
-    "aws-lambda-mock-context": "^3.2.1",
     "husky": "^3.1.0",
     "jest": "^25.5.4",
     "jest-plugin-context": "^2.9.0",
     "jest-sonar-reporter": "^2.0.0",
-    "lambda-tester": "^3.6.0",
+    "lambda-tester": "^4.0.1",
     "prettier": "2.3.2",
     "serverless": "^2.43.1",
     "serverless-dynamodb-local": "0.2.40",

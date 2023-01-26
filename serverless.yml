@@ -3,7 +3,7 @@ configValidationMode: warn
 provider:
   lambdaHashingVersion: 20201221
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   stage: dev
   tracing:
     apiGateway: true
@@ -120,3 +120,6 @@ custom:
             sources: [./tests/resources/activities.json]
     stages:
       - dev
+      - test
+#serverless:
+#  port: 3007
