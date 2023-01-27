@@ -20,9 +20,9 @@ provider:
 
 plugins:
   - serverless-dynamodb-local
-  - serverless-offline
   - serverless-plugin-typescript
   - serverless-plugin-tracing
+  - serverless-offline
 
 functions:
   main:
@@ -105,7 +105,7 @@ resources:
           WriteCapacityUnits: 1
 custom:
   serverless-offline:
-    port: 3007
+    httpPort: 3007
   dynamodb:
     start:
       port: 8005

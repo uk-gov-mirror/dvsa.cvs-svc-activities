@@ -1,7 +1,12 @@
 // tslint:disable-next-line: no-var-requires
-const AWSXRay = require('aws-xray-sdk');
-// tslint:disable-next-line: no-var-requires
-const AWS = AWSXRay.captureAWS(require('aws-sdk'));
+let AWS: { DynamoDB: { DocumentClient: new (arg0: any) => DocumentClient; }; }
+if (process.env._X_AMZN_TRACE_ID) {
+  AWS = require("aws-xray-sdk").captureAWS(require("aws-sdk"))
+} else {
+  console.log("Serverless Offline detected; skipping AWS X-Ray setup")
+  AWS = require("aws-sdk")
+}// tslint:disable-next-line: no-var-requires
+// const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 import { AWSError } from 'aws-sdk'; // Only used as a type, so not wrapped by XRay
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only used as a type, so not wrapped by XRay
 import { PromiseResult } from 'aws-sdk/lib/request'; // Only used as a type, so not wrapped by XRay
