@@ -1,6 +1,6 @@
 import { HTTPRESPONSE } from './assets/enums';
 import { APIGatewayProxyResult, Callback, Context, Handler } from 'aws-lambda';
-import Path from 'path-parser';
+import { Path } from 'path-parser'
 import { Configuration, IFunctionEvent } from './utils/Configuration';
 import { HTTPResponse } from './utils/HTTPResponse';
 import { ILogMessage } from './models/ILogMessage';

@@ -8,7 +8,7 @@ import { Validator } from '../utils/Validator';
 const endActivity: Handler = async (
   event: any,
   context: Context
-): Promise<APIGatewayProxyResult> => {
+): Promise<HTTPResponse> => {
   const activityService = new ActivityService(new DynamoDBService());
   const check: Validator = new Validator();
   // auto-close will provide the endTime in the event body but VTA requests will not

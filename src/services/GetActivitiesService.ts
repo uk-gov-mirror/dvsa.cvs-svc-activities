@@ -47,10 +47,12 @@ export class GetActivityService {
       const ActivityFilter: ActivityFilters = new ActivityFilters();
       const result = ActivityFilter.returnOrderedActivities(data);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof HTTPResponse) {
         console.log('error on getActivities:', error);
         throw new HTTPResponse(error.statusCode, error.body);
+      } else {
+        throw new HTTPResponse(500, null);
       }
     }
   }

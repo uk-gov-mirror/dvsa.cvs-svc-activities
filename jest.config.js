@@ -6,5 +6,7 @@ module.exports = {
   moduleFileExtensions: ['js', 'ts'],
   testResultsProcessor: 'jest-sonar-reporter',
   testMatch: ['**/*.*Test.ts'],
+  collectCoverage: true,
+  coverageDirectory: "./coverage",
   collectCoverageFrom: ['<rootDir>/src/**/{!(ignore-me),}.ts']
 };

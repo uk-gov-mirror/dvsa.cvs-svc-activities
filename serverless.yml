@@ -3,7 +3,7 @@ configValidationMode: warn
 provider:
   lambdaHashingVersion: 20201221
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   stage: dev
   tracing:
     apiGateway: true

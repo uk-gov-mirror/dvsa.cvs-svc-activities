@@ -28,7 +28,7 @@ describe('startActivity Function', () => {
           const resp: HTTPResponse = await startActivity({}, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });

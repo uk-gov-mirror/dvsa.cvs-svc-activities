@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 
-class HTTPResponse extends Error implements APIGatewayProxyResult {
+class HTTPResponse implements APIGatewayProxyResult {
   public readonly statusCode: number;
   public readonly body: any;
   public readonly headers: any;
@@ -12,8 +12,6 @@ class HTTPResponse extends Error implements APIGatewayProxyResult {
    * @param headers - optional - the response headers
    */
   constructor(statusCode: number, body: any, headers = {}) {
-    super();
-
     if (headers) {
       this.headers = headers;
     }
@@ -25,8 +23,6 @@ class HTTPResponse extends Error implements APIGatewayProxyResult {
 
     this.statusCode = statusCode;
     this.body = JSON.stringify(body);
-
-    console.log(`HTTP STATUS CODE RETURNED: ${this.statusCode}`);
   }
 }
 

@@ -10,7 +10,7 @@ const opts = Object.assign({
 
 describe('The lambda function handler', () => {
   afterAll(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   context('With correct Config', () => {
     context('should correctly handle incoming events', () => {

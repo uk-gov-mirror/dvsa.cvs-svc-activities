@@ -41,7 +41,7 @@ describe('endActivity Function', () => {
           await endActivity({ pathParameters: { id: '1' } }, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });
@@ -51,7 +51,7 @@ describe('endActivity Function', () => {
           await endActivity({ pathParameters: { id: '1' }, body: { "endTime": endTime } }, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });

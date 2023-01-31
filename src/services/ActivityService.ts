@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 import moment from 'moment';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { AWSError } from 'aws-sdk'; // Only used as a type, so not wrapped by XRay
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only used as a type, so not wrapped by XRay
 
@@ -69,7 +69,7 @@ export class ActivityService {
     }
 
     // Assign an id
-    const id: string = uuid();
+    const id: string = uuidv4();
     Object.assign(activity, { id });
 
     const activityDay = moment(activity.startTime!).format('YYYY-MM-DD');
@@ -118,7 +118,7 @@ export class ActivityService {
       await this.dbClient.put(activity);
 
       return { wasVisitAlreadyClosed: false };
-    } catch (e) {
+    } catch (e: any) {
       // client error so we rethrow
       if (e instanceof HTTPResponse) throw e;
 
@@ -196,7 +196,7 @@ export class ActivityService {
     try {
       // Check if staff already has an ongoing activity if activityType is visit
       ongoingVisits = await this.dbClient.getOngoingByStaffId(activity.testerStaffId);
-    } catch (error) {
+    } catch (error: any) {
       throw new HTTPResponse(error.statusCode || 500, {
         error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`
       });

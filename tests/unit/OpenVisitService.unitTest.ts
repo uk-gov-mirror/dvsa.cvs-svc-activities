@@ -52,7 +52,7 @@ describe('OpenVisitService', () => {
         expect.assertions(1);
         try {
           await svc.checkOpenVisit('abc123');
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(418);
         }
       });
@@ -71,7 +71,7 @@ describe('OpenVisitService', () => {
         expect.assertions(1);
         try {
           await svc.checkOpenVisit('abc123');
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(500);
         }
       });

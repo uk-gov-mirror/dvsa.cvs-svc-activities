@@ -27,7 +27,7 @@ describe('startActivity Function', () => {
           .mockRejectedValue(new Error('Oh No!'));
         try {
           await getActivity({ pathParameters: { id: 1 } }, ctx);
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
         return;

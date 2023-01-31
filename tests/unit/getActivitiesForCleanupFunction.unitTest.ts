@@ -42,7 +42,7 @@ describe('getActivitiesForCleanup Function', () => {
           }, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -53,7 +53,7 @@ describe('getActivitiesForCleanup Function', () => {
           await getActivitiesForCleanup({}, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -64,7 +64,7 @@ describe('getActivitiesForCleanup Function', () => {
           await getActivitiesForCleanup(null, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -82,7 +82,7 @@ describe('getActivitiesForCleanup Function', () => {
               return;
             }
           );
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });
