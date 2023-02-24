@@ -34,7 +34,7 @@ describe('The lambda function handler', () => {
           .mockResolvedValue({ testResponse: 1234 });
 
         // @ts-ignore
-        const ctx: Context = null ;
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
@@ -58,7 +58,7 @@ describe('The lambda function handler', () => {
           .mockResolvedValue({ testResponse: 1234 });
 
         // @ts-ignore
-        const ctx: Context = null ;
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
@@ -84,7 +84,7 @@ describe('The lambda function handler', () => {
           .mockResolvedValue({ testResponse: 1234 });
 
         // @ts-ignore
-        const ctx: Context = null ;
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
@@ -108,7 +108,7 @@ describe('The lambda function handler', () => {
           .fn()
           .mockResolvedValue({ wasVisitAlreadyClosed: true });
         // @ts-ignore
-        const ctx: Context = null ;
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
@@ -124,7 +124,8 @@ describe('The lambda function handler', () => {
 
       it('should return error on empty event', async () => {
         // @ts-ignore
-        const ctx: Context = null ;        const result = await handler(null, ctx, () => {
+        const ctx: Context = null;
+        const result = await handler(null, ctx, () => {
           return;
         });
         // ctx.succeed(result);
@@ -139,7 +140,8 @@ describe('The lambda function handler', () => {
         invalidBodyEvent.body = '{"hello":}';
 
         // @ts-ignore
-        const ctx: Context = null ;        const result = await handler(invalidBodyEvent, ctx, () => {
+        const ctx: Context = null;
+        const result = await handler(invalidBodyEvent, ctx, () => {
           return;
         });
         // ctx.succeed(result);
@@ -153,7 +155,7 @@ describe('The lambda function handler', () => {
         invalidPathEvent.path = '/vehicles/123/doesntExist';
 
         // @ts-ignore
-        const ctx: Context = null ;
+        const ctx: Context = null;
         const result = await handler(invalidPathEvent, ctx, () => {
           return;
         });
@@ -174,7 +176,8 @@ describe('The lambda function handler', () => {
       Configuration.prototype.getFunctions = jest.fn().mockImplementation(() => []);
       const eventNoRoute = { httpMethod: 'GET', path: '' };
       // @ts-ignore
-      const ctx: Context = null ;      const result = await handler(eventNoRoute, ctx, () => {
+      const ctx: Context = null;
+      const result = await handler(eventNoRoute, ctx, () => {
         return;
       });
       // ctx.succeed(result);

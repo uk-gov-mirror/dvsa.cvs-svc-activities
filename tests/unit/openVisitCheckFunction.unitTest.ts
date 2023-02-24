@@ -2,7 +2,7 @@ import { openVisitCheck } from '../../src/functions/openVisitCheck';
 import { Context } from 'aws-lambda';
 import OpenVisitService from '../../src/services/OpenVisitService';
 import { HTTPRESPONSE } from '../../src/assets/enums';
-import {HTTPResponse} from "../../src/utils/HTTPResponse";
+import { HTTPResponse } from '../../src/utils/HTTPResponse';
 
 describe('openVisitCheck Function', () => {
   // @ts-ignore

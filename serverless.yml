@@ -122,5 +122,3 @@ custom:
     stages:
       - dev
       - test
-serverless:
- port: 3007

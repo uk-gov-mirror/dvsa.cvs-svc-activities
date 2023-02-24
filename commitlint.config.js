@@ -18,8 +18,8 @@ module.exports = {
         'docs',
         'breaking_change',
         'breaking',
-        'refactor',
-      ],
+        'refactor'
+      ]
     ],
     'subject-case': [1, 'always', 'lower-case'],
     // disable it to allow release notes from semantic-release to happen when releasing
@@ -43,10 +43,10 @@ module.exports = {
         } else {
           return [
             false,
-            `scope must follow the format defined in the commitlint config. The current format is ${ticketNumberFormat}`,
+            `scope must follow the format defined in the commitlint config. The current format is ${ticketNumberFormat}`
           ];
         }
-      },
-    ],
-  },
+      }
+    ]
+  }
 };

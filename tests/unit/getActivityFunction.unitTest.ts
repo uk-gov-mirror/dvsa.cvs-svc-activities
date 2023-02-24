@@ -1,12 +1,12 @@
 import { getActivity } from '../../src/functions/getActivity';
 import { GetActivityService } from '../../src/services/GetActivitiesService';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
-import {Context} from "aws-lambda";
+import { Context } from 'aws-lambda';
 
 describe('startActivity Function', () => {
   context('calls activity service', () => {
     // @ts-ignore
-    const ctx: Context = null ;
+    const ctx: Context = null;
     context('gets a successful response', () => {
       it('returns 201 and stringinfied empty string as body', async () => {
         GetActivityService.prototype.getActivities = jest

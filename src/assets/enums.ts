@@ -13,7 +13,7 @@ export enum HTTPRESPONSE {
   START_TIME_EMPTY = 'Start Time not provided.',
   END_TIME_EMPTY = 'End Time not provided.',
   ACTIVITY_UPDATED = 'Activity updated',
-  MISSING_PARAMETERS = "Missing parameter value."
+  MISSING_PARAMETERS = 'Missing parameter value.'
 }
 
 export enum ERRORS {

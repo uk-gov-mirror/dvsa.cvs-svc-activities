@@ -3,10 +3,7 @@ import { ActivityService } from '../services/ActivityService';
 import { HTTPResponse } from '../utils/HTTPResponse';
 import { DynamoDBService } from '../services/DynamoDBService';
 
-const startActivity: Handler = async (
-  event: any,
-  context?: Context
-): Promise<HTTPResponse> => {
+const startActivity: Handler = async (event: any, context?: Context): Promise<HTTPResponse> => {
   const activityService = new ActivityService(new DynamoDBService());
 
   return activityService

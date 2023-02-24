@@ -4,10 +4,7 @@ import { HTTPResponse } from '../utils/HTTPResponse';
 import { HTTPRESPONSE } from '../assets/enums';
 import { DynamoDBService } from '../services/DynamoDBService';
 
-const updateActivity: Handler = async (
-  event: any,
-  context: Context
-): Promise<HTTPResponse> => {
+const updateActivity: Handler = async (event: any, context: Context): Promise<HTTPResponse> => {
   const activityService = new ActivityService(new DynamoDBService());
   // Is body valid: present, not empty, and an array
   if (

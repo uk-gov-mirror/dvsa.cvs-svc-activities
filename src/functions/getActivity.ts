@@ -13,17 +13,18 @@ export async function getActivity(event: any, context?: Context): Promise<HTTPRe
   const { fromStartTime, toStartTime, activityType, testStationPNumber, testerStaffId } =
     event.queryStringParameters && event.queryStringParameters;
 
-  return activityService.getActivities({
-    fromStartTime,
-    toStartTime,
-    activityType,
-    testStationPNumber,
-    testerStaffId
-  })
-  .then((data: any) => {
-    return new HTTPResponse(200, data);
-  })
-  .catch((error: HTTPResponse) => {
-    return error;
-  });
+  return activityService
+    .getActivities({
+      fromStartTime,
+      toStartTime,
+      activityType,
+      testStationPNumber,
+      testerStaffId
+    })
+    .then((data: any) => {
+      return new HTTPResponse(200, data);
+    })
+    .catch((error: HTTPResponse) => {
+      return error;
+    });
 }

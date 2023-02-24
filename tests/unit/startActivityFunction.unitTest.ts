@@ -5,7 +5,7 @@ import { Context } from 'aws-lambda';
 
 describe('startActivity Function', () => {
   // @ts-ignore
-  const ctx: Context = null ;
+  const ctx: Context = null;
   context('calls activity service', () => {
     context('gets a successful response', () => {
       it('returns 201 and stringified id of created Activity', async () => {

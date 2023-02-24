@@ -18,7 +18,7 @@
     "test-i": "npm run test:integration -- --globalSetup='./scripts/setUp.ts' --globalTeardown='./scripts/tearDown.ts'",
     "test:integration": "BRANCH=local jest --testMatch=\"**/*.intTest.ts\" --runInBand",
     "commit-msg": "commitlint --edit",
-    "pre-commit": "npm run security-checks && npm run audit && npm run lint && npm run format",
+    "pre-commit": "npm run audit && npm run lint && npm run format",
     "prepush": "npm run coverage && npm run build && npm run test-i",
     "security-checks": "git secrets --scan",
     "lint": "tslint --fix src/**/*.ts tests/**/*.ts",

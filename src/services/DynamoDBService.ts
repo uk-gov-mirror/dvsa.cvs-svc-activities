@@ -1,12 +1,11 @@
-
-let AWS: { DynamoDB: { DocumentClient: new (arg0: any) => DocumentClient; }; }
+let AWS: { DynamoDB: { DocumentClient: new (arg0: any) => DocumentClient } };
 if (process.env._X_AMZN_TRACE_ID) {
   // tslint:disable-next-line:no-var-requires
-  AWS = require("aws-xray-sdk").captureAWS(require("aws-sdk"))
+  AWS = require('aws-xray-sdk').captureAWS(require('aws-sdk'));
 } else {
-  console.log("Serverless Offline detected; skipping AWS X-Ray setup")
+  console.log('Serverless Offline detected; skipping AWS X-Ray setup');
   // tslint:disable-next-line:no-var-requires
-  AWS = require("aws-sdk")
+  AWS = require('aws-sdk');
 }
 import { AWSError } from 'aws-sdk'; // Only used as a type, so not wrapped by XRay
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only used as a type, so not wrapped by XRay
@@ -64,14 +63,16 @@ export class DynamoDBService {
 
     // create keyExpressionAttribute object
     keyExpressionAttribute = {
-      [':activityType']: activityType,
-    }
+      [':activityType']: activityType
+    };
 
     // isOpen is used to determine which additional expressions are needed
     // fromStartTime is mandatory but not provided by auto-close so always set to 01-01-2020
     if (filterParams.isOpen) {
-      Object.assign(keyExpressionAttribute, { [':fromStartTime']: new Date(2020, 0, 1).toISOString() })
-      Object.assign(keyExpressionAttribute, { [':NULL']: 'NULL' } )
+      Object.assign(keyExpressionAttribute, {
+        [':fromStartTime']: new Date(2020, 0, 1).toISOString()
+      });
+      Object.assign(keyExpressionAttribute, { [':NULL']: 'NULL' });
     } else {
       Object.assign(keyExpressionAttribute, { [':fromStartTime']: fromStartTime });
       Object.assign(keyExpressionAttribute, { [':toStartTime']: toStartTime });
@@ -90,15 +91,18 @@ export class DynamoDBService {
       KeyConditionExpression: 'activityType = :activityType AND startTime >= :fromStartTime',
       ExpressionAttributeValues: {
         ...expressionAttributeValues
-      },
+      }
     };
 
     // isOpen is used to determine which additional conditions are needed
     // auto-close only retrieves activities with no endTime
     if (filterParams.isOpen) {
-      Object.assign(params, { FilterExpression: 'attribute_type(endTime, :NULL)' })
+      Object.assign(params, { FilterExpression: 'attribute_type(endTime, :NULL)' });
     } else {
-      Object.assign(params, { KeyConditionExpression: 'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime' });
+      Object.assign(params, {
+        KeyConditionExpression:
+          'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime'
+      });
 
       const filterExpression = this.getOptionalFilters('', filterParams);
 
@@ -121,9 +125,7 @@ export class DynamoDBService {
    * @param staffId - staff id for which to retrieve activity
    * @returns Promise<Activity[]>
    */
-  public async getOngoingByStaffId(
-    staffId: string
-  ): Promise<IActivity[]> {
+  public async getOngoingByStaffId(staffId: string): Promise<IActivity[]> {
     const keyCondition = 'testerStaffId = :staffId';
     const filterValues = {
       ':staffId': staffId,

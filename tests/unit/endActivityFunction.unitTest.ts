@@ -2,13 +2,13 @@ import { endActivity } from '../../src/functions/endActivity';
 import { ActivityService } from '../../src/services/ActivityService';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { HTTPRESPONSE } from '../../src/assets/enums';
-import {Context} from "aws-lambda";
+import { Context } from 'aws-lambda';
 
 describe('endActivity Function', () => {
-  const endTime: string = '2020-03-05T13:29:45.938Z' // test date
+  const endTime: string = '2020-03-05T13:29:45.938Z'; // test date
   context('calls activity service', () => {
     // @ts-ignore
-    const ctx: Context = {} as Context ;
+    const ctx: Context = {} as Context;
     context('gets a successful response', () => {
       it('returns 200 containing the response body value', async () => {
         ActivityService.prototype.endActivity = jest
@@ -25,9 +25,13 @@ describe('endActivity Function', () => {
         ActivityService.prototype.endActivity = jest
           .fn()
           .mockResolvedValue({ wasVisitAlreadyClosed: false });
-        const resp: HTTPResponse = await endActivity({ pathParameters: { id: '1' }, body: { "endTime": endTime } }, ctx, () => {
-          return;
-        });
+        const resp: HTTPResponse = await endActivity(
+          { pathParameters: { id: '1' }, body: { endTime } },
+          ctx,
+          () => {
+            return;
+          }
+        );
         expect(resp).toBeInstanceOf(HTTPResponse);
         expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual(JSON.stringify({ wasVisitAlreadyClosed: false }));
@@ -48,7 +52,7 @@ describe('endActivity Function', () => {
       it('returns the thrown error', async () => {
         ActivityService.prototype.endActivity = jest.fn().mockRejectedValue(new Error('Oh No!'));
         try {
-          await endActivity({ pathParameters: { id: '1' }, body: { "endTime": endTime } }, ctx, () => {
+          await endActivity({ pathParameters: { id: '1' }, body: { endTime } }, ctx, () => {
             return;
           });
         } catch (e: any) {
@@ -117,13 +121,9 @@ describe('endActivity Function', () => {
         ActivityService.prototype.endActivity = jest
           .fn()
           .mockResolvedValue({ wasVisitAlreadyClosed: false });
-        const resp: HTTPResponse = await endActivity(
-          { pathParameters: null },
-          ctx,
-          () => {
-            return;
-          }
-        );
+        const resp: HTTPResponse = await endActivity({ pathParameters: null }, ctx, () => {
+          return;
+        });
         expect(resp).toBeInstanceOf(HTTPResponse);
         expect(resp.statusCode).toEqual(400);
         expect(resp.body).toEqual(JSON.stringify(HTTPRESPONSE.MISSING_PARAMETERS));

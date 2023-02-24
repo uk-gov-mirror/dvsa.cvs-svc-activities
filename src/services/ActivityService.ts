@@ -96,7 +96,10 @@ export class ActivityService {
    * @param endTime - endTime provided by auto-close function
    * @returns Promise<{wasVisitAlreadyClosed: boolean}>
    */
-  public async endActivity(id: string, endTime: string): Promise<{ wasVisitAlreadyClosed: boolean }> {
+  public async endActivity(
+    id: string,
+    endTime: string
+  ): Promise<{ wasVisitAlreadyClosed: boolean }> {
     try {
       const result: DocumentClient.GetItemOutput = await this.dbClient.get({ id });
 
@@ -113,7 +116,9 @@ export class ActivityService {
       const activity: IActivity = result.Item as IActivity;
 
       // use value provided by auto-close as activityEndTime, otherwise use Date.now()
-      (endTime) ? activity.endTime = new Date(endTime).toISOString() : activity.endTime = new Date().toISOString();
+      endTime
+        ? (activity.endTime = new Date(endTime).toISOString())
+        : (activity.endTime = new Date().toISOString());
 
       await this.dbClient.put(activity);
 

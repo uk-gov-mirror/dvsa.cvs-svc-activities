@@ -12,7 +12,7 @@ export class Validator {
     for (const key of Object.keys(parameters)) {
       const value: string = Object.values(parameters)[key.indexOf(key)];
       if (value) {
-        if (value.trim().length === 0 || value === "undefined" || value === "null") {
+        if (value.trim().length === 0 || value === 'undefined' || value === 'null') {
           isValid = false;
           break;
         }

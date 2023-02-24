@@ -6,7 +6,7 @@ import { HTTPRESPONSE } from '../../src/assets/enums';
 describe('endActivity', () => {
   let activityService: any;
   let activityId: string = '5e4bd304-446e-4678-8289-d34fca9256e9'; // Non-existing ID
-  const endTime: string = '2020-03-05T13:29:45.938Z' // test date
+  const endTime: string = '2020-03-05T13:29:45.938Z'; // test date
   // @ts-ignore
   beforeEach(() => (activityService = new ActivityService(new DynamoDBMockService())));
   afterEach(() => jest.clearAllMocks());
@@ -18,9 +18,11 @@ describe('endActivity', () => {
       activityService.endActivity = jest
         .fn()
         .mockImplementation(() => Promise.reject({ body: { error: HTTPRESPONSE.NOT_EXIST } }));
-      return activityService.endActivity(activityId, endTime).catch((errorResponse: HTTPResponse) => {
-        expect(errorResponse.body.error).toEqual(HTTPRESPONSE.NOT_EXIST);
-      });
+      return activityService
+        .endActivity(activityId, endTime)
+        .catch((errorResponse: HTTPResponse) => {
+          expect(errorResponse.body.error).toEqual(HTTPRESPONSE.NOT_EXIST);
+        });
     });
   });
 

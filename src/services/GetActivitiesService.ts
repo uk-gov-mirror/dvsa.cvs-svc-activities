@@ -30,12 +30,14 @@ export class GetActivityService {
         if (!activityType) {
           throw new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
         }
-      } else if (!(
+      } else if (
+        !(
           fromStartTime &&
           toStartTime &&
           activityType &&
           isValid(new Date(fromStartTime)) &&
-          isValid(new Date(toStartTime)))
+          isValid(new Date(toStartTime))
+        )
       ) {
         throw new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
       }
