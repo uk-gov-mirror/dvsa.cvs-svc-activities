@@ -4,6 +4,7 @@ provider:
   lambdaHashingVersion: 20201221
   name: aws
   runtime: nodejs18.x
+  timeout: 30
   stage: dev
   tracing:
     apiGateway: true
@@ -121,5 +122,5 @@ custom:
     stages:
       - dev
       - test
-#serverless:
-#  port: 3007
+serverless:
+ port: 3007
