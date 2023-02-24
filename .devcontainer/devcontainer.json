@@ -23,14 +23,22 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": {
-		"install-cpio": "sudo apt update && sudo apt install cpio",
-		"serverless-install-dynamodb": "sls dynamodb install",
-		"npm-install": "npm install --force"
-	}
+	"postCreateCommand": "/bin/bash .devcontainer/postCreateCommand.sh",
+
+	// Use 'postAttachCommand' to run commands after the container is attached.
+	"postAttachCommand": "/bin/bash .devcontainer/postAttachCommand.sh",
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Orta.vscode-jest",
+				"eamodio.gitlens",
+				"dbaeumer.vscode-eslint",
+				"EditorConfig.EditorConfig"
+			]
+		}
+	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
