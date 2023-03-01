@@ -32,7 +32,6 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "Orta.vscode-jest",
         "eamodio.gitlens",
         "dbaeumer.vscode-eslint",
         "EditorConfig.EditorConfig"
