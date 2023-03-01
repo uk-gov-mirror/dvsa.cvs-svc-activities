@@ -1,7 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run prepush
+npm run pre-push
 
 ## Enable the following to run SonarScanner checks prior to push
 # npm run sonar-scanner
