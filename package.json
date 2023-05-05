@@ -24,7 +24,8 @@
     "sonar-scanner": "sonar-scanner",
     "audit": "npm audit --prod",
     "package": "mkdir ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip .",
-    "tools-setup": "ts-node scripts/installDynamoDB.ts"
+    "tools-setup": "ts-node scripts/installDynamoDB.ts",
+    "postinstall": "patch-package"
   },
   "author": "",
   "license": "ISC",
@@ -40,7 +41,8 @@
     "path-parser": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "ts-node-register": "^1.0.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "patch-package": "^6.5.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.34",
