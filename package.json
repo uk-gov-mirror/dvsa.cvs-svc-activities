@@ -37,7 +37,6 @@
     "aws-xray-sdk": "^3.4.1",
     "date-fns": "^2.29.3",
     "joi": "^14.3.1",
-    "js-yaml": "4.1.0",
     "moment": "2.29.4",
     "node-yaml": "4.0.1",
     "path-parser": "^6.1.0",
