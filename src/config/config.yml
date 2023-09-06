@@ -33,7 +33,7 @@ dynamodb:
   local:
     params:
       region: localhost
-      endpoint: http://localhost:8005
+      endpoint: http://127.0.0.1:8005
     table: cvs-local-activities
     keys:
       - id
