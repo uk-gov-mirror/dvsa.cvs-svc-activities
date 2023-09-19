@@ -30,12 +30,14 @@ export class GetActivityService {
         if (!activityType) {
           throw new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
         }
-      } else if (!(
+      } else if (
+        !(
           fromStartTime &&
           toStartTime &&
           activityType &&
           isValid(new Date(fromStartTime)) &&
-          isValid(new Date(toStartTime)))
+          isValid(new Date(toStartTime))
+        )
       ) {
         throw new HTTPResponse(400, HTTPRESPONSE.BAD_REQUEST);
       }
@@ -47,10 +49,12 @@ export class GetActivityService {
       const ActivityFilter: ActivityFilters = new ActivityFilters();
       const result = ActivityFilter.returnOrderedActivities(data);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof HTTPResponse) {
         console.log('error on getActivities:', error);
         throw new HTTPResponse(error.statusCode, error.body);
+      } else {
+        throw new HTTPResponse(500, null);
       }
     }
   }

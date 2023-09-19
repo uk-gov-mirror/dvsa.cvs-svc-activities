@@ -1,11 +1,12 @@
 import { startActivity } from '../../src/functions/startActivity';
 import { ActivityService } from '../../src/services/ActivityService';
-import mockContext from 'aws-lambda-mock-context';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
+import { Context } from 'aws-lambda';
 
 describe('startActivity Function', () => {
+  // @ts-ignore
+  const ctx: Context = null;
   context('calls activity service', () => {
-    const ctx = mockContext();
     context('gets a successful response', () => {
       it('returns 201 and stringified id of created Activity', async () => {
         ActivityService.prototype.createActivity = jest.fn().mockResolvedValue(1234);
@@ -27,7 +28,7 @@ describe('startActivity Function', () => {
           const resp: HTTPResponse = await startActivity({}, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });

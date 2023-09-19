@@ -1,11 +1,12 @@
 import { getActivity } from '../../src/functions/getActivity';
 import { GetActivityService } from '../../src/services/GetActivitiesService';
-import mockContext from 'aws-lambda-mock-context';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
+import { Context } from 'aws-lambda';
 
 describe('startActivity Function', () => {
   context('calls activity service', () => {
-    const ctx = mockContext();
+    // @ts-ignore
+    const ctx: Context = null;
     context('gets a successful response', () => {
       it('returns 201 and stringinfied empty string as body', async () => {
         GetActivityService.prototype.getActivities = jest
@@ -26,7 +27,7 @@ describe('startActivity Function', () => {
           .mockRejectedValue(new Error('Oh No!'));
         try {
           await getActivity({ pathParameters: { id: 1 } }, ctx);
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
         return;

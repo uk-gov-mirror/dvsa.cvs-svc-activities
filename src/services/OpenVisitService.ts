@@ -22,7 +22,7 @@ export default class OpenVisitService {
       const visits: IActivity[] = await this.dbClient.getOngoingByStaffId(staffId);
       console.log(`Open visit for user ${staffId} : ${!!visits.length}`);
       return !!visits.length;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Failed to get open visits from DynamoDB: ', error);
       throw new HTTPResponse(error.statusCode || 500, { error: `Failed to get open visits` });
     }

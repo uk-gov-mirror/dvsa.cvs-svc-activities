@@ -1,12 +1,13 @@
 import { GetActivityService } from '../../src/services/GetActivitiesService';
-import mockContext from 'aws-lambda-mock-context';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { getActivitiesForCleanup } from '../../src/functions/getActivitiesForCleanup';
 import { HTTPRESPONSE } from '../../src/assets/enums';
+import { Context } from 'aws-lambda';
 
 describe('getActivitiesForCleanup Function', () => {
   context('calls activity service', () => {
-    const ctx = mockContext();
+    // @ts-ignore
+    const ctx: Context = null;
     context('gets a successful response', () => {
       it('returns 200 and the array of activities', async () => {
         const expectedResponse = [{ testActivity: 1234 }];
@@ -34,14 +35,18 @@ describe('getActivitiesForCleanup Function', () => {
     context('gets an unsuccessful response', () => {
       it('returns a Bad Request error if all required query parameters are not provided', async () => {
         try {
-          await getActivitiesForCleanup({
-            queryStringParameters: {
-              isOpen: true
+          await getActivitiesForCleanup(
+            {
+              queryStringParameters: {
+                isOpen: true
+              }
+            },
+            ctx,
+            () => {
+              return;
             }
-          }, ctx, () => {
-            return;
-          });
-        } catch (e) {
+          );
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -52,7 +57,7 @@ describe('getActivitiesForCleanup Function', () => {
           await getActivitiesForCleanup({}, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -63,7 +68,7 @@ describe('getActivitiesForCleanup Function', () => {
           await getActivitiesForCleanup(null, ctx, () => {
             return;
           });
-        } catch (e) {
+        } catch (e: any) {
           expect(e.statusCode).toEqual(400);
           expect(e.message).toEqual(HTTPRESPONSE.BAD_REQUEST);
         }
@@ -81,7 +86,7 @@ describe('getActivitiesForCleanup Function', () => {
               return;
             }
           );
-        } catch (e) {
+        } catch (e: any) {
           expect(e.message).toEqual('Oh No!');
         }
       });

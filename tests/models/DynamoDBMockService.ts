@@ -95,9 +95,7 @@ export class DynamoDBMockService {
    * @param staffId
    * @returns Promise<IActivity[]>
    */
-  public getOngoingByStaffId(
-    staffId: string
-  ): Promise<IActivity[]> {
+  public getOngoingByStaffId(staffId: string): Promise<IActivity[]> {
     return new Promise((resolve, reject) => {
       return resolve(this.db as IActivity[]);
     });

@@ -1,7 +1,7 @@
 import { handler } from '../../src/handler';
 import { Configuration } from '../../src/utils/Configuration';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
-import mockContext from 'aws-lambda-mock-context';
+import { Context } from 'aws-lambda';
 import { ActivityService } from '../../src/services/ActivityService';
 import { GetActivityService } from '../../src/services/GetActivitiesService';
 const opts = Object.assign({
@@ -10,7 +10,7 @@ const opts = Object.assign({
 
 describe('The lambda function handler', () => {
   afterAll(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
   context('With correct Config', () => {
     context('should correctly handle incoming events', () => {
@@ -33,12 +33,12 @@ describe('The lambda function handler', () => {
           .fn()
           .mockResolvedValue({ testResponse: 1234 });
 
-        const ctx: any = mockContext(opts);
-
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
+        // ctx.succeed(result);
         expect(result.statusCode).toEqual(200);
         expect(GetActivityService.prototype.getActivities).toHaveBeenCalled();
       });
@@ -57,13 +57,13 @@ describe('The lambda function handler', () => {
           .fn()
           .mockResolvedValue({ testResponse: 1234 });
 
-        let ctx: any = mockContext(opts);
-
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
+        // ctx = null;
         expect(result.statusCode).toEqual(201);
         expect(ActivityService.prototype.createActivity).toHaveBeenCalled();
       });
@@ -83,13 +83,12 @@ describe('The lambda function handler', () => {
           .fn()
           .mockResolvedValue({ testResponse: 1234 });
 
-        let ctx: any = mockContext(opts);
-
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
         expect(result.statusCode).toEqual(204);
         expect(ActivityService.prototype.updateActivity).toHaveBeenCalled();
       });
@@ -108,13 +107,12 @@ describe('The lambda function handler', () => {
         ActivityService.prototype.endActivity = jest
           .fn()
           .mockResolvedValue({ wasVisitAlreadyClosed: true });
-        let ctx: any = mockContext(opts);
-
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(testEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
 
         const { body, statusCode } = result;
         const { wasVisitAlreadyClosed } = JSON.parse(body);
@@ -125,12 +123,12 @@ describe('The lambda function handler', () => {
       });
 
       it('should return error on empty event', async () => {
-        let ctx: any = mockContext(opts);
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(null, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
 
         expect(result).toBeInstanceOf(HTTPResponse);
         expect(result.statusCode).toEqual(400);
@@ -141,12 +139,12 @@ describe('The lambda function handler', () => {
         const invalidBodyEvent: any = {};
         invalidBodyEvent.body = '{"hello":}';
 
-        let ctx: any = mockContext(opts);
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(invalidBodyEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
         expect(result).toBeInstanceOf(HTTPResponse);
         expect(result.statusCode).toEqual(400);
         expect(result.body).toEqual(JSON.stringify('Body is not a valid JSON.'));
@@ -156,12 +154,12 @@ describe('The lambda function handler', () => {
         const invalidPathEvent: any = {};
         invalidPathEvent.path = '/vehicles/123/doesntExist';
 
-        let ctx: any = mockContext(opts);
+        // @ts-ignore
+        const ctx: Context = null;
         const result = await handler(invalidPathEvent, ctx, () => {
           return;
         });
-        ctx.succeed(result);
-        ctx = null;
+        // ctx.succeed(result);
         expect(result.statusCode).toEqual(400);
         expect(result.body).toStrictEqual(
           JSON.stringify({
@@ -177,12 +175,12 @@ describe('The lambda function handler', () => {
       const getFunctions = Configuration.prototype.getFunctions;
       Configuration.prototype.getFunctions = jest.fn().mockImplementation(() => []);
       const eventNoRoute = { httpMethod: 'GET', path: '' };
-      let ctx: any = mockContext(opts);
+      // @ts-ignore
+      const ctx: Context = null;
       const result = await handler(eventNoRoute, ctx, () => {
         return;
       });
-      ctx.succeed(result);
-      ctx = null;
+      // ctx.succeed(result);
       expect(result.statusCode).toEqual(400);
       expect(result.body).toEqual(
         JSON.stringify({

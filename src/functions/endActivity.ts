@@ -5,10 +5,7 @@ import { DynamoDBService } from '../services/DynamoDBService';
 import { HTTPRESPONSE } from '../assets/enums';
 import { Validator } from '../utils/Validator';
 
-const endActivity: Handler = async (
-  event: any,
-  context: Context
-): Promise<APIGatewayProxyResult> => {
+const endActivity: Handler = async (event: any, context: Context): Promise<HTTPResponse> => {
   const activityService = new ActivityService(new DynamoDBService());
   const check: Validator = new Validator();
   // auto-close will provide the endTime in the event body but VTA requests will not

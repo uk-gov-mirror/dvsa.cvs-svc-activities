@@ -42,8 +42,7 @@ describe('getActivities', () => {
   });
   context('when the parameters are valid - isOpen true', () => {
     it('should return array of activities with activity 1 first', async () => {
-
-      const mockData : IActivity[] = [];
+      const mockData: IActivity[] = [];
       mockData.push(jsonData[0] as IActivity);
       mockData.push(jsonData[1] as IActivity);
 
@@ -57,8 +56,7 @@ describe('getActivities', () => {
       expect(await getActivityService.getActivities(params)).not.toHaveLength(0);
     });
     it('should return array of activities with activity 2 first', async () => {
-
-      const mockData : IActivity[] = [];
+      const mockData: IActivity[] = [];
       mockData.push(jsonData[1] as IActivity);
       mockData.push(jsonData[0] as IActivity);
 
@@ -72,8 +70,7 @@ describe('getActivities', () => {
       expect(await getActivityService.getActivities(params)).not.toHaveLength(0);
     });
     it('should return array of activities with no change in order', async () => {
-
-      const mockData : IActivity[] = [];
+      const mockData: IActivity[] = [];
       mockData.push(jsonData[0] as IActivity);
       mockData.push(jsonData[0] as IActivity);
 
@@ -107,7 +104,7 @@ describe('getActivities', () => {
     it('should throw 400', () => {
       const params = {
         fromStartTime: '2020-02-12',
-        toStartTime: '2020-02-12',
+        toStartTime: '2020-02-12'
       };
       expect.assertions(2);
 

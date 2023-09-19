@@ -3,7 +3,8 @@ configValidationMode: warn
 provider:
   lambdaHashingVersion: 20201221
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
+  timeout: 30
   stage: dev
   tracing:
     apiGateway: true
@@ -20,9 +21,9 @@ provider:
 
 plugins:
   - serverless-dynamodb-local
-  - serverless-offline
   - serverless-plugin-typescript
   - serverless-plugin-tracing
+  - serverless-offline
 
 functions:
   main:
@@ -105,7 +106,7 @@ resources:
           WriteCapacityUnits: 1
 custom:
   serverless-offline:
-    port: 3007
+    httpPort: 3007
   dynamodb:
     start:
       port: 8005
@@ -113,6 +114,7 @@ custom:
       migrate: true
       seed: true
       noStart: false
+      host: 127.0.0.1
     seed:
       activities:
         sources:
@@ -120,3 +122,4 @@ custom:
             sources: [./tests/resources/activities.json]
     stages:
       - dev
+      - test
