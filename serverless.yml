@@ -20,7 +20,7 @@ provider:
             - '*'
 
 plugins:
-  - serverless-dynamodb-local
+  - serverless-dynamodb
   - serverless-plugin-typescript
   - serverless-plugin-tracing
   - serverless-offline
