@@ -39,7 +39,7 @@
     "moment": "2.29.4",
     "node-yaml": "4.0.1",
     "path-parser": "^6.1.0",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.1.14",
     "serverless-dynamodb": "0.2.45",
     "ts-node-register": "^1.0.0",
     "uuid": "^9.0.0"
