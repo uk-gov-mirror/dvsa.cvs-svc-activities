@@ -2,10 +2,9 @@ import { IActivity } from '../../src/models/Activity';
 import { ActivityType, StationType } from '../../src/assets/enums';
 import { Configuration } from '../../src/utils/Configuration';
 import supertest, { Response } from 'supertest';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
 import { ActivityService } from '../../src/services/ActivityService';
 import { DynamoDBService } from '../../src/services/DynamoDBService';
-let postedActivity: DocumentClient.Key = {};
+let postedActivity: any = {};
 
 describe('POST /activities', () => {
   const config: any = Configuration.getInstance().getConfig();

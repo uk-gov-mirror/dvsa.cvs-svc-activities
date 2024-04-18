@@ -1,8 +1,6 @@
 import * as Joi from 'joi';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { AWSError } from 'aws-sdk'; // Only used as a type, so not wrapped by XRay
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client'; // Only used as a type, so not wrapped by XRay
 
 import { DynamoDBService } from './DynamoDBService';
 import { IActivity } from '../models/Activity';
@@ -10,6 +8,8 @@ import { HTTPResponse } from '../utils/HTTPResponse';
 import * as Constants from '../assets/enums';
 import { ActivitySchema } from '../models/ActivitySchema';
 import { ActivityUpdateSchema } from '../models/ActivityUpdateSchema';
+import { ServiceException } from '@smithy/smithy-client';
+import { GetCommandOutput } from '@aws-sdk/lib-dynamodb';
 
 export class ActivityService {
   public readonly dbClient: DynamoDBService;
@@ -80,11 +80,10 @@ export class ActivityService {
       .then(() => {
         return { id };
       })
-      .catch((error: AWSError) => {
-        throw new HTTPResponse(error.statusCode || 500, {
-          error: `${error.code}: ${error.message}
-                At: ${error.hostname} - ${error.region}
-                Request id: ${error.requestId}`
+      .catch((error: ServiceException) => {
+        throw new HTTPResponse(error.$metadata.httpStatusCode || 500, {
+          error: `${error.name}: ${error.message}
+                Request id: ${error.$metadata.requestId}`
         });
       });
   }
@@ -101,7 +100,7 @@ export class ActivityService {
     endTime: string
   ): Promise<{ wasVisitAlreadyClosed: boolean }> {
     try {
-      const result: DocumentClient.GetItemOutput = await this.dbClient.get({ id });
+      const result = await this.dbClient.get({ id }) as GetCommandOutput;
 
       if (result.Item === undefined) {
         console.log(`Error occurred: ${Constants.HTTPRESPONSE.NOT_EXIST} with statusCode: 404`);
@@ -113,7 +112,7 @@ export class ActivityService {
         return { wasVisitAlreadyClosed: true };
       }
 
-      const activity: IActivity = result.Item as IActivity;
+      const activity: IActivity = result.Item as unknown as IActivity;
 
       // use value provided by auto-close as activityEndTime, otherwise use Date.now()
       endTime
@@ -127,9 +126,9 @@ export class ActivityService {
       // client error so we rethrow
       if (e instanceof HTTPResponse) throw e;
 
-      const { statusCode, code, message, hostname, region, requestId } = e;
+      const { statusCode, code, message, hostname, region, requestId, name} = e;
       throw new HTTPResponse(statusCode, {
-        error: `${code}: ${message} At: ${hostname} - ${region} Request id: ${requestId}`
+        error: `${code | name}: ${message} At: ${hostname} - ${region} Request id: ${requestId}`
       });
     }
   }
@@ -154,13 +153,13 @@ export class ActivityService {
       }
       await this.dbClient
         .get({ id: each.id })
-        .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
+        .then(async result => {
           // Result checks
-          if (result.Item === undefined) {
+          if ((result as GetCommandOutput).Item === undefined) {
             throw new HTTPResponse(404, { error: Constants.HTTPRESPONSE.NOT_EXIST });
           }
 
-          const dbActivity: IActivity = result.Item as IActivity;
+          const dbActivity: IActivity = (result as GetCommandOutput).Item as unknown as IActivity;
 
           // Assign the waitReasons
           Object.assign(dbActivity, { waitReason: each.waitReason });
@@ -168,15 +167,15 @@ export class ActivityService {
           Object.assign(dbActivity, { notes: each.notes });
           activitiesList.push(dbActivity);
         })
-        .catch((error: AWSError | HTTPResponse) => {
+        .catch((error: ServiceException | HTTPResponse) => {
           // If we get HTTPResponse, we rethrow it
           if (error instanceof HTTPResponse) {
             throw error;
           }
 
           // Otherwise, if DynamoDB errors, we throw 500
-          throw new HTTPResponse(error.statusCode || 500, {
-            error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`
+          throw new HTTPResponse(error.$metadata.httpStatusCode || 500, {
+            error: `${error.name}: ${error.message} Request id: ${error.$metadata.requestId}`
           });
         });
     }
@@ -229,9 +228,9 @@ export class ActivityService {
     // Validate if parentId exists.
     await this.dbClient
       .get({ id: activity.parentId })
-      .then(async (result: DocumentClient.GetItemOutput): Promise<void> => {
+      .then(async result => {
         // Result checks
-        if (result.Item === undefined) {
+        if ((result as GetCommandOutput).Item === undefined) {
           throw new HTTPResponse(400, { error: Constants.HTTPRESPONSE.PARENT_ID_NOT_EXIST });
         }
         // Validate if startTime is provided in request
@@ -243,15 +242,15 @@ export class ActivityService {
           throw new HTTPResponse(400, { error: Constants.HTTPRESPONSE.END_TIME_EMPTY });
         }
       })
-      .catch((error: AWSError | HTTPResponse) => {
+      .catch((error: ServiceException | HTTPResponse) => {
         // If we get HTTPResponse, we rethrow it
         if (error instanceof HTTPResponse) {
           throw error;
         }
 
         // Otherwise, if DynamoDB errors, we throw 500
-        throw new HTTPResponse(error.statusCode || 500, {
-          error: `${error.code}: ${error.message} At: ${error.hostname} - ${error.region} Request id: ${error.requestId}`
+        throw new HTTPResponse(error.$metadata.httpStatusCode || 500, {
+          error: `${error.name}: ${error.message} Request id: ${error.$metadata.requestId}`
         });
       });
     return true;

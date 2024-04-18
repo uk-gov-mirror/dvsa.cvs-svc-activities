@@ -1,28 +1,18 @@
-import AWS from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
 import { DynamoDBService } from '../../src/services/DynamoDBService';
 import { IActivityParams } from '../../src/models/Activity';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
 
 describe('DynamoDBService', () => {
   context('Query activities', () => {
     context('builds correct request for QUERY', () => {
       beforeEach(() => {
         jest.resetModules();
-      });
-      // Mock once
-      let stub: any = null;
-      AWS.DynamoDB.DocumentClient.prototype.query = jest
-        .fn()
-        .mockImplementation((params: DocumentClient.QueryInput) => {
-          return {
-            promise: () => {
-              stub = params;
-              return Promise.resolve([]);
-            }
-          };
-        });
+      });      
 
       it('for getOngoingByStaffId', async () => {
+        const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+        mockDynamoClient.on(QueryCommand).resolves({});
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'StaffIndex',
@@ -33,12 +23,17 @@ describe('DynamoDBService', () => {
             ':NULL': 'NULL'
           }
         };
+       
         const dynamoDbService = new DynamoDBService();
         await dynamoDbService.getOngoingByStaffId('1234');
-        expect(stub).toStrictEqual(expectedCall);
+
+        const getStub = mockDynamoClient.commandCalls(QueryCommand);
+        expect(getStub[0].args[0].input).toStrictEqual(expectedCall);
       });
 
       it('for getActivities with optional params', async () => {
+        const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+        mockDynamoClient.on(QueryCommand).resolves({});
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'ActivityTypeIndex',
@@ -64,10 +59,13 @@ describe('DynamoDBService', () => {
         };
         await dynamoDbService.getActivities(params);
 
-        expect(stub).toStrictEqual(expectedCall);
+        const stub = mockDynamoClient.commandCalls(QueryCommand);
+        expect(stub[0].args[0].input).toStrictEqual(expectedCall);
       });
 
       it('for getActivities without optional params', async () => {
+        const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+        mockDynamoClient.on(QueryCommand).resolves({});
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'ActivityTypeIndex',
@@ -87,10 +85,13 @@ describe('DynamoDBService', () => {
         };
         await dynamoDbService.getActivities(params);
 
-        expect(stub).toStrictEqual(expectedCall);
+        const stub = mockDynamoClient.commandCalls(QueryCommand);
+        expect(stub[0].args[0].input).toStrictEqual(expectedCall);
       });
 
       it('for get openVisit activities', async () => {
+        const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+        mockDynamoClient.on(QueryCommand).resolves({});
         const expectedCall = {
           TableName: 'cvs-local-activities',
           IndexName: 'ActivityTypeIndex',
@@ -109,7 +110,8 @@ describe('DynamoDBService', () => {
         };
         await dynamoDbService.getActivities(params);
 
-        expect(stub).toStrictEqual(expectedCall);
+        const stub = mockDynamoClient.commandCalls(QueryCommand);
+        expect(stub[0].args[0].input).toStrictEqual(expectedCall);
       });
     });
   });
@@ -117,20 +119,10 @@ describe('DynamoDBService', () => {
     beforeEach(() => {
       jest.resetModules();
     });
-    // Mock once
-    let stub: any = null;
-    AWS.DynamoDB.DocumentClient.prototype.get = jest
-      .fn()
-      .mockImplementation((params: DocumentClient.Get) => {
-        return {
-          promise: () => {
-            stub = params;
-            return Promise.resolve([]);
-          }
-        };
-      });
 
     it('for get', async () => {
+      const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+      mockDynamoClient.on(GetCommand).resolves({});
       const expectedCall = {
         TableName: 'cvs-local-activities',
         Key: {
@@ -139,8 +131,8 @@ describe('DynamoDBService', () => {
       };
       const dynamoDbService = new DynamoDBService();
       await dynamoDbService.get({ id: '1234' });
-
-      expect(stub).toStrictEqual(expectedCall);
+      const stub = mockDynamoClient.commandCalls(GetCommand);
+      expect(stub[0].args[0].input).toStrictEqual(expectedCall);
     });
   });
 
@@ -148,20 +140,10 @@ describe('DynamoDBService', () => {
     beforeEach(() => {
       jest.resetModules();
     });
-    // Mock once
-    let stub: any = null;
-    AWS.DynamoDB.DocumentClient.prototype.put = jest
-      .fn()
-      .mockImplementation((params: DocumentClient.Put) => {
-        return {
-          promise: () => {
-            stub = params;
-            return Promise.resolve([]);
-          }
-        };
-      });
     context('builds correct request when the activity updated', () => {
       it('should return the correct query', async () => {
+        const mockDynamoClient = mockClient(DynamoDBDocumentClient);
+        mockDynamoClient.on(PutCommand).resolves({});
         const activity = {
           mockActivity: '123'
         };
@@ -173,7 +155,8 @@ describe('DynamoDBService', () => {
 
         const dynamoDbService = new DynamoDBService();
         await dynamoDbService.put(activity);
-        expect(stub).toStrictEqual(expectedCall);
+        const stub = mockDynamoClient.commandCalls(PutCommand);
+        expect(stub[0].args[0].input).toStrictEqual(expectedCall);
       });
     });
   });

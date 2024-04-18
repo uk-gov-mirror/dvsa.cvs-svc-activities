@@ -1,8 +1,7 @@
-import { AWSError, Response } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { Configuration } from '../../src/utils/Configuration';
 import { IActivity, IActivityParams } from '../../src/models/Activity';
+import { ServiceException } from '@smithy/smithy-client';
+import { BatchGetCommandOutput, BatchWriteCommandOutput, DeleteCommandOutput, GetCommandOutput, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
 
 export class DynamoDBMockService {
   private db: any;
@@ -30,40 +29,18 @@ export class DynamoDBMockService {
   }
 
   /**
-   * Scan the entire table and retrieve all data
-   * @returns Promise<PromiseResult<DocumentClient.ScanOutput, AWSError>>
-   */
-  public scan(): Promise<PromiseResult<DocumentClient.ScanOutput, AWSError>> {
-    return new Promise((resolve, reject) => {
-      const response = new Response<DocumentClient.ScanOutput, AWSError>();
-      response.data = {
-        Count: this.db.length,
-        Items: this.db,
-        ScannedCount: this.db.length
-      };
-
-      resolve({
-        $response: response,
-        Count: this.db.length,
-        Items: this.db,
-        ScannedCount: this.db.length
-      });
-    });
-  }
-
-  /**
    * Retrieves the item with the given key
    * @param key - the key of the item you wish to fetch
    * @param attributes - optionally, you can request only a set of attributes
-   * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, ServiceException>>
    */
   public get(
-    key: DocumentClient.Key,
-    attributes?: DocumentClient.AttributeNameList
-  ): Promise<PromiseResult<DocumentClient.GetItemOutput, AWSError>> {
+    key: any,
+    attributes?: any
+  ): Promise<GetCommandOutput | ServiceException> {
     return new Promise((resolve, reject) => {
       const response = {
-        $response: new Response<DocumentClient.GetItemOutput, AWSError>()
+        $response: new Response() as any
       };
 
       const keyAttributes: any[] = Object.entries(key);
@@ -86,7 +63,7 @@ export class DynamoDBMockService {
         Object.assign(response, { Item: itemRetrieved });
       }
 
-      resolve(response);
+      resolve(response as unknown as GetCommandOutput);
     });
   }
 
@@ -104,12 +81,12 @@ export class DynamoDBMockService {
   /**
    * Replaces the provided item, or inserts it if it does not exist
    * @param item - item to be inserted or updated
-   * @returns Promise<PromiseResult<DocumentClient.PutItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<DocumentClient.PutItemOutput, ServiceException>>
    */
-  public put(item: any): Promise<PromiseResult<DocumentClient.PutItemOutput, AWSError>> {
+  public put(item: any): Promise<PutCommandOutput | ServiceException> {
     return new Promise((resolve, reject) => {
-      const response: PromiseResult<DocumentClient.PutItemOutput, AWSError> = {
-        $response: new Response<DocumentClient.GetItemOutput, AWSError>()
+      const response = {
+        $response: new Response() as any
       };
 
       const itemIndex: number = this.db.findIndex((dbItem: any) => {
@@ -132,21 +109,21 @@ export class DynamoDBMockService {
         this.db.push(item);
       }
 
-      resolve(response);
+      resolve(response as unknown as  PutCommandOutput);
     });
   }
 
   /**
    * Deletes the item with the given key and returns the item deleted
    * @param key - the key of the item you wish to delete
-   * @returns Promise<PromiseResult<DocumentClient.DeleteItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<DocumentClient.DeleteItemOutput, ServiceException>>
    */
   public delete(
-    key: DocumentClient.Key
-  ): Promise<PromiseResult<DocumentClient.DeleteItemOutput, AWSError>> {
+    key: any
+  ): Promise<DeleteCommandOutput | ServiceException> {
     return new Promise((resolve, reject) => {
       const response = {
-        $response: new Response<DocumentClient.GetItemOutput, AWSError>()
+        $response: new Response()
       };
 
       const keyAttributes: any[] = Object.entries(key);
@@ -169,26 +146,26 @@ export class DynamoDBMockService {
         this.db.splice(itemIndex, 1);
       }
 
-      resolve(response);
+      resolve(response as unknown as DeleteCommandOutput);
     });
   }
 
   /**
    * Retrieves a list of items with the given keys
    * @param keys - a list of keys you wish to retrieve
-   * @returns Promise<PromiseResult<BatchGetItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<BatchGetItemOutput, ServiceException>>
    */
   public batchGet(
-    keys: DocumentClient.KeyList
-  ): Promise<PromiseResult<DocumentClient.BatchGetItemOutput, AWSError>> {
+    keys: any
+  ): Promise<BatchGetCommandOutput | ServiceException> {
     return new Promise((resolve, reject) => {
       const config: any = Configuration.getInstance().getDynamoDBConfig();
 
       const response = {
-        $response: new Response<DocumentClient.BatchGetItemOutput, AWSError>()
+        $response: new Response()
       };
 
-      const keyAttributes: any[] = keys.map((key: DocumentClient.Key) => Object.entries(key));
+      const keyAttributes: any[] = keys.map((key: any) => Object.entries(key));
 
       const items: number = this.db.filter((item: any) => {
         let isMatch: boolean = true;
@@ -209,57 +186,37 @@ export class DynamoDBMockService {
         Object.assign(response, { Responses: { [config.table]: items } });
       }
 
-      resolve(response);
+      resolve(response as unknown as BatchGetCommandOutput);
     });
   }
 
   /**
    * Updates or creates the items provided
    * @param items - items to add or update
-   * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, ServiceException>>
    */
   public batchPut(
     items: any[]
-  ): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>> {
+  ): Promise<BatchWriteCommandOutput | ServiceException> {
     return new Promise((resolve, reject) => {
       items.forEach(async (item: any) => {
         await this.put(item);
       });
 
       const response = {
-        $response: new Response<DocumentClient.BatchWriteItemOutput, AWSError>()
+        $response: new Response()
       };
 
-      resolve(response);
+      resolve(response as unknown as BatchWriteCommandOutput);
     });
   }
 
-  /**
-   * Updates or creates the items provided
-   * @param items - items to add or update
-   * @returns Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>>
-   */
-  public batchDelete(
-    items: DocumentClient.KeyList
-  ): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>> {
-    return new Promise((resolve, reject) => {
-      items.forEach(async (item: any) => {
-        await this.delete(item);
-      });
-
-      const response = {
-        $response: new Response<DocumentClient.BatchWriteItemOutput, AWSError>()
-      };
-
-      resolve(response);
-    });
-  }
 
   /**
    * Retrieves the item with the given key
    * @param key - the key of the item you wish to fetch
    * @param attributes - optionally, you can request only a set of attributes
-   * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, AWSError>>
+   * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, ServiceException>>
    */
   public getActivities(params: IActivityParams): Promise<IActivity[]> {
     return new Promise((resolve, reject) => {
