@@ -1,5 +1,6 @@
 import { Configuration } from '../../src/utils/Configuration';
 import supertest from 'supertest';
+import { WaitReason } from '@dvsa/cvs-type-definitions/types/v1/enums/waitReason.enum';
 
 const config: any = Configuration.getInstance().getConfig();
 const request = supertest(`http://localhost:${config.serverless.port}`);
@@ -9,7 +10,7 @@ const activityId: string = '5e4bd304-446e-4678-8289-d34fca925612'; // Existing I
 describe('PUT /activities/update', () => {
   context('when the updateActivity function is invoked', () => {
     const payload: any = [
-      { id: activityId, waitReason: ['Other', 'Waiting for vehicle'], notes: 'sample' }
+      { id: activityId, waitReason: [WaitReason.OTHER, WaitReason.WAITING_FOR_VEHICLE], notes: 'sample' }
     ];
     it('should respond with HTTP 204', () => {
       return request

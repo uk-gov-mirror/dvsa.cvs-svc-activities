@@ -1,4 +1,4 @@
-import { IActivity } from '../models/Activity';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
 
 export class ActivityFilters {
   // tslint:disable-next-line: no-empty
@@ -9,8 +9,8 @@ export class ActivityFilters {
    * @param activities Array of activities
    * @returns Array of Activities ordered desc
    */
-  public returnOrderedActivities(activities: IActivity[]): IActivity[] {
-    const sortDateDesc = (activity1: IActivity, activity2: IActivity) => {
+  public returnOrderedActivities(activities: ActivitySchema[]): ActivitySchema[] {
+    const sortDateDesc = (activity1: ActivitySchema, activity2: ActivitySchema) => {
       const date = new Date(activity1.startTime as string).toISOString();
       const dateToCompare = new Date(activity2.startTime as string).toISOString();
       if (date > dateToCompare) {

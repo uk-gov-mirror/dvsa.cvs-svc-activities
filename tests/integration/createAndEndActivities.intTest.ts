@@ -1,5 +1,7 @@
-import { IActivity } from '../../src/models/Activity';
-import { ActivityType, StationType } from '../../src/assets/enums';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
+import { ActivityType } from '@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum';
+import { TestStationTypes } from '@dvsa/cvs-type-definitions/types/v1/enums/testStationType.enum';
+import { WaitReason } from '@dvsa/cvs-type-definitions/types/v1/enums/waitReason.enum';
 import { Configuration } from '../../src/utils/Configuration';
 import supertest, { Response } from 'supertest';
 import { ActivityService } from '../../src/services/ActivityService';
@@ -17,7 +19,7 @@ describe('POST /activities', () => {
         badAttr: 'badValue',
         testStationPNumber: '87-1369569',
         testStationEmail: 'malformed',
-        testStationType: StationType.GVTS,
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica'
       };
 
@@ -32,15 +34,16 @@ describe('POST /activities', () => {
     });
 
     context('and the payload is correct for visit activityType', () => {
-      const payload: IActivity = {
+      const payload: ActivitySchema = {
         activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: StationType.GVTS,
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Dorel',
         testerStaffId: '1664',
-        testerEmail: 'tester@dvsa.gov.uk'
+        testerEmail: 'tester@dvsa.gov.uk',
+        startTime: new Date().getTime().toString(),
       };
 
       it('should respond with HTTP 201', () => {
@@ -63,18 +66,18 @@ describe('POST /activities', () => {
     });
 
     context('and the payload is correct for wait activityType', () => {
-      const payload: IActivity = {
+      const payload: ActivitySchema = {
         parentId: visitId,
         activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: StationType.GVTS,
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Dorel',
         testerStaffId: '1664',
         startTime: new Date().toISOString(),
         endTime: new Date().toISOString(),
-        waitReason: ['Break'],
+        waitReason: [WaitReason.BREAK],
         notes: 'test notes'
       };
 

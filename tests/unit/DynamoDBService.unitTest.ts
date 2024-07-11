@@ -1,14 +1,15 @@
 import { DynamoDBService } from '../../src/services/DynamoDBService';
-import { IActivityParams } from '../../src/models/Activity';
+import { IActivityParams } from '../../src/models/IActivityParams';
 import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
+import { ActivityType } from '@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum';
 
 describe('DynamoDBService', () => {
   context('Query activities', () => {
     context('builds correct request for QUERY', () => {
       beforeEach(() => {
         jest.resetModules();
-      });      
+      });
 
       it('for getOngoingByStaffId', async () => {
         const mockDynamoClient = mockClient(DynamoDBDocumentClient);
@@ -23,7 +24,7 @@ describe('DynamoDBService', () => {
             ':NULL': 'NULL'
           }
         };
-       
+
         const dynamoDbService = new DynamoDBService();
         await dynamoDbService.getOngoingByStaffId('1234');
 
@@ -42,7 +43,7 @@ describe('DynamoDBService', () => {
           FilterExpression:
             'testStationPNumber = :testStationPNumber AND testerStaffId = :testerStaffId',
           ExpressionAttributeValues: {
-            ':activityType': 'visit',
+            ':activityType': ActivityType.VISIT,
             ':fromStartTime': '2021-01-01',
             ':toStartTime': '2021-01-01',
             ':testStationPNumber': 'abc123',
@@ -53,7 +54,7 @@ describe('DynamoDBService', () => {
         const params: IActivityParams = {
           fromStartTime: '2021-01-01',
           toStartTime: '2021-01-01',
-          activityType: 'visit',
+          activityType: ActivityType.VISIT,
           testStationPNumber: 'abc123',
           testerStaffId: 'test123'
         };
@@ -72,7 +73,7 @@ describe('DynamoDBService', () => {
           KeyConditionExpression:
             'activityType = :activityType AND startTime BETWEEN :fromStartTime AND :toStartTime',
           ExpressionAttributeValues: {
-            ':activityType': 'visit',
+            ':activityType': ActivityType.VISIT,
             ':fromStartTime': '2021-01-01',
             ':toStartTime': '2021-01-01'
           }
@@ -81,7 +82,7 @@ describe('DynamoDBService', () => {
         const params: IActivityParams = {
           fromStartTime: '2021-01-01',
           toStartTime: '2021-01-01',
-          activityType: 'visit'
+          activityType: ActivityType.VISIT
         };
         await dynamoDbService.getActivities(params);
 
@@ -98,7 +99,7 @@ describe('DynamoDBService', () => {
           KeyConditionExpression: 'activityType = :activityType AND startTime >= :fromStartTime',
           ExpressionAttributeValues: {
             ':NULL': 'NULL',
-            ':activityType': 'visit',
+            ':activityType': ActivityType.VISIT,
             ':fromStartTime': new Date(2020, 0, 1).toISOString()
           },
           FilterExpression: 'attribute_type(endTime, :NULL)'
@@ -106,7 +107,7 @@ describe('DynamoDBService', () => {
         const dynamoDbService = new DynamoDBService();
         const params: any = {
           isOpen: true,
-          activityType: 'visit'
+          activityType: ActivityType.VISIT
         };
         await dynamoDbService.getActivities(params);
 

@@ -1,7 +1,11 @@
 import { ActivityService } from '../../src/services/ActivityService';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
+import { ActivityType } from '@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum';
+import { TestStationTypes } from '@dvsa/cvs-type-definitions/types/v1/enums/testStationType.enum';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { HTTPRESPONSE } from '../../src/assets/enums';
 import { DynamoDBService } from '../../src/services/DynamoDBService';
+import { WaitReason } from '@dvsa/cvs-type-definitions/types/v1/enums/waitReason.enum';
 
 describe('createActivity', () => {
   const visitId: string = '5e4bd304-446e-4678-8289-d34fca9256e8'; // existing-parentId
@@ -12,9 +16,10 @@ describe('createActivity', () => {
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
-        testerStaffId: '132'
+        testerStaffId: '132',
+        startTime: new Date().getTime().toString()
       };
 
       it('should return an error', () => {
@@ -27,13 +32,14 @@ describe('createActivity', () => {
     });
 
     context("parentId attribute for 'visit' activityType is not required", () => {
-      const payload: any = {
+      const payload: ActivitySchema = {
         parentId: visitId,
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        startTime: new Date().getTime().toString(),
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerEmail: 'tester@dvsa.gov.uk',
         testerStaffId: '132'
@@ -50,10 +56,10 @@ describe('createActivity', () => {
 
     context('testStationName attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132'
       };
@@ -69,10 +75,10 @@ describe('createActivity', () => {
 
     context('testStationPNumber attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132'
       };
@@ -88,10 +94,10 @@ describe('createActivity', () => {
 
     context('testStationEmail attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132'
       };
@@ -107,7 +113,7 @@ describe('createActivity', () => {
 
     context('testStationType attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
@@ -126,11 +132,11 @@ describe('createActivity', () => {
 
     context('testerName attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerStaffId: '132'
       };
 
@@ -145,11 +151,11 @@ describe('createActivity', () => {
 
     context('testerStaffId attribute', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica'
       };
 
@@ -170,7 +176,7 @@ describe('createActivity', () => {
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132'
       };
@@ -189,11 +195,11 @@ describe('createActivity', () => {
 
     context('and testStationEmail does not meet the requirements', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'malformed email',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132'
       };
@@ -210,7 +216,7 @@ describe('createActivity', () => {
 
     context('and testStationType does not meet the requirements', () => {
       const payload: any = {
-        activityType: 'visit',
+        activityType: ActivityType.VISIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
@@ -232,11 +238,11 @@ describe('createActivity', () => {
     context('and waitReason does not meet the requirements', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -251,7 +257,7 @@ describe('createActivity', () => {
         return activityService.createActivity(payload).catch((error: HTTPResponse) => {
           const body: any = JSON.parse(error.body);
           expect(body.error).toEqual(
-            '"waitReason" at position 0 does not match any of the allowed types'
+            `"waitReason[0]" must be one of [${WaitReason.WAITING_FOR_VEHICLE}, ${WaitReason.BREAK}, ${WaitReason.ADMIN}, ${WaitReason.SITE_ISSUE}, ${WaitReason.OTHER}]`
           );
         });
       });
@@ -260,11 +266,11 @@ describe('createActivity', () => {
     context('and parentId does not exist as a visit activity', () => {
       const payload: any = {
         parentId: 'non-existingID',
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -289,11 +295,11 @@ describe('createActivity', () => {
 
   context("when the payload is correct for 'visit' activityType", () => {
     const payload: any = {
-      activityType: 'visit',
+      activityType: ActivityType.VISIT,
       testStationName: 'Rowe, Wunsch and Wisoky',
       testStationPNumber: '87-1369569',
       testStationEmail: 'teststationname@dvsa.gov.uk',
-      testStationType: 'gvts',
+      testStationType: TestStationTypes.GVTS,
       testerName: 'Gica',
       testerEmail: 'tester@dvsa.gov.uk',
       testerStaffId: '132'
@@ -321,11 +327,11 @@ describe('createActivity', () => {
 
   context("when the payload is correct for 'potf' testStationType", () => {
     const payload: any = {
-      activityType: 'visit',
+      activityType: ActivityType.VISIT,
       testStationName: 'Rowe, Wunsch and Wisoky',
       testStationPNumber: '87-1369569',
       testStationEmail: 'teststationname@dvsa.gov.uk',
-      testStationType: 'potf',
+      testStationType: TestStationTypes.POTF,
       testerName: 'Gica',
       testerEmail: 'tester@dvsa.gov.uk',
       testerStaffId: '132'
@@ -353,11 +359,11 @@ describe('createActivity', () => {
 
   context("when the payload for 'visit' activityType has startTime and endTime", () => {
     const payload: any = {
-      activityType: 'visit',
+      activityType: ActivityType.VISIT,
       testStationName: 'Rowe, Wunsch and Wisoky',
       testStationPNumber: '87-1369569',
       testStationEmail: 'teststationname@dvsa.gov.uk',
-      testStationType: 'gvts',
+      testStationType: TestStationTypes.GVTS,
       testerName: 'Gica',
       testerStaffId: '139',
       testerEmail: 'tester@dvsa.gov.uk',
@@ -381,19 +387,18 @@ describe('createActivity', () => {
   });
 
   context("when the payload is correct for 'wait' activityType", () => {
-    const payload: any = {
+    const payload: ActivitySchema = {
       parentId: visitId,
-      activityType: 'wait',
+      activityType: ActivityType.WAIT,
       testStationName: 'Rowe, Wunsch and Wisoky',
       testStationPNumber: '87-1369569',
       testStationEmail: 'teststationname@dvsa.gov.uk',
-      testStationType: 'gvts',
+      testStationType: TestStationTypes.GVTS,
       testerName: 'Gica',
       testerStaffId: '132',
       startTime: new Date().toISOString(),
       endTime: new Date().toISOString(),
-      waitReason: [],
-      notes: null
+      waitReason: []
     };
 
     it('should return a uuid', () => {
@@ -416,12 +421,12 @@ describe('createActivity', () => {
   // 'wait' or 'unaccountable time' activityType creation Test validations
   context('when the payload is missing the', () => {
     context("parentId attribute for 'wait' or 'unaccountable time' activityType", () => {
-      const payload: any = {
-        activityType: 'wait',
+      const payload: ActivitySchema = {
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -441,10 +446,10 @@ describe('createActivity', () => {
     context('testStationName attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -464,10 +469,10 @@ describe('createActivity', () => {
     context('testStationPNumber attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -487,10 +492,10 @@ describe('createActivity', () => {
     context('testStationEmail attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString(),
@@ -510,7 +515,7 @@ describe('createActivity', () => {
     context('testStationType attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'unaccountable time',
+        activityType: ActivityType.UNACCOUNTABLE_TIME,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
@@ -533,11 +538,11 @@ describe('createActivity', () => {
     context('testerName attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerStaffId: '132',
         startTime: new Date().toISOString(),
         endTime: new Date().toISOString()
@@ -556,11 +561,11 @@ describe('createActivity', () => {
     context('testerStaffId attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'unaccountable time',
+        activityType: ActivityType.UNACCOUNTABLE_TIME,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         startTime: new Date().toISOString(),
         endTime: new Date().toISOString()
@@ -579,11 +584,11 @@ describe('createActivity', () => {
     context('startTime attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'wait',
+        activityType: ActivityType.WAIT,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         endTime: new Date().toISOString()
@@ -602,11 +607,11 @@ describe('createActivity', () => {
     context('endTime attribute', () => {
       const payload: any = {
         parentId: visitId,
-        activityType: 'unaccountable time',
+        activityType: ActivityType.UNACCOUNTABLE_TIME,
         testStationName: 'Rowe, Wunsch and Wisoky',
         testStationPNumber: '87-1369569',
         testStationEmail: 'teststationname@dvsa.gov.uk',
-        testStationType: 'gvts',
+        testStationType: TestStationTypes.GVTS,
         testerName: 'Gica',
         testerStaffId: '132',
         startTime: new Date().toISOString()

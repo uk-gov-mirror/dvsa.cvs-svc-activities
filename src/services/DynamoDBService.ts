@@ -1,5 +1,6 @@
 import { Configuration } from '../utils/Configuration';
-import { IActivity, IActivityParams } from '../models/Activity';
+import { IActivityParams } from '../models/IActivityParams';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
 import {
   BatchWriteCommand,
   BatchWriteCommandOutput,
@@ -68,9 +69,9 @@ export class DynamoDBService {
   /**
    * queries the entire table and retrieves all data based on filterParams
    * @param filterParams - parameters used for filtering data in the database
-   * @returns Promise<IActivity[]> an array of activities
+   * @returns Promise<ActivitySchema[]> an array of activities
    */
-  public async getActivities(filterParams: IActivityParams): Promise<IActivity[]> {
+  public async getActivities(filterParams: IActivityParams): Promise<ActivitySchema[]> {
     const { activityType, fromStartTime, toStartTime } = filterParams;
     let keyExpressionAttribute;
     let params;
@@ -139,7 +140,7 @@ export class DynamoDBService {
    * @param staffId - staff id for which to retrieve activity
    * @returns Promise<Activity[]>
    */
-  public async getOngoingByStaffId(staffId: string): Promise<IActivity[]> {
+  public async getOngoingByStaffId(staffId: string): Promise<ActivitySchema[]> {
     const keyCondition = 'testerStaffId = :staffId';
     const filterValues = {
       ':staffId': staffId,
@@ -249,13 +250,13 @@ export class DynamoDBService {
    * @param allData the result set which is recursively populated.
    * @returns array of activities
    */
-  private async queryAllData(params: any, allData: IActivity[] = []): Promise<IActivity[]> {
+  private async queryAllData(params: any, allData: ActivitySchema[] = []): Promise<ActivitySchema[]> {
     const data: QueryCommandOutput | ServiceException = await DynamoDBService.client.send(
       new QueryCommand(params)
     );
 
     if (data.Items && data.Items.length > 0) {
-      allData = [...allData, ...(data.Items as IActivity[])];
+      allData = [...allData, ...(data.Items as ActivitySchema[])];
     }
     if (data.LastEvaluatedKey) {
       params.ExclusiveStartKey = data.LastEvaluatedKey;

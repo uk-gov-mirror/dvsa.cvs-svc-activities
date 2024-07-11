@@ -1,5 +1,6 @@
 import { Configuration } from '../../src/utils/Configuration';
-import { IActivity, IActivityParams } from '../../src/models/Activity';
+import { IActivityParams } from '../../src/models/IActivityParams';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
 import { ServiceException } from '@smithy/smithy-client';
 import { BatchGetCommandOutput, BatchWriteCommandOutput, DeleteCommandOutput, GetCommandOutput, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
 
@@ -17,7 +18,7 @@ export class DynamoDBMockService {
    * Seeds the database with the provided items
    * @param items - an array of items
    */
-  public seed(items: IActivity[]): void {
+  public seed(items: ActivitySchema[]): void {
     this.db = items;
   }
 
@@ -70,11 +71,11 @@ export class DynamoDBMockService {
   /**
    * Get ongoing by staff id
    * @param staffId
-   * @returns Promise<IActivity[]>
+   * @returns Promise<ActivitySchema[]>
    */
-  public getOngoingByStaffId(staffId: string): Promise<IActivity[]> {
+  public getOngoingByStaffId(staffId: string): Promise<ActivitySchema[]> {
     return new Promise((resolve, reject) => {
-      return resolve(this.db as IActivity[]);
+      return resolve(this.db as ActivitySchema[]);
     });
   }
 
@@ -218,9 +219,9 @@ export class DynamoDBMockService {
    * @param attributes - optionally, you can request only a set of attributes
    * @returns Promise<PromiseResult<DocumentClient.GetItemOutput, ServiceException>>
    */
-  public getActivities(params: IActivityParams): Promise<IActivity[]> {
+  public getActivities(params: IActivityParams): Promise<ActivitySchema[]> {
     return new Promise((resolve, reject) => {
-      return resolve(this.db as IActivity[]);
+      return resolve(this.db as ActivitySchema[]);
     });
   }
 }

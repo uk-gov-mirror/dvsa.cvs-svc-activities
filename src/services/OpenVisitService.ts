@@ -1,6 +1,6 @@
 import { DynamoDBService } from './DynamoDBService';
 import { HTTPResponse } from '../utils/HTTPResponse';
-import { IActivity } from '../models/Activity';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
 
 export default class OpenVisitService {
   public readonly dbClient: DynamoDBService;
@@ -19,7 +19,7 @@ export default class OpenVisitService {
    */
   public async checkOpenVisit(staffId: string): Promise<boolean> {
     try {
-      const visits: IActivity[] = await this.dbClient.getOngoingByStaffId(staffId);
+      const visits: ActivitySchema[] = await this.dbClient.getOngoingByStaffId(staffId);
       console.log(`Open visit for user ${staffId} : ${!!visits.length}`);
       return !!visits.length;
     } catch (error: any) {

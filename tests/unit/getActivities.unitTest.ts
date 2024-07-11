@@ -2,7 +2,7 @@ import { GetActivityService } from '../../src/services/GetActivitiesService';
 import { DynamoDBMockService } from '../models/DynamoDBMockService';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import * as jsonData from '../resources/activities.json';
-import { IActivity } from '../../src/models/Activity';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
 import { HTTPRESPONSE } from '../../src/assets/enums';
 
 describe('getActivities', () => {
@@ -31,7 +31,7 @@ describe('getActivities', () => {
   });
   context('when the parameters are valid', () => {
     it('should return array of activities', async () => {
-      dbMock.seed(Array.of(jsonData[0]) as IActivity[]);
+      dbMock.seed(Array.of(jsonData[0]) as ActivitySchema[]);
       const params = {
         fromStartTime: '2018-02-13T04:00:40.561Z',
         toStartTime: '2018-02-13T04:00:40.561Z',
@@ -42,11 +42,11 @@ describe('getActivities', () => {
   });
   context('when the parameters are valid - isOpen true', () => {
     it('should return array of activities with activity 1 first', async () => {
-      const mockData: IActivity[] = [];
-      mockData.push(jsonData[0] as IActivity);
-      mockData.push(jsonData[1] as IActivity);
+      const mockData: ActivitySchema[] = [];
+      mockData.push(jsonData[0] as ActivitySchema);
+      mockData.push(jsonData[1] as ActivitySchema);
 
-      dbMock.seed(mockData as IActivity[]);
+      dbMock.seed(mockData as ActivitySchema[]);
       const params = {
         fromStartTime: '2018-02-13T04:00:40.561Z',
         toStartTime: '2018-02-13T04:00:40.561Z',
@@ -56,11 +56,11 @@ describe('getActivities', () => {
       expect(await getActivityService.getActivities(params)).not.toHaveLength(0);
     });
     it('should return array of activities with activity 2 first', async () => {
-      const mockData: IActivity[] = [];
-      mockData.push(jsonData[1] as IActivity);
-      mockData.push(jsonData[0] as IActivity);
+      const mockData: ActivitySchema[] = [];
+      mockData.push(jsonData[1] as ActivitySchema);
+      mockData.push(jsonData[0] as ActivitySchema);
 
-      dbMock.seed(mockData as IActivity[]);
+      dbMock.seed(mockData as ActivitySchema[]);
       const params = {
         fromStartTime: '2018-02-13T04:00:40.561Z',
         toStartTime: '2018-02-13T04:00:40.561Z',
@@ -70,11 +70,11 @@ describe('getActivities', () => {
       expect(await getActivityService.getActivities(params)).not.toHaveLength(0);
     });
     it('should return array of activities with no change in order', async () => {
-      const mockData: IActivity[] = [];
-      mockData.push(jsonData[0] as IActivity);
-      mockData.push(jsonData[0] as IActivity);
+      const mockData: ActivitySchema[] = [];
+      mockData.push(jsonData[0] as ActivitySchema);
+      mockData.push(jsonData[0] as ActivitySchema);
 
-      dbMock.seed(mockData as IActivity[]);
+      dbMock.seed(mockData as ActivitySchema[]);
       const params = {
         fromStartTime: '2018-02-13T04:00:40.561Z',
         toStartTime: '2018-02-13T04:00:40.561Z',

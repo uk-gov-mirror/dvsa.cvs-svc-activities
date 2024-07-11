@@ -2,6 +2,7 @@ import { ActivityService } from '../../src/services/ActivityService';
 import { HTTPResponse } from '../../src/utils/HTTPResponse';
 import { HTTPRESPONSE } from '../../src/assets/enums';
 import { DynamoDBService } from '../../src/services/DynamoDBService';
+import { WaitReason } from '@dvsa/cvs-type-definitions/types/v1/enums/waitReason.enum';
 
 describe('Activity Service - update Activity path', () => {
   const activityId: string = '9e4b9304-446e-4678-8289-d34fca9259e4'; // Existing ID
@@ -20,7 +21,7 @@ describe('Activity Service - update Activity path', () => {
 
   context('when the activity does not exist', () => {
     const payload: any = [
-      { id: 'non-existing-id', waitReason: ['Other', 'Waiting for vehicle'], notes: 'sample' }
+      { id: 'non-existing-id', waitReason: [WaitReason.OTHER, WaitReason.WAITING_FOR_VEHICLE], notes: 'sample' }
     ];
     it('should return an error', () => {
       DynamoDBService.prototype.get = jest.fn().mockResolvedValue({});
@@ -34,7 +35,7 @@ describe('Activity Service - update Activity path', () => {
   });
 
   context('when the activity was successfully updated', () => {
-    const payload: any = [{ id: 'waitId', waitReason: ['Waiting for vehicle'], notes: 'sample' }];
+    const payload: any = [{ id: 'waitId', waitReason: [WaitReason.WAITING_FOR_VEHICLE], notes: 'sample' }];
     it('should return void', async () => {
       DynamoDBService.prototype.get = jest.fn().mockResolvedValue({ Item: { test: true } });
       DynamoDBService.prototype.batchPut = jest
@@ -51,7 +52,7 @@ describe('Activity Service - update Activity path', () => {
 
   context('when the waitReason does not meet the requirements', () => {
     const payload: any = [
-      { id: activityId, waitReason: ['invalidReason', 'Waiting for vehicle'], notes: null }
+      { id: activityId, waitReason: ['invalidReason', WaitReason.WAITING_FOR_VEHICLE], notes: null }
     ];
     it('should return an error', async () => {
       const activityService = new ActivityService(new DynamoDBService());
@@ -60,7 +61,7 @@ describe('Activity Service - update Activity path', () => {
       return activityService.updateActivity(payload).catch((error: HTTPResponse) => {
         const body: any = JSON.parse(error.body);
         expect(body.error).toEqual(
-          '"waitReason" at position 0 does not match any of the allowed types'
+          `"waitReason[0]" must be one of [${WaitReason.WAITING_FOR_VEHICLE}, ${WaitReason.BREAK}, ${WaitReason.ADMIN}, ${WaitReason.SITE_ISSUE}, ${WaitReason.OTHER}]`
         );
       });
     });

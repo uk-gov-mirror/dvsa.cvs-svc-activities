@@ -1,13 +1,13 @@
-import * as Joi from 'joi';
+import Joi from 'joi';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-
 import { DynamoDBService } from './DynamoDBService';
-import { IActivity } from '../models/Activity';
+import { ActivitySchema } from '@dvsa/cvs-type-definitions/types/v1/activity';
+import { ActivityType } from '@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum';
 import { HTTPResponse } from '../utils/HTTPResponse';
 import * as Constants from '../assets/enums';
-import { ActivitySchema } from '../models/ActivitySchema';
-import { ActivityUpdateSchema } from '../models/ActivityUpdateSchema';
+import { ActivityCreated } from '../models/validators/ActivityCreated';
+import { ActivityUpdated } from '../models/validators/ActivityUpdated';
 import { ServiceException } from '@smithy/smithy-client';
 import { GetCommandOutput } from '@aws-sdk/lib-dynamodb';
 
@@ -26,11 +26,11 @@ export class ActivityService {
    * Creates a new activity in the database.
    * The startTime of this activity will be now.
    * @param activity - the payload containing the activity
-   * @returns Promise - The ID of the activitiy
+   * @returns Promise - The ID of the activity
    */
-  public async createActivity(activity: IActivity): Promise<{ id: string }> {
+  public async createActivity(activity: ActivitySchema): Promise<{ id: string }> {
     // Payload validation
-    const validation: Joi.ValidationResult<IActivity> = Joi.validate(activity, ActivitySchema);
+    const validation: Joi.ValidationResult<ActivitySchema> = ActivityCreated.validate(activity);
 
     if (validation.error) {
       const error: string = validation.error.details[0].message;
@@ -48,7 +48,7 @@ export class ActivityService {
 
     // 'visit' activity validations and object field assignments
     if (
-      activity.activityType === Constants.ActivityType.VISIT &&
+      activity.activityType === ActivityType.VISIT &&
       (await this.performVisitActValidations(activity))
     ) {
       const startTime = activity.startTime ? activity.startTime : new Date().toISOString();
@@ -59,7 +59,7 @@ export class ActivityService {
     }
     // non-'visit' activity validations and object field assignments
     if (
-      activity.activityType !== Constants.ActivityType.VISIT &&
+      activity.activityType !== ActivityType.VISIT &&
       (await this.performNonVisitActValidations(activity))
     ) {
       // Assign startTime
@@ -112,7 +112,7 @@ export class ActivityService {
         return { wasVisitAlreadyClosed: true };
       }
 
-      const activity: IActivity = result.Item as unknown as IActivity;
+      const activity: ActivitySchema = result.Item as ActivitySchema;
 
       // use value provided by auto-close as activityEndTime, otherwise use Date.now()
       endTime
@@ -138,13 +138,12 @@ export class ActivityService {
    * @param activities - the payload containing the activity
    * @returns Promise - void
    */
-  public async updateActivity(activities: IActivity[]): Promise<void> {
+  public async updateActivity(activities: ActivitySchema[]): Promise<void> {
     const activitiesList: any[] = [];
     for (const each of activities) {
       // Payload validation
-      const validation: Joi.ValidationResult<IActivity> = Joi.validate(
-        each,
-        ActivityUpdateSchema
+      const validation: Joi.ValidationResult<ActivitySchema> = ActivityUpdated.validate(
+        each
       );
       if (validation.error) {
         const error: string = validation.error.details[0].message;
@@ -159,7 +158,7 @@ export class ActivityService {
             throw new HTTPResponse(404, { error: Constants.HTTPRESPONSE.NOT_EXIST });
           }
 
-          const dbActivity: IActivity = (result as GetCommandOutput).Item as unknown as IActivity;
+          const dbActivity: ActivitySchema = (result as GetCommandOutput).Item as ActivitySchema;
 
           // Assign the waitReasons
           Object.assign(dbActivity, { waitReason: each.waitReason });
@@ -189,13 +188,13 @@ export class ActivityService {
    * @returns boolean
    */
 
-  protected async performVisitActValidations(activity: IActivity): Promise<boolean> {
+  protected async performVisitActValidations(activity: ActivitySchema): Promise<boolean> {
     // Visit activity should not have parent IDs
     if (activity.parentId) {
       throw new HTTPResponse(400, { error: Constants.HTTPRESPONSE.PARENT_ID_NOT_REQUIRED });
     }
 
-    let ongoingVisits: IActivity[];
+    let ongoingVisits: ActivitySchema[];
 
     try {
       // Check if staff already has an ongoing activity if activityType is visit
@@ -220,7 +219,7 @@ export class ActivityService {
    * @param activity - the payload containing the activity
    * @returns boolean
    */
-  protected async performNonVisitActValidations(activity: IActivity): Promise<boolean> {
+  protected async performNonVisitActValidations(activity: ActivitySchema): Promise<boolean> {
     // Non-visit activity requires parent ID
     if (!activity.parentId) {
       throw new HTTPResponse(400, { error: Constants.HTTPRESPONSE.PARENT_ID_REQUIRED });

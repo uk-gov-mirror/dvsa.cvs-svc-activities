@@ -32,16 +32,3 @@ export enum QUERY_PARAMS {
   TESTER_STAFF_ID = 'testerStaffId',
   END_TIME = 'endTime'
 }
-
-export enum ActivityType {
-  VISIT = 'visit',
-  WAIT = 'wait',
-  UNACCOUNTABLE_TIME = 'unaccountable time'
-}
-
-export enum StationType {
-  ATF = 'atf',
-  GVTS = 'gvts',
-  HQ = 'hq',
-  POTF = 'potf'
-}

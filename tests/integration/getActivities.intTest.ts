@@ -1,5 +1,6 @@
 import { Configuration } from '../../src/utils/Configuration';
 import supertest, { Response } from 'supertest';
+import { ActivityType } from '@dvsa/cvs-type-definitions/types/v1/enums/activityType.enum';
 
 const config: any = Configuration.getInstance().getConfig();
 const request = supertest(`http://localhost:${config.serverless.port}`);
@@ -7,7 +8,7 @@ describe('GET /activities/details', () => {
   const queryEventParams = {
     fromStartTime: '2014-02-12',
     toStartTime: '2019-02-12',
-    activityType: 'visit',
+    activityType: ActivityType.VISIT,
     testStationPNumber: '87-1369561',
     testerStaffId: '132'
   };
