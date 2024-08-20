@@ -230,7 +230,7 @@ describe('createActivity', () => {
         expect.assertions(1);
         return activityService.createActivity(payload).catch((error: HTTPResponse) => {
           const body: any = JSON.parse(error.body);
-          expect(body.error).toEqual('"testStationType" must be one of [atf, gvts, hq, potf]');
+          expect(body.error).toEqual('"testStationType" must be one of [atf, gvts, hq, potf, vef]');
         });
       });
     });
